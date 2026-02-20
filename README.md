@@ -16,7 +16,7 @@ unar/
 ├── assets/                 # Images and logos
 │   ├── Copy of Unar (1 x 2 in).svg
 │   ├── Designer.png
-│   ├── HANDCRAFTED and HANDPOURED - 100% natural - SKIN FRIENDLY.svg
+│   ├── logo.svg
 │   └── butterfly.png
 └── README.md              # This file
 ```

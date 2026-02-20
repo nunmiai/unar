@@ -547,10 +547,26 @@ section {
     background: linear-gradient(135deg, white 0%, var(--accent-color) 100%);
 }
 
+.collection-card:hover .collection-icon img {
+    transform: scale(1.1);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
 .collection-icon {
-    font-size: 56px;
-    margin-bottom: 16px;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.collection-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    transition: var(--transition);
 }
 
 .collection-card h3 {

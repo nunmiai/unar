@@ -82,6 +82,85 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(element);
     });
 
+    // Terms and Conditions tooltip functionality
+    const termsLink = document.getElementById('termsLink');
+    const termsTooltip = document.getElementById('termsTooltip');
+    const agreeTerms = document.getElementById('agreeTerms');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (termsLink && termsTooltip) {
+        termsLink.addEventListener('mouseenter', function() {
+            termsTooltip.classList.add('show');
+        });
+
+        termsLink.addEventListener('mouseleave', function() {
+            setTimeout(() => {
+                if (!termsTooltip.matches(':hover')) {
+                    termsTooltip.classList.remove('show');
+                }
+            }, 200);
+        });
+
+        termsTooltip.addEventListener('mouseleave', function() {
+            termsTooltip.classList.remove('show');
+        });
+
+        termsLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            termsTooltip.classList.toggle('show');
+        });
+    }
+
+    // Form validation - check all required fields (message is optional)
+    function validateForm() {
+        const name = document.getElementById('name');
+        const email = document.getElementById('email');
+        const fragrance = document.getElementById('fragrance');
+        const termsChecked = agreeTerms ? agreeTerms.checked : false;
+
+        const isValid = name && name.value.trim() && 
+                       email && email.value.trim() && 
+                       fragrance && fragrance.value && 
+                       termsChecked;
+        
+        console.log('Form validation:', {
+            name: name?.value,
+            email: email?.value,
+            fragrance: fragrance?.value,
+            termsChecked,
+            isValid
+        });
+
+        return isValid;
+    }
+
+    // Update submit button state
+    function updateSubmitButton() {
+        if (submitBtn) {
+            if (validateForm()) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.5';
+                submitBtn.style.cursor = 'not-allowed';
+            }
+        }
+    }
+
+    // Add event listeners to form fields
+    if (contactForm) {
+        const formInputs = contactForm.querySelectorAll('input[required], select[required], #agreeTerms');
+        formInputs.forEach(input => {
+            input.addEventListener('input', updateSubmitButton);
+            input.addEventListener('change', updateSubmitButton);
+        });
+
+        // Initial button state
+        updateSubmitButton();
+    }
+
     // Google Sheets Web App URL - Replace with your deployed script URL
     const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycby1PbOkJZVBbk0SPiPkW64Q7lZFUp-pTRvH0H8FJWx-izJxNKFSfVObuuk-MDJZMj6E/exec';
 

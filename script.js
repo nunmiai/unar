@@ -82,28 +82,47 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(element);
     });
 
+    // Google Sheets Web App URL - Replace with your deployed script URL
+    const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycby1PbOkJZVBbk0SPiPkW64Q7lZFUp-pTRvH0H8FJWx-izJxNKFSfVObuuk-MDJZMj6E/exec';
+
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            const submitBtn = contactForm.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.textContent;
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+
             const formData = new FormData(contactForm);
-            const name = formData.get('name');
-            const email = formData.get('email');
-            const phone = formData.get('phone');
-            const fragrance = formData.get('fragrance');
-            const message = formData.get('message');
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone') || 'Not provided',
+                fragrance: formData.get('fragrance'),
+                message: formData.get('message'),
+                timestamp: new Date().toISOString()
+            };
 
-            const mailtoLink = `mailto:unar.consciousliving@gmail.com?subject=Website Inquiry from ${encodeURIComponent(name)}&body=${encodeURIComponent(
-                `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'Not provided'}\nPreferred Fragrance: ${fragrance}\n\nMessage:\n${message}`
-            )}`;
+            try {
+                const response = await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
 
-            window.location.href = mailtoLink;
-
-            showNotification('Thank you for your message! Your email client will open to send the message.', 'success');
-
-            setTimeout(() => {
+                showNotification('Thank you for your message! We will get back to you soon.', 'success');
                 contactForm.reset();
-            }, 1000);
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                showNotification('Something went wrong. Please try again or email us directly.', 'error');
+            } finally {
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+            }
         });
     }
 

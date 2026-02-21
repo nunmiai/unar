@@ -37,7 +37,7 @@
             <div class="hero-content container">
                 <div class="hero-text">
                     <h1 class="hero-title">
-                        <span class="hero-title-main">UNAR</span>
+                        <img src="assets/unar_text.png" alt="UNAR" class="hero-logo-img">
                         <span class="hero-subtitle">Fragrance, Realized.</span>
                     </h1>
                     <p class="hero-description">
@@ -132,16 +132,6 @@
                         </div>
                         <h3>100% Natural</h3>
                         <p>Pure beeswax and essential oils, with absolutely no synthetic ingredients or harmful chemicals.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12 6 12 12 16 14"/>
-                            </svg>
-                        </div>
-                        <h3>Long Lasting</h3>
-                        <p>Concentrated formula that stays with you all day with just a single application.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">
@@ -295,6 +285,21 @@
                                 <label for="phone">Phone Number (Optional)</label>
                             </div>
                             <div class="form-group">
+                                <select id="fragrance" name="fragrance" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="Champa">Champa</option>
+                                    <option value="Jasmine">Jasmine</option>
+                                    <option value="Rose">Rose</option>
+                                    <option value="Frangipani">Frangipani</option>
+                                    <option value="Blue Lotus">Blue Lotus</option>
+                                    <option value="Vetiver">Vetiver</option>
+                                    <option value="Oud">Oud</option>
+                                    <option value="Sandalwood">Sandalwood</option>
+                                    <option value="Not Sure">Not Sure / Need Recommendation</option>
+                                </select>
+                                <label for="fragrance">Preferred Fragrance</label>
+                            </div>
+                            <div class="form-group">
                                 <textarea id="message" name="message" required rows="5" placeholder=" "></textarea>
                                 <label for="message">Your Message</label>
                             </div>
@@ -310,7 +315,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <h3 class="footer-brand-name">UNAR</h3>
+                    <img src="assets/unar_text.png" alt="UNAR" class="footer-logo-img">
                     <p class="footer-tagline">Fragrance, Realized.</p>
                     <p class="footer-description">
                         Natural solid perfumes handcrafted with love, for conscious living.

@@ -90,10 +90,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const name = formData.get('name');
             const email = formData.get('email');
             const phone = formData.get('phone');
+            const fragrance = formData.get('fragrance');
             const message = formData.get('message');
 
             const mailtoLink = `mailto:unar.consciousliving@gmail.com?subject=Website Inquiry from ${encodeURIComponent(name)}&body=${encodeURIComponent(
-                `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'Not provided'}\n\nMessage:\n${message}`
+                `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'Not provided'}\nPreferred Fragrance: ${fragrance}\n\nMessage:\n${message}`
             )}`;
 
             window.location.href = mailtoLink;

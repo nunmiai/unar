@@ -934,8 +934,28 @@ section {
         font-size: 48px;
     }
 
+    .hero-logo-img {
+        max-width: 180px;
+        margin: 0 auto -35px auto;
+    }
+
     .hero-subtitle {
         font-size: 24px;
+    }
+
+    .hero-image {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .hero-visual {
+        max-width: 100%;
+    }
+
+    .butterfly-1 {
+        width: 120px;
+        top: 5%;
+        right: -5%;
     }
 
     .section-title {
@@ -976,8 +996,29 @@ section {
         font-size: 36px;
     }
 
+    .hero-logo-img {
+        max-width: 150px;
+        margin: 0 auto -25px auto;
+    }
+
     .hero-subtitle {
         font-size: 20px;
+    }
+
+    .hero-image {
+        max-width: 100%;
+        padding: 0 20px;
+    }
+
+    .butterfly-1 {
+        width: 100px;
+        top: 8%;
+        right: 0;
+    }
+
+    .footer-logo-img {
+        max-width: 120px;
+        margin-bottom: -10px;
     }
 
     .collections-grid {

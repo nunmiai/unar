@@ -180,6 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 phone: formData.get('phone') || 'Not provided',
                 fragrance: formData.get('fragrance'),
                 message: formData.get('message'),
+                termsChecked: formData.get('agreeTerms') === 'on',
                 timestamp: new Date().toISOString()
             };
 

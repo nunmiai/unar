@@ -759,6 +759,11 @@ section {
     font-size: 15px;
     transition: var(--transition);
     background-color: var(--bg-light);
+    color: #2d3436 !important;
+}
+
+.form-group textarea {
+    color: #2d3436 !important;
 }
 
 .form-group select {
@@ -777,6 +782,14 @@ section {
     outline: none;
     border-color: var(--primary-color);
     background-color: white;
+    color: #2d3436 !important;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder,
+.form-group select::placeholder {
+    color: #999;
+    opacity: 0.6;
 }
 
 .form-group label {
@@ -807,6 +820,14 @@ section {
 .form-group textarea {
     resize: vertical;
     min-height: 120px;
+}
+
+.form-helper {
+    display: block;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text-light);
+    font-style: italic;
 }
 
 .terms-group {

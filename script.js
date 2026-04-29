@@ -9,11 +9,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ==================== CART FUNCTIONALITY ====================
     let cart = JSON.parse(localStorage.getItem('unarCart')) || [];
-    const SHIPPING_COST = 50; // Free shipping above certain amount
-    const FREE_SHIPPING_THRESHOLD = 1000;
+    const SHIPPING_COST = 0; // Default shipping cost
+    const FREE_SHIPPING_THRESHOLD = 1000; // Free shipping above this amount
     
-    // RAZORPAY KEY - Replace with your actual key
-    const RAZORPAY_KEY_ID = 'YOUR_RAZORPAY_KEY_ID'; // User will provide this
+    // Lambda API URL for payment processing
+    const LAMBDA_API_URL = 'https://vfl2536p7nvialuiwcgt22s6iu0noirr.lambda-url.us-east-1.on.aws';
 
     // Cart Elements
     const cartIcon = document.getElementById('cartIcon');
@@ -291,9 +291,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = '';
     }
 
-    // Checkout form submission with Razorpay
+    // Checkout form submission with Razorpay via Lambda
     if (checkoutForm) {
-        checkoutForm.addEventListener('submit', function(e) {
+        checkoutForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const formData = new FormData(checkoutForm);
@@ -309,51 +309,109 @@ document.addEventListener('DOMContentLoaded', function() {
             const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
             const total = subtotal + shipping;
 
-            // Check if Razorpay key is configured
-            if (RAZORPAY_KEY_ID === 'YOUR_RAZORPAY_KEY_ID') {
-                showNotification('Payment gateway not configured. Please contact support.', 'error');
-                console.log('Order Details:', { customerData, cart, total });
-                return;
-            }
+            // Disable pay button during processing
+            const payBtn = document.getElementById('payNowBtn');
+            const originalBtnText = payBtn.textContent;
+            payBtn.textContent = 'Processing...';
+            payBtn.disabled = true;
 
-            // Initialize Razorpay
-            const options = {
-                key: RAZORPAY_KEY_ID,
-                amount: total * 100, // Amount in paise
-                currency: 'INR',
-                name: 'Unar',
-                description: 'Natural Solid Perfumes',
-                image: 'assets/logo.png',
-                handler: function(response) {
-                    // Payment successful
-                    handlePaymentSuccess(response, customerData, total);
-                },
-                prefill: {
-                    name: customerData.name,
-                    email: customerData.email,
-                    contact: customerData.phone
-                },
-                notes: {
-                    address: customerData.address,
-                    pincode: customerData.pincode,
-                    items: cart.map(item => `${item.name} x${item.quantity}`).join(', ')
-                },
-                theme: {
-                    color: '#5a7c65'
-                },
-                modal: {
-                    ondismiss: function() {
-                        showNotification('Payment cancelled', 'error');
-                    }
+            try {
+                // Step 1: Create order via Lambda
+                const orderResponse = await fetch(`${LAMBDA_API_URL}/create-order`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: total,
+                        currency: 'INR',
+                        receipt: `unar_${Date.now()}`,
+                        notes: {
+                            customer_name: customerData.name,
+                            customer_email: customerData.email,
+                            customer_phone: customerData.phone,
+                            address: customerData.address,
+                            pincode: customerData.pincode,
+                            items: cart.map(item => `${item.name} x${item.quantity}`).join(', ')
+                        }
+                    })
+                });
+
+                const orderData = await orderResponse.json();
+
+                if (!orderData.success) {
+                    throw new Error(orderData.error || 'Failed to create order');
                 }
-            };
 
-            const rzp = new Razorpay(options);
-            rzp.on('payment.failed', function(response) {
-                showNotification('Payment failed. Please try again.', 'error');
-                console.error('Payment failed:', response.error);
-            });
-            rzp.open();
+                // Step 2: Open Razorpay checkout
+                const options = {
+                    key: orderData.key_id,
+                    amount: orderData.amount,
+                    currency: orderData.currency,
+                    order_id: orderData.order_id,
+                    name: 'Unar',
+                    description: 'Natural Solid Perfumes',
+                    image: 'assets/logo.png',
+                    handler: async function(response) {
+                        // Step 3: Verify payment via Lambda
+                        try {
+                            const verifyResponse = await fetch(`${LAMBDA_API_URL}/verify-payment`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                    order_details: {
+                                        customer: customerData,
+                                        items: cart,
+                                        total: total
+                                    }
+                                })
+                            });
+
+                            const verifyData = await verifyResponse.json();
+
+                            if (verifyData.success) {
+                                handlePaymentSuccess(response, customerData, total);
+                            } else {
+                                showNotification('Payment verification failed. Please contact support.', 'error');
+                            }
+                        } catch (verifyError) {
+                            console.error('Verification error:', verifyError);
+                            showNotification('Payment verification failed. Please contact support.', 'error');
+                        }
+                    },
+                    prefill: {
+                        name: customerData.name,
+                        email: customerData.email,
+                        contact: customerData.phone
+                    },
+                    theme: {
+                        color: '#5a7c65'
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            showNotification('Payment cancelled', 'error');
+                            payBtn.textContent = originalBtnText;
+                            payBtn.disabled = false;
+                        }
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.on('payment.failed', function(response) {
+                    showNotification('Payment failed. Please try again.', 'error');
+                    console.error('Payment failed:', response.error);
+                    payBtn.textContent = originalBtnText;
+                    payBtn.disabled = false;
+                });
+                rzp.open();
+
+            } catch (error) {
+                console.error('Checkout error:', error);
+                showNotification(error.message || 'Something went wrong. Please try again.', 'error');
+                payBtn.textContent = originalBtnText;
+                payBtn.disabled = false;
+            }
         });
     }
 

@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ==================== CART FUNCTIONALITY ====================
     let cart = JSON.parse(localStorage.getItem('unarCart')) || [];
-    const SHIPPING_COST = 0; // Default shipping cost
+    const SHIPPING_COST = 80; // Default shipping cost
     const FREE_SHIPPING_THRESHOLD = 1000; // Free shipping above this amount
     
     // Lambda API URL for payment processing
@@ -305,6 +305,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 pincode: formData.get('pincode')
             };
 
+            // Validate phone number (required for order tracking)
+            if (!customerData.phone || customerData.phone.trim().length < 10) {
+                showNotification('Please enter a valid phone number', 'error');
+                return;
+            }
+
             const subtotal = getCartTotal();
             const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
             const total = subtotal + shipping;
@@ -324,6 +330,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         amount: total,
                         currency: 'INR',
                         receipt: `unar_${Date.now()}`,
+                        customer: customerData,
+                        items: cart,
                         notes: {
                             customer_name: customerData.name,
                             customer_email: customerData.email,

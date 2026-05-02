@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ==================== CART FUNCTIONALITY ====================
     let cart = JSON.parse(localStorage.getItem('unarCart')) || [];
-    const SHIPPING_COST = 0; // Default shipping cost
+    const SHIPPING_COST = 80; // Default shipping cost
     const FREE_SHIPPING_THRESHOLD = 1000; // Free shipping above this amount
     
     // Lambda API URL for payment processing

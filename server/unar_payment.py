@@ -65,6 +65,7 @@ def create_order(event):
     notes = body.get('notes', {})
     customer = body.get('customer', {})
     items = body.get('items', [])
+    user_id = body.get('user_id')  # Cognito user ID if logged in
 
     if not amount:
         return response(400, {'error': 'Amount is required'})
@@ -97,7 +98,8 @@ def create_order(event):
                 items=items,
                 amount=amount,
                 currency=currency,
-                receipt=receipt
+                receipt=receipt,
+                user_id=user_id
             )
         except Exception as db_error:
             print(f'Failed to save initial order to DynamoDB: {str(db_error)}')
@@ -115,7 +117,7 @@ def create_order(event):
         return response(500, {'error': 'Failed to create order', 'details': str(e)})
 
 
-def create_order_in_dynamodb(phone, order_id, customer, notes, items, amount, currency, receipt):
+def create_order_in_dynamodb(phone, order_id, customer, notes, items, amount, currency, receipt, user_id=None):
     """Create initial order entry in DynamoDB with pending status"""
 
     timestamp = datetime.utcnow().isoformat()
@@ -134,6 +136,7 @@ def create_order_in_dynamodb(phone, order_id, customer, notes, items, amount, cu
     order_record = {
         'order_id': order_id,
         'payment_id': None,
+        'user_id': user_id,  # Link to user if logged in
         'customer_name': notes.get('customer_name') or customer.get('name', ''),
         'customer_email': notes.get('customer_email') or customer.get('email', ''),
         'mobile_number': phone,
@@ -401,7 +404,7 @@ def update_order_status_in_dynamodb(phone, order_id, payment_id, payment_status,
 
         print(f'Order updated in DynamoDB: mobile_number={phone}, order_id={order_id}, status={order_status}')
         return True
-        
+
     except Exception as e:
         print(f'Error updating order status: {str(e)}')
         raise e

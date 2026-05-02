@@ -129,6 +129,34 @@ body {
     width: 100%;
 }
 
+/* Auth Link Styles */
+#authLink {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-greeting {
+    color: var(--primary-color);
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.logout-link {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 4px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.logout-link:hover {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
 .hero {
     padding: 140px 0 80px;
     background: linear-gradient(135deg, #fdfbf7 0%, #f5f1eb 100%);

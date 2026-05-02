@@ -7,9 +7,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let lastScrollTop = 0;
 
+    // ==================== USER AUTHENTICATION ====================
+    const unarUser = JSON.parse(localStorage.getItem('unarUser'));
+    
+    function updateAuthUI() {
+        const authLink = document.getElementById('authLink');
+        const ordersLink = document.getElementById('ordersLink');
+        
+        if (authLink) {
+            if (unarUser && unarUser.email) {
+                const firstName = unarUser.name ? unarUser.name.split(' ')[0] : unarUser.email.split('@')[0];
+                authLink.innerHTML = `
+                    <span class="user-greeting">Hi, ${firstName}</span>
+                    <a href="#" onclick="logoutUser()" class="logout-link">Logout</a>
+                `;
+                // Show orders link when logged in
+                if (ordersLink) {
+                    ordersLink.style.display = 'list-item';
+                }
+            } else {
+                authLink.innerHTML = '<a href="login.html" class="nav-link">Login</a>';
+                // Hide orders link when not logged in
+                if (ordersLink) {
+                    ordersLink.style.display = 'none';
+                }
+            }
+        }
+    }
+    
+    updateAuthUI();
+
     // ==================== CART FUNCTIONALITY ====================
     let cart = JSON.parse(localStorage.getItem('unarCart')) || [];
-    const SHIPPING_COST = 80; // Default shipping cost
+    const SHIPPING_COST = 0; // Default shipping cost
     const FREE_SHIPPING_THRESHOLD = 1000; // Free shipping above this amount
     
     // Lambda API URL for payment processing
@@ -322,6 +352,10 @@ document.addEventListener('DOMContentLoaded', function() {
             payBtn.disabled = true;
 
             try {
+                // Get user ID if logged in
+                const unarUser = JSON.parse(localStorage.getItem('unarUser') || '{}');
+                const userId = unarUser.cognito_user_id || null;
+
                 // Step 1: Create order via Lambda
                 const orderResponse = await fetch(`${LAMBDA_API_URL}/create-order`, {
                     method: 'POST',
@@ -332,6 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         receipt: `unar_${Date.now()}`,
                         customer: customerData,
                         items: cart,
+                        user_id: userId,
                         notes: {
                             customer_name: customerData.name,
                             customer_email: customerData.email,
@@ -371,6 +406,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     order_details: {
                                         customer: customerData,
                                         items: cart,
+                                        subtotal: subtotal,
+                                        shipping: shipping,
                                         total: total
                                     }
                                 })
@@ -479,8 +516,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
-            e.preventDefault();
             const targetId = this.getAttribute('href');
+            
+            // Only handle anchor links (starting with #), let other links navigate normally
+            if (!targetId || !targetId.startsWith('#')) {
+                return; // Allow normal navigation for non-anchor links
+            }
+            
+            e.preventDefault();
             const targetSection = document.querySelector(targetId);
             
             if (targetSection) {
@@ -748,3 +791,26 @@ window.addEventListener('load', function() {
         document.body.style.opacity = '1';
     }, 100);
 });
+
+// Logout function (global scope for onclick)
+async function logoutUser() {
+    const AUTH_API_URL = 'https://hxr7qp46qicsvrlnale5v7z34m0crgjm.lambda-url.us-east-1.on.aws/'; // Same as in login.html
+    
+    try {
+        const tokens = JSON.parse(localStorage.getItem('unarTokens') || '{}');
+        
+        if (tokens.access_token) {
+            await fetch(`${AUTH_API_URL}/logout`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ access_token: tokens.access_token })
+            });
+        }
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
+    
+    localStorage.removeItem('unarUser');
+    localStorage.removeItem('unarTokens');
+    window.location.href = 'login.html';
+}

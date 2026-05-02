@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Unar</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: #faf8f5;
+            min-height: 100vh;
+        }
+
+        .orders-container {
+            max-width: 900px;
+            margin: 120px auto 60px;
+            padding: 0 20px;
+        }
+
+        .orders-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .orders-header h1 {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .orders-header p {
+            color: var(--text-light);
+        }
+
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .order-header {
+            background: var(--bg-cream);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .order-id {
+            font-family: var(--font-heading);
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .order-date {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .order-status {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .order-status.confirmed, .order-status.captured {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .order-status.pending {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .order-status.failed {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .order-body {
+            padding: 20px;
+        }
+
+        .order-items {
+            margin-bottom: 20px;
+        }
+
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--bg-cream);
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-item-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: var(--bg-cream);
+        }
+
+        .order-item-details {
+            flex: 1;
+        }
+
+        .order-item-name {
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .order-item-qty {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .order-item-price {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 2px solid var(--bg-cream);
+        }
+
+        .order-total-label {
+            color: var(--text-light);
+        }
+
+        .order-total-amount {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .order-address {
+            background: var(--bg-cream);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .order-address-title {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .order-address-text {
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+
+        .no-orders-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .no-orders h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .no-orders p {
+            color: var(--text-light);
+            margin-bottom: 25px;
+        }
+
+        .shop-now-btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .shop-now-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .login-prompt {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+
+        .login-prompt h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .login-prompt p {
+            color: var(--text-light);
+            margin-bottom: 25px;
+        }
+
+        .login-btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-light);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--bg-cream);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            margin-bottom: 30px;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 600px) {
+            .orders-container {
+                margin-top: 100px;
+            }
+
+            .orders-header h1 {
+                font-size: 2rem;
+            }
+
+            .order-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .order-item {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header" style="position: fixed; top: 0; left: 0; right: 0; background: white; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <nav style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; max-width: 1200px; margin: 0 auto;">
+            <a href="index.html" style="font-family: var(--font-heading); font-size: 1.8rem; color: var(--primary); text-decoration: none; letter-spacing: 3px;">UNAR</a>
+            <div style="display: flex; gap: 25px; align-items: center;">
+                <a href="index.html" style="color: var(--text); text-decoration: none;">Home</a>
+                <a href="index.html#collections" style="color: var(--text); text-decoration: none;">Shop</a>
+                <a href="orders.html" style="color: var(--primary); text-decoration: none; font-weight: 500;">My Orders</a>
+                <span id="authLink"><a href="login.html" style="color: var(--text); text-decoration: none;">Login</a></span>
+            </div>
+        </nav>
+    </header>
+
+    <main class="orders-container">
+        <a href="index.html" class="back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back to Home
+        </a>
+
+        <div class="orders-header">
+            <h1>My Orders</h1>
+            <p>Track and view your order history</p>
+        </div>
+
+        <div id="ordersContent">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Loading your orders...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const AUTH_API_URL = 'https://hxr7qp46qicsvrlnale5v7z34m0crgjm.lambda-url.us-east-1.on.aws';
+
+        // Update auth link based on login state
+        function updateAuthUI() {
+            const authLink = document.getElementById('authLink');
+            const unarUser = JSON.parse(localStorage.getItem('unarUser') || '{}');
+
+            if (unarUser.email) {
+                authLink.innerHTML = `
+                    <span class="user-greeting">Hi, ${unarUser.name || unarUser.email.split('@')[0]}</span>
+                    <button onclick="logoutUser()" class="logout-btn">Logout</button>
+                `;
+            }
+        }
+
+        async function logoutUser() {
+            localStorage.removeItem('unarUser');
+            localStorage.removeItem('unarTokens');
+            window.location.href = 'login.html';
+        }
+
+        async function loadOrders() {
+            const ordersContent = document.getElementById('ordersContent');
+            const unarUser = JSON.parse(localStorage.getItem('unarUser') || '{}');
+
+            // Check if user is logged in
+            if (!unarUser.cognito_user_id) {
+                ordersContent.innerHTML = `
+                    <div class="login-prompt">
+                        <h2>Please Log In</h2>
+                        <p>You need to be logged in to view your order history.</p>
+                        <a href="login.html" class="login-btn">Log In</a>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const response = await fetch(`${AUTH_API_URL}/user-orders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: unarUser.cognito_user_id })
+                });
+
+                const data = await response.json();
+
+                if (!data.success || data.orders.length === 0) {
+                    ordersContent.innerHTML = `
+                        <div class="no-orders">
+                            <div class="no-orders-icon">📦</div>
+                            <h2>No Orders Yet</h2>
+                            <p>You haven't placed any orders yet. Start shopping to see your orders here!</p>
+                            <a href="index.html#collections" class="shop-now-btn">Shop Now</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Render orders
+                let ordersHTML = '<div class="orders-list">';
+
+                for (const order of data.orders) {
+                    const orderDate = new Date(order.created_at).toLocaleDateString('en-IN', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+
+                    const statusClass = order.payment_status || 'pending';
+
+                    let itemsHTML = '';
+                    if (order.items && order.items.length > 0) {
+                        for (const item of order.items) {
+                            const itemTotal = (item.price || 0) * (item.quantity || 1);
+                            itemsHTML += `
+                                <div class="order-item">
+                                    <img src="${item.image || 'assets/placeholder.png'}" alt="${item.name}" class="order-item-image">
+                                    <div class="order-item-details">
+                                        <div class="order-item-name">${item.name}</div>
+                                        <div class="order-item-qty">Qty: ${item.quantity || 1}</div>
+                                    </div>
+                                    <div class="order-item-price">₹${itemTotal}</div>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    ordersHTML += `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div>
+                                    <div class="order-id">Order #${(order.order_id || '').slice(-8).toUpperCase()}</div>
+                                    <div class="order-date">${orderDate}</div>
+                                </div>
+                                <span class="order-status ${statusClass}">${statusClass}</span>
+                            </div>
+                            <div class="order-body">
+                                <div class="order-items">
+                                    ${itemsHTML}
+                                </div>
+                                <div class="order-footer">
+                                    <span class="order-total-label">Total Amount</span>
+                                    <span class="order-total-amount">₹${order.amount || 0}</span>
+                                </div>
+                                ${order.address ? `
+                                    <div class="order-address">
+                                        <div class="order-address-title">Delivery Address</div>
+                                        <div class="order-address-text">
+                                            ${order.customer_name || ''}<br>
+                                            ${order.address}<br>
+                                            ${order.pincode ? 'Pincode: ' + order.pincode : ''}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                ordersHTML += '</div>';
+                ordersContent.innerHTML = ordersHTML;
+
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                ordersContent.innerHTML = `
+                    <div class="no-orders">
+                        <h2>Error Loading Orders</h2>
+                        <p>Something went wrong. Please try again later.</p>
+                        <a href="index.html" class="shop-now-btn">Go Home</a>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAuthUI();
+            loadOrders();
+        });
+    </script>
+</body>
+</html>

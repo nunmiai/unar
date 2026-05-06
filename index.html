@@ -421,6 +421,7 @@
                                 <img src="assets/new_assets/sandalwood1.png" alt="Sandalwood Natural Solid Perfume">
                                 <div class="product-badge">Premium</div>
                                 <div class="flip-hint">Tap to see details</div>
+                                <div class="out-of-stock-overlay">Out of Stock</div>
                             </div>
                             <div class="flip-card-back">
                                 <h3>Sandalwood</h3>
@@ -433,9 +434,8 @@
                                 <div class="back-badges">100% Natural | Zero Waste | Cruelty Free</div>
                                 <div class="product-price">₹1249</div>
                                 <div class="product-buttons">
-                                    <button class="add-to-cart-btn" data-name="Sandalwood" data-price="1249" data-image="assets/new_assets/sandalwood1.png">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                                        Add to Cart
+                                    <button class="add-to-cart-btn out-of-stock" disabled data-name="Sandalwood" data-price="1249" data-image="assets/new_assets/sandalwood1.png">
+                                        Out of Stock
                                     </button>
                                 </div>
                             </div>
@@ -541,7 +541,7 @@
                     </div>
                     <div class="contact-form-wrapper">
                         <form class="contact-form" id="contactForm">
-                            <h3>Send a Message/Try Our Sample</h3>
+                            <h3>Send a Message</h3>
                             <div class="form-group">
                                 <input type="text" id="name" name="name" required placeholder=" ">
                                 <label for="name">Your Name</label>
@@ -708,35 +708,93 @@
                     <line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
             </button>
-            <h2>Checkout</h2>
-            <div class="checkout-summary" id="checkoutSummary"></div>
-            <form class="checkout-form" id="checkoutForm">
-                <div class="form-group">
-                    <input type="text" id="checkoutName" name="name" required placeholder=" ">
-                    <label for="checkoutName">Full Name</label>
+
+            <div class="checkout-layout">
+
+                <!-- Left: Shipping Form -->
+                <div class="checkout-left">
+                    <h2 class="checkout-main-title">Checkout</h2>
+                    <h3 class="checkout-section-title">Shipping Information</h3>
+                    <form class="checkout-form" id="checkoutForm">
+                        <div class="form-row-two">
+                            <div class="checkout-field">
+                                <label class="field-label">Full Name *</label>
+                                <input type="text" id="checkoutName" name="name" required placeholder="Your full name">
+                            </div>
+                            <div class="checkout-field">
+                                <label class="field-label">Email *</label>
+                                <input type="email" id="checkoutEmail" name="email" required placeholder="you@email.com">
+                            </div>
+                        </div>
+                        <div class="checkout-field">
+                            <label class="field-label">Phone Number *</label>
+                            <input type="tel" id="checkoutPhone" name="phone" required placeholder="10-digit mobile number" pattern="[0-9]{10}" minlength="10" maxlength="10">
+                        </div>
+                        <div class="checkout-field">
+                            <label class="field-label">Delivery Address *</label>
+                            <textarea id="checkoutAddress" name="address" required placeholder="House no, Street, Area, City" rows="3"></textarea>
+                        </div>
+                        <div class="checkout-field">
+                            <label class="field-label">Pincode *</label>
+                            <input type="text" id="checkoutPincode" name="pincode" required placeholder="6-digit pincode" pattern="[0-9]{6}" maxlength="6">
+                        </div>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <input type="email" id="checkoutEmail" name="email" required placeholder=" ">
-                    <label for="checkoutEmail">Email</label>
+
+                <!-- Right: Order Review -->
+                <div class="checkout-right">
+                    <h3 class="checkout-section-title">Review your cart</h3>
+                    <div class="checkout-summary" id="checkoutSummary"></div>
+
+                    <div class="coupon-section">
+                        <div class="coupon-ticket" id="couponChip">
+                            <div class="coupon-stub"><span>COUPON</span></div>
+                            <div class="coupon-ticket-body">
+                                <div class="coupon-pct">25<span>%</span></div>
+                                <div class="coupon-ticket-info">
+                                    <div class="coupon-off-text">OFF</div>
+                                    <div class="coupon-code-badge">MOM25</div>
+                                    <div class="coupon-valid-text">on your entire order</div>
+                                </div>
+                                <button type="button" class="coupon-use-btn" id="useCouponBtn">Use Coupon</button>
+                            </div>
+                        </div>
+                        <div class="coupon-input-group">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                            <input type="text" id="couponInput" placeholder="Or enter discount code" autocomplete="off">
+                            <button type="button" id="applyCouponBtn">Apply</button>
+                        </div>
+                        <p class="coupon-message" id="couponMessage"></p>
+                    </div>
+
+                    <div class="checkout-totals">
+                        <div class="totals-row">
+                            <span>Subtotal</span>
+                            <span id="checkoutSubtotal">₹0</span>
+                        </div>
+                        <div class="totals-row">
+                            <span>Shipping</span>
+                            <span id="checkoutShipping">₹0</span>
+                        </div>
+                        <div class="totals-row discount-row" id="discountRow" style="display:none;">
+                            <span id="discountLabel">Discount</span>
+                            <span id="checkoutDiscount" style="color:#27ae60;">-₹0</span>
+                        </div>
+                        <div class="totals-row totals-final">
+                            <span>Total</span>
+                            <span id="checkoutTotalAmount">₹0</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" form="checkoutForm" class="btn btn-primary btn-full" id="payNowBtn">Pay Now</button>
+
+                    <div class="secure-badge">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Secure Checkout — SSL Encrypted
+                    </div>
                 </div>
-                <div class="form-group">
-                    <input type="tel" id="checkoutPhone" name="phone" required placeholder=" " pattern="[0-9]{10}" minlength="10" maxlength="10" title="Please enter a valid 10-digit phone number">
-                    <label for="checkoutPhone">Phone Number *</label>
-                </div>
-                <div class="form-group">
-                    <textarea id="checkoutAddress" name="address" required placeholder=" " rows="3"></textarea>
-                    <label for="checkoutAddress">Delivery Address</label>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="checkoutPincode" name="pincode" required placeholder=" " pattern="[0-9]{6}" maxlength="6">
-                    <label for="checkoutPincode">Pincode</label>
-                </div>
-                <div class="checkout-total">
-                    <span>Total Amount:</span>
-                    <span id="checkoutTotalAmount">₹0</span>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full" id="payNowBtn">Pay Now</button>
-            </form>
+
+            </div>
         </div>
     </div>
 

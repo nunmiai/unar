@@ -66,6 +66,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const checkoutForm = document.getElementById('checkoutForm');
     const checkoutSummary = document.getElementById('checkoutSummary');
     const checkoutTotalAmount = document.getElementById('checkoutTotalAmount');
+    const couponInput = document.getElementById('couponInput');
+    const applyCouponBtn = document.getElementById('applyCouponBtn');
+    const couponMessage = document.getElementById('couponMessage');
+
+    // Coupon state
+    const VALID_COUPONS = { 'MOM25': 25 };
+    const COUPON_ELIGIBLE = { 'MOM25': ['Champa', 'Jasmine'] };
+    let appliedDiscount = 0;
+    let appliedCouponCode = '';
 
     // Initialize cart
     updateCartUI();
@@ -277,40 +286,94 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function openCheckout() {
-        if (cart.length === 0) return;
+    function getEligibleDiscountAmount() {
+        if (!appliedCouponCode || appliedDiscount === 0) return 0;
+        const eligible = COUPON_ELIGIBLE[appliedCouponCode];
+        const base = eligible
+            ? cart.filter(i => eligible.includes(i.name)).reduce((s, i) => s + i.price * i.quantity, 0)
+            : getCartTotal();
+        return Math.round(base * appliedDiscount / 100);
+    }
 
+    function updateCheckoutSummary() {
         const subtotal = getCartTotal();
         const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-        const total = subtotal + shipping;
+        const eligible = appliedCouponCode ? (COUPON_ELIGIBLE[appliedCouponCode] || null) : null;
+        const discountAmount = getEligibleDiscountAmount();
+        const total = subtotal + shipping - discountAmount;
 
-        // Build checkout summary
+        // Render cart items with images (highlight eligible items)
         if (checkoutSummary) {
             let summaryHTML = '';
             cart.forEach(item => {
+                const itemDiscount = (eligible && eligible.includes(item.name) && appliedDiscount > 0)
+                    ? Math.round(item.price * item.quantity * appliedDiscount / 100)
+                    : 0;
                 summaryHTML += `
-                    <div class="checkout-summary-item">
-                        <span>${item.name} × ${item.quantity}</span>
-                        <span>₹${item.price * item.quantity}</span>
+                    <div class="checkout-summary-item${itemDiscount > 0 ? ' eligible-item' : ''}">
+                        <div class="summary-item-img">
+                            <img src="${item.image}" alt="${item.name}">
+                        </div>
+                        <div class="summary-item-info">
+                            <span class="summary-item-name">${item.name}</span>
+                            <div class="summary-qty-ctrl">
+                                <button class="sq-btn sq-minus" data-name="${item.name}">−</button>
+                                <span class="sq-count">${item.quantity}</span>
+                                <button class="sq-btn sq-plus" data-name="${item.name}">+</button>
+                            </div>
+                            ${itemDiscount > 0 ? `<span class="item-discount-badge">-₹${itemDiscount}</span>` : ''}
+                        </div>
+                        <div class="summary-item-right">
+                            <span class="summary-item-price">₹${item.price * item.quantity}</span>
+                            <button class="sq-remove" data-name="${item.name}" title="Remove">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                            </button>
+                        </div>
                     </div>
                 `;
             });
-            summaryHTML += `
-                <div class="checkout-summary-item">
-                    <span>Shipping</span>
-                    <span>${shipping === 0 ? 'FREE' : '₹' + shipping}</span>
-                </div>
-                <div class="checkout-summary-item">
-                    <span>Total</span>
-                    <span>₹${total}</span>
-                </div>
-            `;
             checkoutSummary.innerHTML = summaryHTML;
+        }
+
+        // Update totals separately
+        const subtotalEl = document.getElementById('checkoutSubtotal');
+        const shippingEl = document.getElementById('checkoutShipping');
+        const discountRow = document.getElementById('discountRow');
+        const discountEl = document.getElementById('checkoutDiscount');
+        const discountLabel = document.getElementById('discountLabel');
+
+        if (subtotalEl) subtotalEl.textContent = `₹${subtotal}`;
+        if (shippingEl) shippingEl.textContent = shipping === 0 ? 'FREE' : `₹${shipping}`;
+
+        if (discountRow) {
+            if (appliedDiscount > 0 && discountAmount > 0) {
+                discountRow.style.display = 'flex';
+                const eligibleNames = eligible ? eligible.join(' & ') : 'all items';
+                if (discountLabel) discountLabel.textContent = `Discount (${appliedDiscount}% on ${eligibleNames})`;
+                if (discountEl) discountEl.textContent = `-₹${discountAmount}`;
+            } else {
+                discountRow.style.display = 'none';
+            }
         }
 
         if (checkoutTotalAmount) {
             checkoutTotalAmount.textContent = `₹${total}`;
         }
+    }
+
+    function openCheckout() {
+        if (cart.length === 0) return;
+
+        // Reset coupon state on each open
+        appliedDiscount = 0;
+        appliedCouponCode = '';
+        if (couponInput) { couponInput.value = ''; couponInput.disabled = false; }
+        if (couponMessage) { couponMessage.textContent = ''; couponMessage.className = 'coupon-message'; }
+        if (applyCouponBtn) { applyCouponBtn.textContent = 'Apply'; applyCouponBtn.disabled = false; }
+        const useCouponBtnEl = document.getElementById('useCouponBtn');
+        if (useCouponBtnEl) { useCouponBtnEl.textContent = 'Use Coupon'; useCouponBtnEl.classList.remove('applied', 'remove-mode'); useCouponBtnEl.disabled = false; }
+
+        updateCheckoutSummary();
 
         checkoutModal.classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -319,6 +382,103 @@ document.addEventListener('DOMContentLoaded', function() {
     function closeCheckout() {
         checkoutModal.classList.remove('active');
         document.body.style.overflow = '';
+    }
+
+    // Checkout quantity controls (event delegation)
+    if (checkoutSummary) {
+        checkoutSummary.addEventListener('click', function(e) {
+            const plusBtn  = e.target.closest('.sq-plus');
+            const minusBtn = e.target.closest('.sq-minus');
+            const removeBtn = e.target.closest('.sq-remove');
+
+            if (plusBtn) {
+                const name = plusBtn.dataset.name;
+                const item = cart.find(i => i.name === name);
+                if (item) { item.quantity += 1; saveCart(); updateCartUI(); updateCheckoutSummary(); }
+            } else if (minusBtn) {
+                const name = minusBtn.dataset.name;
+                const item = cart.find(i => i.name === name);
+                if (item) {
+                    item.quantity -= 1;
+                    if (item.quantity <= 0) cart = cart.filter(i => i.name !== name);
+                    saveCart(); updateCartUI(); updateProductButtons();
+                    if (cart.length === 0) { closeCheckout(); return; }
+                    updateCheckoutSummary();
+                }
+            } else if (removeBtn) {
+                const name = removeBtn.dataset.name;
+                cart = cart.filter(i => i.name !== name);
+                saveCart(); updateCartUI(); updateProductButtons();
+                if (cart.length === 0) { closeCheckout(); return; }
+                updateCheckoutSummary();
+            }
+        });
+    }
+
+    // "Use" coupon chip button - auto-fills and applies
+    const useCouponBtn = document.getElementById('useCouponBtn');
+    if (useCouponBtn) {
+        useCouponBtn.addEventListener('click', function() {
+            if (appliedCouponCode) {
+                unapplyCoupon();
+            } else {
+                if (couponInput) { couponInput.value = 'MOM25'; couponInput.disabled = false; }
+                applyCurrentCoupon();
+            }
+        });
+    }
+
+    function unapplyCoupon() {
+        appliedDiscount = 0;
+        appliedCouponCode = '';
+        if (couponInput) { couponInput.value = ''; couponInput.disabled = false; }
+        if (couponMessage) { couponMessage.textContent = ''; couponMessage.className = 'coupon-message'; }
+        if (applyCouponBtn) { applyCouponBtn.textContent = 'Apply'; applyCouponBtn.disabled = false; }
+        if (useCouponBtn) { useCouponBtn.textContent = 'Use Coupon'; useCouponBtn.classList.remove('applied', 'remove-mode'); useCouponBtn.disabled = false; }
+        updateCheckoutSummary();
+    }
+
+    function applyCurrentCoupon() {
+        const code = couponInput.value.trim().toUpperCase();
+        if (VALID_COUPONS[code] !== undefined) {
+            const eligible = COUPON_ELIGIBLE[code];
+            if (eligible) {
+                const hasEligible = cart.some(i => eligible.includes(i.name));
+                if (!hasEligible) {
+                    couponMessage.textContent = `❌ This coupon applies only to ${eligible.join(' & ')} products.`;
+                    couponMessage.className = 'coupon-message error';
+                    return;
+                }
+            }
+            appliedDiscount = VALID_COUPONS[code];
+            appliedCouponCode = code;
+            const eligibleNames = eligible ? eligible.join(' & ') : 'all items';
+            couponMessage.textContent = `✅ Applied! ${appliedDiscount}% off on ${eligibleNames}.`;
+            couponMessage.className = 'coupon-message success';
+            applyCouponBtn.textContent = 'Applied ✓';
+            applyCouponBtn.disabled = true;
+            couponInput.disabled = true;
+            if (useCouponBtn) { useCouponBtn.textContent = 'Remove'; useCouponBtn.classList.add('applied', 'remove-mode'); useCouponBtn.disabled = false; }
+            updateCheckoutSummary();
+        } else {
+            appliedDiscount = 0;
+            appliedCouponCode = '';
+            couponMessage.textContent = '❌ Invalid coupon code.';
+            couponMessage.className = 'coupon-message error';
+            updateCheckoutSummary();
+        }
+    }
+
+    // Coupon apply logic
+    if (applyCouponBtn) {
+        applyCouponBtn.addEventListener('click', function() {
+            if (!couponInput.value.trim()) {
+                couponMessage.textContent = 'Please enter a coupon code.';
+                couponMessage.className = 'coupon-message error';
+                return;
+            }
+            applyCurrentCoupon();
+        });
     }
 
     // Checkout form submission with Razorpay via Lambda
@@ -343,7 +503,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const subtotal = getCartTotal();
             const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-            const total = subtotal + shipping;
+            const discountAmount = getEligibleDiscountAmount();
+            const total = subtotal + shipping - discountAmount;
 
             // Disable pay button during processing
             const payBtn = document.getElementById('payNowBtn');

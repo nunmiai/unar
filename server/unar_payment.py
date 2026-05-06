@@ -13,6 +13,11 @@ from decimal import Decimal
 RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID')
 RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET')
 
+# SES Email configuration
+SES_SENDER_EMAIL = os.environ.get('SES_SENDER_EMAIL', 'no-reply@unar.in')
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'unar.consciousliving@gmail.com')
+ses_client = boto3.client('ses', region_name='us-east-1')
+
 # DynamoDB setup
 DYNAMODB_TABLE_NAME = os.environ.get('DYNAMODB_TABLE_NAME', 'user_payment_details')
 dynamodb = boto3.resource('dynamodb')
@@ -333,6 +338,45 @@ def verify_payment(event):
         print(f'Failed to update order in DynamoDB: {str(e)}')
         # Continue even if DB update fails - payment is still verified
 
+    # Send confirmation emails
+    try:
+        customer_email = order_details.get('customer', {}).get('email') or order_details.get('notes', {}).get('customer_email')
+        customer_name = order_details.get('customer', {}).get('name') or order_details.get('notes', {}).get('customer_name', 'Customer')
+        customer_address = order_details.get('customer', {}).get('address') or order_details.get('notes', {}).get('address', '')
+        customer_pincode = order_details.get('customer', {}).get('pincode') or order_details.get('notes', {}).get('pincode', '')
+        items = order_details.get('items', [])
+        
+        # Send email to customer
+        if customer_email:
+            send_customer_email(
+                customer_email=customer_email,
+                customer_name=customer_name,
+                order_id=razorpay_order_id,
+                payment_id=razorpay_payment_id,
+                items=items,
+                amount=amount,
+                address=customer_address,
+                pincode=customer_pincode,
+                phone=phone
+            )
+        
+        # Send email to admin
+        send_admin_email(
+            customer_name=customer_name,
+            customer_email=customer_email,
+            customer_phone=phone,
+            order_id=razorpay_order_id,
+            payment_id=razorpay_payment_id,
+            items=items,
+            amount=amount,
+            address=customer_address,
+            pincode=customer_pincode,
+            payment_method=payment_method
+        )
+    except Exception as e:
+        print(f'Failed to send emails: {str(e)}')
+        # Continue even if email fails - payment is still verified
+
     return response(200, {
         'success': True,
         'message': 'Payment verified successfully',
@@ -433,6 +477,177 @@ def razorpay_request(method, endpoint, data=None):
     # Make request
     with urllib.request.urlopen(req) as resp:
         return json.loads(resp.read().decode('utf-8'))
+
+
+def send_customer_email(customer_email, customer_name, order_id, payment_id, items, amount, address, pincode, phone):
+    """Send order confirmation email to customer"""
+    
+    # Build items HTML
+    items_html = ''
+    for item in items:
+        item_name = item.get('name', 'Product')
+        item_qty = item.get('quantity', 1)
+        item_price = item.get('price', 0)
+        items_html += f'''
+        <tr>
+            <td style="padding: 12px; border-bottom: 1px solid #e8e0d5;">{item_name}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e8e0d5; text-align: center;">{item_qty}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e8e0d5; text-align: right;">₹{item_price}</td>
+        </tr>'''
+    
+    first_name = customer_name.split()[0] if customer_name else 'Customer'
+    order_short = order_id[-8:].upper() if order_id else ''
+    
+    html_body = f'''
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="UTF-8"></head>
+    <body style="margin: 0; padding: 0; font-family: Georgia, serif; background-color: #faf8f5;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+            <div style="background: linear-gradient(135deg, #5a7c65 0%, #4a6b55 100%); padding: 30px; text-align: center;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 32px; letter-spacing: 3px;">UNAR</h1>
+                <p style="color: #d4a574; margin: 5px 0 0 0; font-size: 12px; letter-spacing: 2px;">NATURAL SOLID PERFUMES</p>
+            </div>
+            
+            <div style="padding: 40px 30px 20px 30px;">
+                <h2 style="color: #5a7c65; margin: 0 0 10px 0;">Thank you, {first_name}!</h2>
+                <p style="color: #6b6b6b; line-height: 1.6;">Your order has been confirmed. Here's your order summary:</p>
+            </div>
+            
+            <div style="background-color: #faf8f5; margin: 0 30px; padding: 20px; border-radius: 8px;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="color: #888; font-size: 13px;">Order ID</td>
+                        <td style="color: #333; font-size: 13px; text-align: right; font-weight: bold;">#{order_short}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #888; font-size: 13px; padding-top: 8px;">Payment ID</td>
+                        <td style="color: #333; font-size: 13px; text-align: right; padding-top: 8px;">{payment_id}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #888; font-size: 13px; padding-top: 8px;">Date</td>
+                        <td style="color: #333; font-size: 13px; text-align: right; padding-top: 8px;">{datetime.utcnow().strftime('%d %B %Y')}</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div style="padding: 30px;">
+                <h3 style="color: #5a7c65; margin: 0 0 15px 0; border-bottom: 2px solid #d4a574; padding-bottom: 10px;">Order Details</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #faf8f5;">
+                            <th style="padding: 12px; text-align: left; color: #5a7c65;">Item</th>
+                            <th style="padding: 12px; text-align: center; color: #5a7c65;">Qty</th>
+                            <th style="padding: 12px; text-align: right; color: #5a7c65;">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>{items_html}</tbody>
+                </table>
+                
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #e8e0d5; text-align: right;">
+                    <span style="color: #5a7c65; font-size: 20px; font-weight: bold;">Total: ₹{amount:.0f}</span>
+                </div>
+            </div>
+            
+            <div style="background-color: #faf8f5; margin: 0 30px; padding: 20px; border-radius: 8px;">
+                <h4 style="color: #5a7c65; margin: 0 0 10px 0; font-size: 14px;">DELIVERY ADDRESS</h4>
+                <p style="color: #333; margin: 0; line-height: 1.6;">
+                    {customer_name}<br>{address}<br>Pincode: {pincode}<br>Phone: {phone}
+                </p>
+            </div>
+            
+            <div style="padding: 30px; text-align: center;">
+                <p style="color: #d4a574; font-style: italic;">"Embrace nature's essence, one fragrance at a time."</p>
+            </div>
+            
+            <div style="background-color: #5a7c65; padding: 25px; text-align: center;">
+                <p style="color: #ffffff; margin: 0 0 5px 0; font-size: 14px;">Need help? Contact us at</p>
+                <a href="mailto:unar.consciousliving@gmail.com" style="color: #d4a574; text-decoration: none;">unar.consciousliving@gmail.com</a>
+                <p style="color: rgba(255,255,255,0.7); margin: 15px 0 0 0; font-size: 11px;">100% Natural | Zero Waste | Cruelty Free</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    '''
+    
+    try:
+        ses_client.send_email(
+            Source=f'Unar <{SES_SENDER_EMAIL}>',
+            Destination={'ToAddresses': [customer_email]},
+            Message={
+                'Subject': {'Data': f'Order Confirmed! Your Unar Order #{order_short}', 'Charset': 'UTF-8'},
+                'Body': {
+                    'Html': {'Data': html_body, 'Charset': 'UTF-8'}
+                }
+            }
+        )
+        print(f'Customer email sent to {customer_email}')
+    except Exception as e:
+        print(f'Failed to send customer email: {str(e)}')
+        raise e
+
+
+def send_admin_email(customer_name, customer_email, customer_phone, order_id, payment_id, items, amount, address, pincode, payment_method):
+    """Send order notification email to admin"""
+    
+    items_text = '\n'.join([f"  - {item.get('name')} x {item.get('quantity')} @ ₹{item.get('price')}" for item in items])
+    order_short = order_id[-8:].upper() if order_id else ''
+    
+    html_body = f'''
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="UTF-8"></head>
+    <body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <div style="background-color: #5a7c65; padding: 20px; text-align: center;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 20px;">🛒 New Order Received!</h1>
+            </div>
+            
+            <div style="padding: 25px;">
+                <div style="background-color: #f0f7f2; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h2 style="color: #5a7c65; margin: 0 0 10px 0; font-size: 16px;">Order #{order_short}</h2>
+                    <p style="margin: 5px 0; color: #666;"><strong>Payment ID:</strong> {payment_id}</p>
+                    <p style="margin: 5px 0; color: #666;"><strong>Method:</strong> {payment_method}</p>
+                    <p style="margin: 5px 0; color: #666;"><strong>Amount:</strong> <span style="font-size: 18px; color: #5a7c65; font-weight: bold;">₹{amount:.0f}</span></p>
+                </div>
+                
+                <h3 style="color: #333; border-bottom: 2px solid #d4a574; padding-bottom: 8px;">Customer Details</h3>
+                <table style="width: 100%; margin-bottom: 20px;">
+                    <tr><td style="padding: 8px 0; color: #666; width: 100px;">Name:</td><td style="padding: 8px 0; color: #333; font-weight: bold;">{customer_name}</td></tr>
+                    <tr><td style="padding: 8px 0; color: #666;">Phone:</td><td style="padding: 8px 0; color: #333; font-weight: bold;">{customer_phone}</td></tr>
+                    <tr><td style="padding: 8px 0; color: #666;">Email:</td><td style="padding: 8px 0; color: #333;">{customer_email}</td></tr>
+                    <tr><td style="padding: 8px 0; color: #666; vertical-align: top;">Address:</td><td style="padding: 8px 0; color: #333;">{address}<br>Pincode: {pincode}</td></tr>
+                </table>
+                
+                <h3 style="color: #333; border-bottom: 2px solid #d4a574; padding-bottom: 8px;">Products Ordered</h3>
+                <ul style="color: #333; line-height: 1.8;">
+                    {''.join([f"<li><strong>{item.get('name')}</strong> x {item.get('quantity')} @ ₹{item.get('price')}</li>" for item in items])}
+                </ul>
+                
+                <p style="color: #888; font-size: 12px; text-align: center; margin-top: 20px;">
+                    Order received on {datetime.utcnow().strftime('%d %B %Y at %H:%M UTC')}
+                </p>
+            </div>
+        </div>
+    </body>
+    </html>
+    '''
+    
+    try:
+        ses_client.send_email(
+            Source=f'Unar Orders <{SES_SENDER_EMAIL}>',
+            Destination={'ToAddresses': [ADMIN_EMAIL]},
+            Message={
+                'Subject': {'Data': f'🛒 New Order #{order_short} - ₹{amount:.0f} from {customer_name}', 'Charset': 'UTF-8'},
+                'Body': {
+                    'Html': {'Data': html_body, 'Charset': 'UTF-8'}
+                }
+            }
+        )
+        print(f'Admin email sent to {ADMIN_EMAIL}')
+    except Exception as e:
+        print(f'Failed to send admin email: {str(e)}')
+        raise e
 
 
 def response(status_code, body):

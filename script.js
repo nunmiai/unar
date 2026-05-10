@@ -18,8 +18,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (unarUser && unarUser.email) {
                 const firstName = unarUser.name ? unarUser.name.split(' ')[0] : unarUser.email.split('@')[0];
                 authLink.innerHTML = `
-                    <span class="user-greeting">Hi, ${firstName}</span>
-                    <a href="#" onclick="logoutUser()" class="logout-link">Logout</a>
+                    <div class="user-auth-container">
+                        <div class="user-profile">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            <span class="user-name">${firstName}</span>
+                        </div>
+                        <a href="#" onclick="logoutUser()" class="logout-btn">Logout</a>
+                    </div>
                 `;
                 // Show orders link when logged in
                 if (ordersLink) {
@@ -39,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ==================== CART FUNCTIONALITY ====================
     let cart = JSON.parse(localStorage.getItem('unarCart')) || [];
-    const SHIPPING_COST = 80; // Default shipping cost
+    const SHIPPING_COST = 0; // Default shipping cost
     const FREE_SHIPPING_THRESHOLD = 1000; // Free shipping above this amount
     
     // Lambda API URL for payment processing

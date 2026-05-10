@@ -129,32 +129,65 @@ body {
     width: 100%;
 }
 
-/* Auth Link Styles */
+/* Auth Link Styles - Enhanced User Display */
 #authLink {
     display: flex;
     align-items: center;
-    gap: 10px;
 }
 
-.user-greeting {
+.user-auth-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 2px;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: linear-gradient(135deg, rgba(90, 124, 101, 0.08) 0%, rgba(90, 124, 101, 0.04) 100%);
+    border: 1.5px solid rgba(90, 124, 101, 0.15);
+    border-radius: 20px;
+    padding: 6px 14px 6px 10px;
+    transition: all 0.25s ease;
+}
+
+.user-profile:hover {
+    background: linear-gradient(135deg, rgba(90, 124, 101, 0.12) 0%, rgba(90, 124, 101, 0.06) 100%);
+    border-color: rgba(90, 124, 101, 0.25);
+    transform: translateY(-1px);
+}
+
+.user-profile svg {
     color: var(--primary-color);
-    font-weight: 500;
-    font-size: 14px;
+    flex-shrink: 0;
 }
 
-.logout-link {
-    color: var(--text-light);
+.user-name {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+}
+
+.logout-btn {
+    color: var(--text-medium);
     text-decoration: none;
     font-size: 13px;
-    padding: 4px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    transition: var(--transition);
+    font-weight: 500;
+    padding: 6px 14px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 18px;
+    transition: all 0.25s ease;
+    white-space: nowrap;
 }
 
-.logout-link:hover {
-    color: var(--primary-color);
-    border-color: var(--primary-color);
+.logout-btn:hover {
+    color: #e74c3c;
+    border-color: #e74c3c;
+    background: rgba(231, 76, 60, 0.04);
+    transform: translateY(-1px);
 }
 
 .hero {

@@ -301,15 +301,33 @@
     </style>
 </head>
 <body>
-    <header class="header" style="position: fixed; top: 0; left: 0; right: 0; background: white; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-        <nav style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; max-width: 1200px; margin: 0 auto;">
-            <a href="index.html" style="font-family: var(--font-heading); font-size: 1.8rem; color: var(--primary); text-decoration: none; letter-spacing: 3px;">UNAR</a>
-            <div style="display: flex; gap: 25px; align-items: center;">
-                <a href="index.html" style="color: var(--text); text-decoration: none;">Home</a>
-                <a href="index.html#collections" style="color: var(--text); text-decoration: none;">Shop</a>
-                <a href="orders.html" style="color: var(--primary); text-decoration: none; font-weight: 500;">My Orders</a>
-                <span id="authLink"><a href="login.html" style="color: var(--text); text-decoration: none;">Login</a></span>
+    <header class="header">
+        <nav class="nav container">
+            <div class="nav-logo">
+                <img src="assets/logo.svg" alt="Unar - Handcrafted & 100% Natural" class="logo">
             </div>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="index.html#home" class="nav-link">Home</a></li>
+                <li><a href="index.html#about" class="nav-link">About</a></li>
+                <li><a href="index.html#features" class="nav-link">Features</a></li>
+                <li><a href="index.html#collections" class="nav-link">Collections</a></li>
+                <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+                <li id="ordersLink"><a href="orders.html" class="nav-link" style="cursor: pointer;">My Orders</a></li>
+                <li id="authLink"><a href="login.html" class="nav-link">Login</a></li>
+            </ul>
+            <button class="cart-icon" id="cartIcon" aria-label="Shopping Cart">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="8" cy="21" r="1"/>
+                    <circle cx="19" cy="21" r="1"/>
+                    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                </svg>
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
         </nav>
     </header>
 
@@ -334,25 +352,6 @@
 
     <script>
         const AUTH_API_URL = 'https://hxr7qp46qicsvrlnale5v7z34m0crgjm.lambda-url.us-east-1.on.aws';
-
-        // Update auth link based on login state
-        function updateAuthUI() {
-            const authLink = document.getElementById('authLink');
-            const unarUser = JSON.parse(localStorage.getItem('unarUser') || '{}');
-
-            if (unarUser.email) {
-                authLink.innerHTML = `
-                    <span class="user-greeting">Hi, ${unarUser.name || unarUser.email.split('@')[0]}</span>
-                    <button onclick="logoutUser()" class="logout-btn">Logout</button>
-                `;
-            }
-        }
-
-        async function logoutUser() {
-            localStorage.removeItem('unarUser');
-            localStorage.removeItem('unarTokens');
-            window.location.href = 'login.html';
-        }
 
         async function loadOrders() {
             const ordersContent = document.getElementById('ordersContent');
@@ -469,9 +468,9 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            updateAuthUI();
             loadOrders();
         });
     </script>
+    <script src="script.js"></script>
 </body>
 </html>

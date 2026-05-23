@@ -76,8 +76,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const couponMessage = document.getElementById('couponMessage');
 
     // Coupon state
-    const VALID_COUPONS = { 'MOM25': 25 };
-    const COUPON_ELIGIBLE = { 'MOM25': ['Champa', 'Jasmine'] };
+    const VALID_COUPONS = {  };
+    const COUPON_ELIGIBLE = { };
     let appliedDiscount = 0;
     let appliedCouponCode = '';
 

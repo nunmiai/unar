@@ -136,7 +136,7 @@ export default function OrdersPage() {
                       <div className="mb-5">
                         {order.items.map((item, idx) => (
                           <div key={idx} className={`flex items-center gap-4 py-3 ${idx < order.items.length - 1 ? "border-b border-[#fdfbf7]" : ""}`}>
-                            <img src={item.image || "/assets/logo.png"} alt={item.name} className="w-14 h-14 rounded-lg object-cover bg-[#fdfbf7] flex-shrink-0" onError={(e) => { e.target.src = "/assets/logo.png"; }} />
+                            <img src={item.image || "/assets/website_assets/logo-circle.png"} alt={item.name} className="w-14 h-14 rounded-lg object-cover bg-[#fdfbf7] flex-shrink-0" onError={(e) => { e.target.src = "/assets/website_assets/logo-circle.png"; }} />
                             <div className="flex-1">
                               <div className="font-medium text-[#2d3436]">{item.name}</div>
                               <div className="text-[#636e72] text-sm">Qty: {item.quantity || 1}</div>

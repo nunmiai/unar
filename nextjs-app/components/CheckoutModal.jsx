@@ -70,7 +70,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
         order_id: orderData.order_id,
         name: "Unar",
         description: "Natural Solid Perfumes",
-        image: "/assets/logo.png",
+        image: "/assets/website_assets/logo-circle.png",
         handler: async (response) => {
           try {
             const verifyRes = await fetch(`${LAMBDA_API_URL}/verify-payment`, {
@@ -253,10 +253,10 @@ export default function CheckoutModal({ isOpen, onClose }) {
               {cart.map((item) => (
                 <div key={item.name} className="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm">
                   <img
-                    src={`/assets/new_assets/${item.image}`}
+                    src={`/assets/website_assets/mockups/${item.image}`}
                     alt={item.name}
                     className="w-12 h-12 rounded-lg object-cover bg-gray-100 flex-shrink-0"
-                    onError={(e) => { e.target.src = "/assets/logo.png"; }}
+                    onError={(e) => { e.target.src = "/assets/website_assets/logo-circle.png"; }}
                   />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm text-[#2d3436] truncate">{item.name}</p>

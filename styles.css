@@ -241,11 +241,12 @@ body {
 }
 
 .hero-logo-img {
-    max-width: 250px;
+    max-width: 220px;
     height: auto;
     display: block;
-    margin-bottom: -30px;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+    margin-bottom: 8px;
+    border-radius: 12px;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
 }
 
 .hero-subtitle {
@@ -1687,7 +1688,8 @@ section {
 
     .hero-logo-img {
         max-width: 180px;
-        margin: 0 auto -35px auto;
+        margin: 0 auto 8px auto;
+        border-radius: 10px;
     }
 
     .hero-subtitle {
@@ -1890,7 +1892,8 @@ section {
 
     .hero-logo-img {
         max-width: 150px;
-        margin: 0 auto -25px auto;
+        margin: 0 auto 8px auto;
+        border-radius: 8px;
     }
 
     .hero-subtitle {

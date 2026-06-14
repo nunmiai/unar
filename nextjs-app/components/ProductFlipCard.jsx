@@ -3,7 +3,7 @@ import { useCart } from "@/lib/CartContext";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Check } from "lucide-react";
 
-export default function ProductFlipCard({ product }) {
+export default function ProductFlipCard({ product, packageType = "box" }) {
   const { name, price, badge, image, benefits, outOfStock } = product;
   const { addToCart, cart } = useCart();
   const [flipped, setFlipped] = useState(false);
@@ -22,6 +22,10 @@ export default function ProductFlipCard({ product }) {
     }
   };
 
+  const currentImage = packageType === "tin"
+    ? `/assets/website_assets/round_tin/${image === "rose.jpg" ? "rose.jpg" : `${image}-r.jpg`}`
+    : `/assets/website_assets/mockups/${image}`;
+
   return (
     <div
       className={`flip-card h-[480px] ${flipped ? "flipped" : ""}`}
@@ -31,7 +35,7 @@ export default function ProductFlipCard({ product }) {
         {/* FRONT */}
         <div className="flip-card-front overflow-hidden bg-gradient-to-br from-[#f8f6f3] to-[#f0ebe5] rounded-2xl">
           <img
-            src={`/assets/new_assets/${image}`}
+            src={currentImage}
             alt={`${name} Natural Solid Perfume`}
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           />

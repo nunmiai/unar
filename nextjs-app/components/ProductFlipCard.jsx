@@ -1,10 +1,11 @@
 import { useState } from "react";
+import Link from "next/link";
 import { useCart } from "@/lib/CartContext";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Check } from "lucide-react";
 
 export default function ProductFlipCard({ product, packageType = "box" }) {
-  const { name, price, badge, image, benefits, outOfStock } = product;
+  const { name, price, badge, image, benefits, outOfStock, slug } = product;
   const { addToCart, cart } = useCart();
   const [flipped, setFlipped] = useState(false);
 
@@ -69,31 +70,39 @@ export default function ProductFlipCard({ product, packageType = "box" }) {
             100% Natural | Zero Waste | Cruelty Free
           </div>
           <p className="font-['Cormorant_Garamond'] text-[32px] font-bold text-[#5a7c65] mb-3.5">₹{price}</p>
-          <button
-            onClick={handleAddToCart}
-            disabled={outOfStock}
-            className={`relative z-10 flex items-center justify-center gap-2 w-auto px-6 py-3 rounded-full text-[14px] font-semibold uppercase tracking-wide transition-all
-              ${outOfStock
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : inCart
-                  ? "bg-green-600 text-white hover:bg-green-700"
-                  : "bg-[#5a7c65] text-white hover:bg-[#475f50] hover:scale-105 hover:shadow-lg"
-              }`}
-          >
-            {outOfStock ? (
-              "Out of Stock"
-            ) : inCart ? (
-              <>
-                <Check size={16} />
-                In Cart ({inCart.quantity})
-              </>
-            ) : (
-              <>
-                <ShoppingCart size={16} />
-                Add to Cart
-              </>
-            )}
-          </button>
+          <div className="flex flex-col gap-2.5 items-center w-full relative z-10">
+            <button
+              onClick={handleAddToCart}
+              disabled={outOfStock}
+              className={`flex items-center justify-center gap-2 w-full max-w-[200px] py-2.5 rounded-full text-[13px] font-semibold uppercase tracking-wide transition-all
+                ${outOfStock
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : inCart
+                    ? "bg-green-600 text-white hover:bg-green-700"
+                    : "bg-[#5a7c65] text-white hover:bg-[#475f50] hover:scale-105 hover:shadow-lg"
+                }`}
+            >
+              {outOfStock ? (
+                "Out of Stock"
+              ) : inCart ? (
+                <>
+                  <Check size={14} />
+                  In Cart ({inCart.quantity})
+                </>
+              ) : (
+                <>
+                  <ShoppingCart size={14} />
+                  Add to Cart
+                </>
+              )}
+            </button>
+            <Link
+              href={`/products/${slug}`}
+              className="text-[12px] font-bold uppercase tracking-wider text-[#5a7c65] hover:text-[#285b46] underline hover:no-underline transition-colors mt-1"
+            >
+              View Details
+            </Link>
+          </div>
         </div>
       </div>
     </div>

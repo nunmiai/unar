@@ -23,42 +23,43 @@ export function CartProvider({ children }) {
   }, []);
 
   const addToCart = useCallback(
-    (product) => {
+    (product, quantityToAdd = 1) => {
       setCart((prev) => {
-        const existing = prev.find((item) => item.name === product.name);
+        const productId = product.id || product.name;
+        const existing = prev.find((item) => (item.id || item.name) === productId);
         const next = existing
           ? prev.map((item) =>
-              item.name === product.name
-                ? { ...item, quantity: item.quantity + 1 }
+              (item.id || item.name) === productId
+                ? { ...item, quantity: item.quantity + quantityToAdd }
                 : item
             )
-          : [...prev, { ...product, quantity: 1 }];
+          : [...prev, { ...product, id: productId, quantity: quantityToAdd }];
         localStorage.setItem("unarCart", JSON.stringify(next));
         return next;
       });
-      toast.success(`${product.name} added to cart!`);
+      toast.success(quantityToAdd > 1 ? `${quantityToAdd} x ${product.name} added to cart!` : `${product.name} added to cart!`);
     },
     []
   );
 
-  const removeFromCart = useCallback((name) => {
+  const removeFromCart = useCallback((idOrName) => {
     setCart((prev) => {
-      const next = prev.filter((item) => item.name !== name);
+      const next = prev.filter((item) => (item.id || item.name) !== idOrName);
       localStorage.setItem("unarCart", JSON.stringify(next));
       return next;
     });
   }, []);
 
-  const updateQuantity = useCallback((name, change) => {
+  const updateQuantity = useCallback((idOrName, change) => {
     setCart((prev) => {
-      const item = prev.find((i) => i.name === name);
+      const item = prev.find((i) => (i.id || i.name) === idOrName);
       if (!item) return prev;
       const newQty = item.quantity + change;
       const next =
         newQty <= 0
-          ? prev.filter((i) => i.name !== name)
+          ? prev.filter((i) => (i.id || i.name) !== idOrName)
           : prev.map((i) =>
-              i.name === name ? { ...i, quantity: newQty } : i
+              (i.id || i.name) === idOrName ? { ...i, quantity: newQty } : i
             );
       localStorage.setItem("unarCart", JSON.stringify(next));
       return next;

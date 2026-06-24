@@ -62,51 +62,59 @@ export default function CartSidebar({ isOpen, onClose }) {
                   <strong>FREE shipping!</strong>
                 </div>
               )}
-              {cart.map((item) => (
-                <div key={item.name} className="flex gap-4 items-center border-b border-[#e8e4df] pb-4">
-                  <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-[#fdfbf7]">
-                    <img
-                      src={`/assets/website_assets/mockups/${item.image}`}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => { e.target.src = "/assets/website_assets/logo-circle.png"; }}
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#2d3436] truncate">
-                      {item.name}
-                    </h4>
-                    <p className="text-[#5a7c65] font-semibold">₹{item.price}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <button
-                        onClick={() => updateQuantity(item.name, -1)}
-                        className="w-7 h-7 rounded-full border border-[#e8e4df] flex items-center justify-center hover:bg-[#5a7c65] hover:text-white hover:border-[#5a7c65] transition-all"
-                      >
-                        <Minus size={12} />
-                      </button>
-                      <span className="w-6 text-center font-medium">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.name, 1)}
-                        className="w-7 h-7 rounded-full border border-[#e8e4df] flex items-center justify-center hover:bg-[#5a7c65] hover:text-white hover:border-[#5a7c65] transition-all"
-                      >
-                        <Plus size={12} />
-                      </button>
-                      <button
-                        onClick={() => removeFromCart(item.name)}
-                        className="ml-2 text-red-400 hover:text-red-600 transition-colors"
-                        aria-label={`Remove ${item.name}`}
-                      >
-                        <Trash2 size={15} />
-                      </button>
+              {cart.map((item) => {
+                const itemId = item.id || item.name;
+                return (
+                  <div key={itemId} className="flex gap-4 items-center border-b border-[#e8e4df] pb-4">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-[#fdfbf7]">
+                      <img
+                        src={`/assets/website_assets/mockups/${item.image}`}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.target.src = "/assets/website_assets/logo-circle.png"; }}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#2d3436] truncate">
+                        {item.name}
+                      </h4>
+                      {item.selectedScents && (
+                        <p className="text-[11px] text-[#5a7c65] mt-0.5 leading-tight font-medium">
+                          Fragrances: {item.selectedScents.join(", ")}
+                        </p>
+                      )}
+                      <p className="text-[#5a7c65] font-semibold mt-0.5">₹{item.price}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <button
+                          onClick={() => updateQuantity(itemId, -1)}
+                          className="w-7 h-7 rounded-full border border-[#e8e4df] flex items-center justify-center hover:bg-[#5a7c65] hover:text-white hover:border-[#5a7c65] transition-all"
+                        >
+                          <Minus size={12} />
+                        </button>
+                        <span className="w-6 text-center font-medium">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(itemId, 1)}
+                          className="w-7 h-7 rounded-full border border-[#e8e4df] flex items-center justify-center hover:bg-[#5a7c65] hover:text-white hover:border-[#5a7c65] transition-all"
+                        >
+                          <Plus size={12} />
+                        </button>
+                        <button
+                          onClick={() => removeFromCart(itemId)}
+                          className="ml-2 text-red-400 hover:text-red-600 transition-colors"
+                          aria-label={`Remove ${item.name}`}
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="font-semibold text-[#2d3436]">
+                        ₹{item.price * item.quantity}
+                      </p>
                     </div>
                   </div>
-                  <div className="text-right flex-shrink-0">
-                    <p className="font-semibold text-[#2d3436]">
-                      ₹{item.price * item.quantity}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

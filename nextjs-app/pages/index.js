@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Image from "next/image";
 import Head from "next/head";
 import { useCart } from "@/lib/CartContext";
@@ -7,11 +8,9 @@ import CartSidebar from "@/components/CartSidebar";
 import CheckoutModal from "@/components/CheckoutModal";
 import ProductCard from "@/components/ProductCard";
 import ContactForm from "@/components/ContactForm";
-import InstagramCarousel from "@/components/InstagramCarousel";
 import GoldenPollenParticles from "@/components/GoldenPollenParticles";
 
 import Footer from "@/components/Footer";
-import { INSTAGRAM_VIDEO_URLS } from "@/config/instagramVideos";
 import { PRODUCTS } from "@/config/products";
 
 
@@ -22,11 +21,6 @@ const FEATURES = [
   { icon: "clock", title: "Long Lasting *", desc: "Compared to alcohol perfume. Solid wax formulas release scents slowly and last much longer.", isSvg: true },
 ];
 
-const TESTIMONIALS = [
-  { initial: "P", name: "Priya M.", city: "Chennai", quote: "\"I was skeptical at first, but the Champa scent is absolutely divine. It lasts all day and my skin feels so soft. Finally, a perfume I don't feel guilty using around my kids!\"" },
-  { initial: "R", name: "Rahul K.", city: "Bangalore", quote: "\"The Sandalwood is my daily go-to. Love that it's travel-friendly and doesn't spill in my bag. The scent evolves beautifully throughout the day.\"" },
-  { initial: "A", name: "Ananya S.", city: "Mumbai", quote: "\"As someone with sensitive skin, I've struggled with perfumes for years. Unar's solid perfumes are the first that don't irritate my skin. The Rose scent is heavenly!\"" },
-];
 
 const INGREDIENTS = [
   { title: "Pure Beeswax", desc: "It keeps the perfume solid while acting as a natural glue that holds the scent to your skin for a longer-lasting fragrance." },
@@ -36,10 +30,16 @@ const INGREDIENTS = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("all");
-  const [testimonialTab, setTestimonialTab] = useState("video");
+
+  useEffect(() => {
+    if (router.isReady && router.query.category) {
+      setActiveCategory(router.query.category);
+    }
+  }, [router.isReady, router.query.category]);
 
   // Listen for checkout event from CartSidebar
   if (typeof window !== "undefined") {
@@ -71,14 +71,22 @@ export default function Home() {
           <GoldenPollenParticles />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,165,116,0.08)_0%,transparent_70%)] pointer-events-none" />
           <div className="max-w-[800px] mx-auto px-10 w-full text-center flex flex-col items-center animate-fade-in-up">
-            <h1 className="flex flex-col items-center mb-6">
-              <span className="font-edo text-7xl md:text-9xl text-[#5a7c65] tracking-wide leading-none select-none">UNAR</span>
-              <span className="font-['Cormorant_Garamond'] text-lg md:text-2xl font-normal text-[#d4a574] italic tracking-[0.45em] mt-2 uppercase select-none">Conscious Living</span>
+            <h1 className="flex flex-col items-center mb-0">
+              <img
+                src="/assets/website_assets/mockups/logo_tagline.png"
+                alt="UNAR"
+                className="h-100 md:h-100 w-auto object-contain select-none mb-0"
+              />
+              {/* <span className="font-madelyn text-5xl md:text-8xl font-normal text-[#d4a574] -mt-8 md:-mt-14 select-none">Conscious Living</span> */}
             </h1>
-            <p className="text-lg md:text-xl text-[#636e72] mb-10 max-w-[600px] leading-[1.8]">
-              Hand-crafted solid perfumes made with pure beeswax, natural butters, and essential oils.
-              No harsh chemicals. No alcohols. No preservatives.
-            </p>
+            <div className="text-left md:text-center text-[#636e72] max-w-[650px] mx-auto mb-8 space-y-6">
+              <p className="text-lg md:text-xl leading-[1.8]">
+                A sensory brand dedicated to the art of awakening. We bridge the gap between ancient heritage and modern mindfulness through intentional, handcrafted rituals.
+              </p>
+              <p className="font-['Cormorant_Garamond'] text-2xl font-semibold text-[#d4a574] italic tracking-wide">
+                Awaken your senses. Live with intent.
+              </p>
+            </div>
             <div className="flex gap-4 justify-center flex-wrap mb-4">
               <a href="#collections" onClick={(e) => { e.preventDefault(); document.querySelector("#collections")?.scrollIntoView({ behavior: "smooth" }); }} className="px-8 py-3.5 rounded-full bg-[#5a7c65] text-white font-medium hover:bg-[#475f50] transition-all hover:-translate-y-0.5 hover:shadow-lg">
                 Explore Collections
@@ -98,24 +106,23 @@ export default function Home() {
           <div className="max-w-[1300px] mx-auto px-10">
             <h2 className="font-['Cormorant_Garamond'] text-5xl font-semibold text-[#5a7c65] text-center mb-3">Our Collections</h2>
             <p className="text-center text-[#636e72] text-lg mb-8">Eight exquisite fragrances inspired by nature&apos;s finest botanicals</p>
-            
+
             {/* Category tabs instead of package toggle */}
             <div className="flex justify-center mb-12">
               <div className="bg-[#5a7c65]/10 p-1.5 rounded-2xl flex flex-wrap justify-center items-center gap-1.5 border border-[#5a7c65]/10 max-w-full">
                 {[
                   { id: "all", label: "All Products" },
                   { id: "solid-perfume", label: "Solid Perfumes" },
-                  { id: "car-fragrance", label: "Car Fragrances" },
-                  { id: "discovery-set", label: "Discovery Sets" }
+                  // { id: "car-fragrance", label: "Car Fragrances" },
+                  { id: "discovery-set", label: "Discovery Set" }
                 ].map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id)}
-                    className={`px-6 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-widest transition-all duration-300 cursor-pointer ${
-                      activeCategory === cat.id
-                        ? "bg-[#5a7c65] text-white shadow-md"
-                        : "text-[#285b46] hover:bg-[#5a7c65]/5"
-                    }`}
+                    className={`px-6 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-widest transition-all duration-300 cursor-pointer ${activeCategory === cat.id
+                      ? "bg-[#5a7c65] text-white shadow-md"
+                      : "text-[#285b46] hover:bg-[#5a7c65]/5"
+                      }`}
                   >
                     {cat.label}
                   </button>
@@ -131,188 +138,40 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── TRANSPARENCY & INGREDIENTS ── */}
-        <section id="transparency" className="py-24 bg-white border-b border-[#e8e4df]">
-          <div className="max-w-[1300px] mx-auto px-10">
-            <h2 className="font-['Cormorant_Garamond'] text-5xl font-semibold text-[#5a7c65] text-center mb-3">Transparency</h2>
-            <p className="text-center text-[#636e72] text-lg mb-12">Every ingredient is natural, clean, and selected with care</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
-              {INGREDIENTS.map((ing) => (
-                <div key={ing.title} className="ingredient-card bg-[#fdfbf7] border border-[#e8e4df] rounded-xl p-8 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-                  <h4 className="font-['Cormorant_Garamond'] text-2xl text-[#5a7c65] mb-3 font-semibold">{ing.title}</h4>
-                  <p className="text-[15px] leading-[1.7] text-[#636e72]">{ing.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* ── ABOUT ── */}
         <section id="about" className="py-24 bg-white">
-          <div className="max-w-[1300px] mx-auto px-10">
-            <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-12 items-start">
-              <div>
-                <h2 className="font-['Cormorant_Garamond'] text-5xl font-semibold text-[#5a7c65] mb-4">Our Story</h2>
-                <div className="space-y-0">
-                  <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#5a7c65] mt-9 mb-4">The Name: <span className="font-edo font-normal tracking-wide">UNAR (உணர்)</span></h3>
-                  <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5">We chose the name <strong><span className="font-edo font-normal tracking-wider text-[1.1em]">UNAR</span></strong> because it translates to more than just &ldquo;sense.&rdquo; It means to feel, to realize, and to become aware. Our brand is built on the belief that every action should be a mindful ritual—a moment where you pause to connect with yourself like our first product &ldquo;Natural Solid Perfumes&rdquo;.</p>
-                  
-                  <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#5a7c65] mt-9 mb-4">The Story of <span className="font-edo font-normal tracking-wide">UNAR</span>: From Our Home to Your Skin</h3>
-                  <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5">We began searching for a natural fragrance because we were tired of harsh chemicals and full of guilt when the same was used by our child. Available options were limited to the fragrance of west and usage of synthetics for mass production. We missed the honest scents of our daily lives—the Champa, Frangipani, and Vetiver we walk past every day.</p>
-                  <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5">So, we started researching. What began as a quest for the &ldquo;right mix&rdquo; became a beautiful family ritual. We discovered that a natural scent is a powerful mood elevator that shouldn&apos;t require synthetic alcohol or artificial flavors.</p>
-                  
-                  {/* Story Video */}
-                  <div className="my-8 rounded-2xl overflow-hidden shadow-lg border border-[#e8e4df] bg-[#fdfbf7] aspect-video relative">
-                    <video
-                      className="w-full h-full object-cover"
-                      controls
-                      playsInline
-                      preload="metadata"
-                      src="https://unarassets.s3.us-east-1.amazonaws.com/The_Name_UNAR_%E0%AE%89%E0%AE%A3%E0%AE%B0%E0%AF%8D__We_chose.mp4"
-                    >
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
+          <div className="max-w-[800px] mx-auto px-10">
+            <h2 className="font-['Cormorant_Garamond'] text-5xl font-semibold text-[#5a7c65] mb-4 text-center">Our Story</h2>
+            <div className="space-y-0">
+              <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#5a7c65] mt-9 mb-4">The Name: <span className="font-edo font-normal tracking-wide">UNAR (உணர்)</span></h3>
+              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5">We chose the name <strong><span className="font-edo font-normal tracking-wider text-[1.1em]">UNAR</span></strong> because it translates to more than just &ldquo;sense.&rdquo; It means to feel, to realize, and to become aware. Our brand is built on the belief that every action should be a mindful ritual—a moment where you pause to connect with yourself like our first product &ldquo;Natural Solid Perfumes&rdquo;.</p>
 
-                  <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#5a7c65] mt-9 mb-4">The Ritual</h3>
-                  <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5"><span className="font-edo font-normal tracking-wider text-[1.1em]">UNAR</span> solid perfume is designed for the intimate areas of your life—your pulse points, your neck, and even for natural odor control in your underarms.</p>
-                </div>
-              </div>
+              <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#5a7c65] mt-9 mb-4">The Story of <span className="font-edo font-normal tracking-wide">UNAR</span>: From Our Home to Your Skin</h3>
+              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5">We began searching for a natural fragrance because we were tired of harsh chemicals and full of guilt when the same was used by our child. Available options were limited to the fragrance of west and usage of synthetics for mass production. We missed the honest scents of our daily lives—the Champa, Frangipani, and Vetiver we walk past every day.</p>
+              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5">So, we started researching. What began as a quest for the &ldquo;right mix&rdquo; became a beautiful family ritual. We discovered that a natural scent is a powerful mood elevator that shouldn&apos;t require synthetic alcohol or artificial flavors.</p>
 
-              {/* Right sticky card */}
-              <div className="sticky top-[120px]">
-                <div className="bg-gradient-to-br from-[#5a7c65] to-[#475f50] text-white p-10 rounded-2xl shadow-2xl">
-                  <h3 className="font-['Cormorant_Garamond'] text-3xl mb-4">What is Solid Perfume?</h3>
-                  <p className="leading-[1.8] mb-6 opacity-95">Solid perfume is a concentrated fragrance made from natural waxes and oils. Unlike alcohol-based perfumes, our solid perfumes are gentle on the skin, long-lasting, and perfect for on-the-go application.</p>
-                  <div className="bg-white/10 p-6 rounded-xl backdrop-blur-sm text-center">
-                    <Image src="/assets/website_assets/how_to_use.png" alt="How to Use Unar Solid Perfume" width={450} height={300} className="w-full max-w-[450px] rounded-xl mb-4" />
-                    <p className="text-[13px] italic text-white/90"><strong>Note:</strong> Natural Solid Perfume contains natural essential oils. If pregnant or nursing, consult your physician before use.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── FEATURES ── */}
-        <section id="features" className="py-24 bg-gradient-to-b from-[#fdfbf7] to-white">
-          <div className="max-w-[1300px] mx-auto px-10">
-            <h2 className="font-['Cormorant_Garamond'] text-5xl font-semibold text-[#5a7c65] text-center mb-12">Why Choose <span className="font-edo font-normal tracking-wide">UNAR</span></h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
-              {FEATURES.map((f) => (
-                <div key={f.title} className="feature-card bg-white p-10 rounded-2xl shadow-sm border border-[#e8e4df] text-center flex flex-col items-center min-h-[280px]">
-                  <div className="w-20 h-20 flex items-center justify-center mb-6">
-                    {f.isSvg ? (
-                      <div className="w-16 h-16 text-[#5a7c65] flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-16 h-16">
-                          <circle cx="12" cy="12" r="10" />
-                          <polyline points="12 6 12 12 16 14" />
-                        </svg>
-                      </div>
-                    ) : (
-                      <Image src={f.icon} alt={f.title} width={80} height={80} className="object-contain drop-shadow-sm" />
-                    )}
-                  </div>
-                  <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#5a7c65] mb-3">{f.title}</h3>
-                  <p className="text-[#636e72] leading-[1.7] text-[15px]">{f.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── TESTIMONIALS ── */}
-        <section id="testimonials" className="py-24 bg-gradient-to-br from-[#f5f1eb] to-white">
-          <div className="max-w-[1300px] mx-auto px-10">
-            <h2 className="font-['Cormorant_Garamond'] text-5xl font-semibold text-[#5a7c65] text-center mb-3">Real Stories &amp; Reviews</h2>
-            <p className="text-center text-[#636e72] text-lg mb-8">Hear from our community of conscious living enthusiasts</p>
-
-            {/* Tab Switcher */}
-            <div className="flex justify-center mb-12">
-              <div className="bg-[#5a7c65]/10 p-1.5 rounded-full flex items-center gap-1 border border-[#5a7c65]/10">
-                <button
-                  onClick={() => setTestimonialTab("video")}
-                  className={`px-6 py-2 rounded-full text-sm font-semibold tracking-wide transition-all duration-300 cursor-pointer flex items-center gap-2 ${
-                    testimonialTab === "video"
-                      ? "bg-[#5a7c65] text-white shadow-md"
-                      : "text-[#5a7c65] hover:bg-[#5a7c65]/5"
-                  }`}
+              {/* Story Video */}
+              {/* <div className="my-8 rounded-2xl overflow-hidden shadow-lg border border-[#e8e4df] bg-[#fdfbf7] aspect-video relative">
+                <video
+                  className="w-full h-full object-cover"
+                  controls
+                  playsInline
+                  preload="metadata"
+                  src="https://unarassets.s3.us-east-1.amazonaws.com/The_Name_UNAR_%E0%AE%89%E0%AE%A3%E0%AE%B0%E0%AF%8D__We_chose.mp4"
                 >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                  </svg>
-                  Video Reviews
-                </button>
-                <button
-                  onClick={() => setTestimonialTab("whatsapp")}
-                  className={`px-6 py-2 rounded-full text-sm font-semibold tracking-wide transition-all duration-300 cursor-pointer flex items-center gap-2 ${
-                    testimonialTab === "whatsapp"
-                      ? "bg-[#5a7c65] text-white shadow-md"
-                      : "text-[#5a7c65] hover:bg-[#5a7c65]/5"
-                  }`}
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                  </svg>
-                  Customer Stories
-                </button>
-              </div>
-            </div>
+                  Your browser does not support the video tag.
+                </video>
+              </div> */}
 
-            {/* ── VIDEO REVIEWS TAB ── */}
-            {testimonialTab === "video" && (
-              <div className="flex flex-col items-center">
-                <InstagramCarousel urls={INSTAGRAM_VIDEO_URLS} />
-              </div>
-            )}
-
-            {/* ── WHATSAPP STORIES TAB ── */}
-            {testimonialTab === "whatsapp" && (
-              <div className="flex flex-col items-center gap-8">
-                <div className="whatsapp-chat-phone">
-                  <div className="whatsapp-chat-header">
-                    <div className="whatsapp-chat-avatar">U</div>
-                    <div>
-                      <h4 className="font-semibold text-sm leading-tight"><span className="font-edo font-normal tracking-wider text-[1.1em]">UNAR</span> Customer Support</h4>
-                      <span className="whatsapp-chat-status">Online</span>
-                    </div>
-                  </div>
-                  <div className="whatsapp-chat-body">
-                    <div className="whatsapp-bubble received">
-                      <p className="text-xs font-semibold text-[#128c7e] mb-1">Rahul K. (Bangalore)</p>
-                      <p>The Sandalwood is my daily go-to. Love that it&apos;s travel-friendly and doesn&apos;t spill in my bag! The scent evolves beautifully throughout the day. 🌲</p>
-                      <div className="whatsapp-bubble-time"><span>11:24 AM</span></div>
-                    </div>
-                    <div className="whatsapp-bubble sent">
-                      <p>So glad you are loving the Sandalwood solid perfume, Rahul! Thank you for the wonderful feedback! 🙏💚</p>
-                      <div className="whatsapp-bubble-time">
-                        <span>11:26 AM</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#53bdeb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="20 6 9 17 4 12" />
-                          <polyline points="13 6 13 11" />
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="whatsapp-bubble received">
-                      <p className="text-xs font-semibold text-[#128c7e] mb-1">Amrit S. (Delhi)</p>
-                      <p>Tried the Vetiver sample today. The earthy notes are amazing. It feels so soothing on the skin, and no irritation at all. Definitely ordering a full tin.</p>
-                      <div className="whatsapp-bubble-time"><span>02:15 PM</span></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="text-center mt-16 pt-8 border-t border-[#e8e4df]">
-              <p className="font-['Cormorant_Garamond'] text-2xl text-[#2d3436] mb-5">Ready to experience conscious, natural fragrance?</p>
-              <a href="#contact" onClick={(e) => { e.preventDefault(); document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" }); }} className="inline-block px-8 py-3.5 rounded-full bg-[#5a7c65] text-white font-medium hover:bg-[#475f50] transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                Contact Us / Request Sample
-              </a>
+              <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#5a7c65] mt-9 mb-4">The Ritual</h3>
+              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5"><span className="font-edo font-normal tracking-wider text-[1.1em]">UNAR</span> solid perfume is designed for the intimate areas of your life—your pulse points, your neck, and even for natural odor control in your underarms.</p>
             </div>
           </div>
         </section>
+
+
+
 
         {/* ── CONTACT ── */}
         <section id="contact" className="py-24 bg-gradient-to-br from-[#fdfbf7] to-[#f0ebe5]">

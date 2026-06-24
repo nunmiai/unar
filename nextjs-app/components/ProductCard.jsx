@@ -1,10 +1,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/CartContext";
-import { Star, ShoppingCart, Check, Eye } from "lucide-react";
+import { ShoppingCart, Check, Eye } from "lucide-react";
 
 export default function ProductCard({ product }) {
-  const { name, price, originalPrice, badge, image, outOfStock, slug, rating, reviewCount, tagline, category } = product;
+  const { name, price, originalPrice, badge, image, outOfStock, slug, tagline, category } = product;
   const { addToCart, cart } = useCart();
   const [hovered, setHovered] = useState(false);
 
@@ -21,10 +21,12 @@ export default function ProductCard({ product }) {
   // Resolve Box/Tin images for crossfade hover effect
   const boxImage = `/assets/website_assets/mockups/${image}`;
   const tinImage = `/assets/website_assets/round_tin/${image === "rose.jpg" ? "rose.jpg" : `${image}-r.jpg`}`;
-  
+
   // Check if it's solid perfume to enable hover image swap
   const hasTinVariant = category === "solid-perfume";
-  const hoverImage = hasTinVariant ? tinImage : boxImage;
+  const hoverImage = hasTinVariant ? boxImage : boxImage;
+  // const hoverImage = hasTinVariant ? tinImage : boxImage;
+
 
   const discountPercent = Math.round(((originalPrice - price) / originalPrice) * 100);
 
@@ -36,7 +38,7 @@ export default function ProductCard({ product }) {
     >
       {/* IMAGE WRAPPER with Crossfade Hover and Zoom */}
       <div className="relative aspect-square w-full overflow-hidden bg-[#faf8f5] border-b border-[#e8e4df]/40">
-        
+
         {/* Badge */}
         <div className="absolute top-3.5 left-3.5 z-20">
           <span className="bg-[#285b46] text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm">
@@ -57,9 +59,8 @@ export default function ProductCard({ product }) {
         <img
           src={boxImage}
           alt={name}
-          className={`w-full h-full object-cover transition-all duration-700 ease-out ${
-            hovered && hasTinVariant ? "opacity-0 scale-102" : "opacity-100 scale-100"
-          }`}
+          className={`w-full h-full object-cover transition-all duration-700 ease-out ${hovered && hasTinVariant ? "opacity-0 scale-102" : "opacity-100 scale-100"
+            }`}
         />
 
         {/* Hover image (Tin Mockup) - only for solid perfumes */}
@@ -67,16 +68,14 @@ export default function ProductCard({ product }) {
           <img
             src={hoverImage}
             alt={`${name} Tin variant`}
-            className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out ${
-              hovered ? "opacity-100 scale-100" : "opacity-0 scale-95"
-            }`}
+            className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out ${hovered ? "opacity-100 scale-100" : "opacity-0 scale-95"
+              }`}
           />
         )}
 
         {/* Quick Action Overlay on Hover */}
-        <div className={`absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/50 via-black/20 to-transparent z-20 flex gap-2 transition-all duration-300 transform ${
-          hovered && !outOfStock ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0 pointer-events-none"
-        }`}>
+        <div className={`absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/50 via-black/20 to-transparent z-20 flex gap-2 transition-all duration-300 transform ${hovered && !outOfStock ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0 pointer-events-none"
+          }`}>
           <Link
             href={`/products/${slug}`}
             className="flex-1 py-2.5 px-3 bg-white text-[#285b46] hover:bg-[#285b46] hover:text-white rounded-full font-bold uppercase tracking-wider text-[10px] text-center flex items-center justify-center gap-1.5 shadow-md transition-all duration-300 transform hover:scale-102"
@@ -86,9 +85,8 @@ export default function ProductCard({ product }) {
           </Link>
           <button
             onClick={handleAddToCart}
-            className={`p-2.5 rounded-full text-white shadow-md transition-all duration-300 transform hover:scale-110 cursor-pointer ${
-              inCart ? "bg-green-600 hover:bg-green-700" : "bg-[#5a7c65] hover:bg-[#285b46]"
-            }`}
+            className={`p-2.5 rounded-full text-white shadow-md transition-all duration-300 transform hover:scale-110 cursor-pointer ${inCart ? "bg-green-600 hover:bg-green-700" : "bg-[#5a7c65] hover:bg-[#285b46]"
+              }`}
             title="Add to Cart"
           >
             {inCart ? <Check size={14} /> : <ShoppingCart size={14} />}
@@ -99,22 +97,7 @@ export default function ProductCard({ product }) {
       {/* INFO WRAPPER */}
       <div className="p-5 flex-1 flex flex-col justify-between">
         <div className="space-y-1">
-          {/* Star Rating Line */}
-          <div className="flex items-center gap-1.5">
-            <div className="flex text-[#d4a574]">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  size={12}
-                  fill={i < Math.floor(rating) ? "currentColor" : "none"}
-                  stroke="currentColor"
-                  className={i < Math.floor(rating) ? "" : "text-gray-300"}
-                />
-              ))}
-            </div>
-            <span className="text-[11px] font-bold text-[#2d3436]">{rating}</span>
-            <span className="text-[10px] text-[#636e72]">({reviewCount})</span>
-          </div>
+
 
           {/* Product Title */}
           <h3 className="font-serif text-xl font-bold text-[#285b46] leading-snug">
@@ -124,7 +107,7 @@ export default function ProductCard({ product }) {
           </h3>
 
           {/* Product Tagline */}
-          <p className="text-[12px] text-[#636e72] leading-relaxed line-clamp-2 h-8">
+          <p className="text-[12px] text-[#636e72] leading-relaxed line-clamp-2 h-10">
             {tagline}
           </p>
         </div>

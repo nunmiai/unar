@@ -91,7 +91,6 @@ export default function Navbar({ onCartOpen }) {
 
   const navLinks = [
     { href: "#about", label: "Our Story" },
-    { href: "#features", label: "Why Choose Us" },
     { href: "#contact", label: "Contact" },
   ];
 

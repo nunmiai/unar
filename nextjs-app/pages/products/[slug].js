@@ -1,32 +1,50 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import Image from "next/image";
 import Link from "next/link";
 import Script from "next/script";
 import { useCart } from "@/lib/CartContext";
+import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartSidebar from "@/components/CartSidebar";
 import CheckoutModal from "@/components/CheckoutModal";
 import { PRODUCTS } from "@/config/products";
-import { Star, ShoppingCart, Check, ChevronDown, ChevronUp, Shield, Truck, Sparkles, AlertCircle, HelpCircle, Sparkle } from "lucide-react";
+import { ShoppingCart, Check, ChevronDown, ChevronUp, Shield, Truck, Sparkles, AlertCircle, HelpCircle, Sparkle, Clock, Hand, Heart, ChevronLeft, ChevronRight } from "lucide-react";
+
+const FEATURES = [
+  { icon: "/assets/icons/natural.png", title: "100% Natural", desc: "Pure beeswax and essential oils, with absolutely no synthetic ingredients or harmful chemicals." },
+  { icon: "/assets/icons/travel.png", title: "Travel Friendly", desc: "Compact tins perfect for your bag—no spills, no leaks, and TSA-approved for flights." },
+  { icon: "/assets/icons/skin.png", title: "Skin Friendly", desc: "Suitable for all skin types. Hand-crafted and hand-poured in small batches with care." },
+  { icon: "clock", title: "Long Lasting", desc: "Compared to alcohol perfume. Solid wax formulas release scents slowly and last much longer.", isSvg: true },
+  { icon: "/assets/icons/handmade.png", title: "Hand Crafted", desc: "Hand-crafted and hand-poured in small batches, ensuring maximum quality control and care." }
+];
+
+const INGREDIENTS = [
+  { title: "Pure Beeswax", desc: "It keeps the perfume solid while acting as a natural glue that holds the scent to your skin for a longer-lasting fragrance." },
+  { title: "Jojoba Oil", desc: "This oil matches your skin's natural oils perfectly, allowing the perfume to soak in quickly without leaving any greasy or sticky feel." },
+  { title: "Shea Butter", desc: "It gives the perfume a creamy, soft texture that melts instantly on your skin, leaving it feeling moisturized and smooth." },
+  { title: "The Essence of Nature", desc: "These authentic botanical extracts interact with your unique body chemistry to create a personalized, evolving scent profile." },
+];
 
 export default function ProductDetailPage() {
   const router = useRouter();
   const { slug } = router.query;
-  const { addToCart, cart } = useCart();
+  const { addToCart, cart, updateQuantity } = useCart();
 
   const [product, setProduct] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState("box");
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [selectedScents, setSelectedScents] = useState([]);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   // General Accordion states
   const [accordions, setAccordions] = useState({
-    about: true,
-    benefits: false,
+    special: false,
     use: false,
-    ingredients: false,
+    features: false,
     safety: false
   });
 
@@ -48,6 +66,9 @@ export default function ProductDetailPage() {
         setProduct(found);
         // Default packaging choice based on categories
         setSelectedPackage(found.category === "solid-perfume" ? "box" : "tin");
+        // Reset selected scents
+        setSelectedScents([]);
+        setActiveSlide(0);
       }
     }
   }, [slug]);
@@ -86,45 +107,87 @@ export default function ProductDetailPage() {
     originalPrice,
     badge,
     image,
-    benefits,
     outOfStock,
     tagline,
-    highlights,
-    rating,
-    reviewCount,
-    scentProfile,
     scentNotes,
     specialTitle,
     specialText,
     specialPoints,
-    resultsTitle,
-    results,
-    aboutText,
     howToUseText,
-    ingredientsText,
     safetyText,
     faqs,
-    reviews,
     category
   } = product;
 
-  // Resolve active image depending on selected packaging type
-  const boxImage = `/assets/website_assets/mockups/${image}`;
-  const tinImage = `/assets/website_assets/round_tin/${image === "rose.jpg" ? "rose.jpg" : `${image}-r.jpg`}`;
-  const currentImage = (selectedPackage === "tin" && category === "solid-perfume") ? tinImage : boxImage;
+  // Resolve active image
+  const currentImage = `/assets/website_assets/mockups/${image}`;
+  const slides = slug === "discovery-set"
+    ? [
+      currentImage,
+      "/assets/website_assets/round_tin/jas.jpg-r.jpg",
+      "/assets/website_assets/round_tin/rose.jpg",
+      "/assets/website_assets/round_tin/cha.jpg-r.jpg",
+      "/assets/website_assets/round_tin/fra.jpg-r.jpg",
+      "/assets/website_assets/round_tin/lot.jpg-r.jpg",
+      "/assets/website_assets/round_tin/veti.jpg-r.jpg",
+      "/assets/website_assets/round_tin/oud.jpg-r.jpg",
+      "/assets/website_assets/round_tin/sand.jpg-r.jpg",
+      "/assets/website_assets/round_tin/par.jpg-r.jpg"
+    ]
+    : [
+      currentImage,
+      "/assets/website_assets/mockups/pomelli_4_5.png",
+      "/assets/website_assets/mockups/pomelli_9_16.png"
+    ];
 
-  const inCart = cart.find((i) => i.name === name);
+  const currentId = category === "discovery-set"
+    ? `discovery-set-${[...selectedScents].sort().map((s) => s.toLowerCase().replace(/\s+/g, "-")).join("-")}`
+    : null;
+
+  const inCart = cart.find((i) => currentId ? (i.id === currentId) : (i.name === name));
 
   const handleAddToCart = () => {
     if (!outOfStock) {
-      addToCart({ name, price, image });
+      if (category === "discovery-set") {
+        if (selectedScents.length !== 5) {
+          toast.error("Please select exactly 5 scents.");
+          return;
+        }
+        const sortedScents = [...selectedScents].sort();
+        addToCart({
+          id: currentId,
+          name: "Unar Solid Perfume Discovery Set",
+          price,
+          image,
+          selectedScents: sortedScents
+        }, 1);
+      } else {
+        addToCart({ name, price, image }, 1);
+      }
     }
   };
 
   const handleBuyNow = () => {
     if (!outOfStock) {
-      if (!inCart) {
-        addToCart({ name, price, image });
+      if (category === "discovery-set") {
+        if (selectedScents.length !== 5) {
+          toast.error("Please select exactly 5 scents.");
+          return;
+        }
+        const sortedScents = [...selectedScents].sort();
+        if (!inCart) {
+          addToCart({
+            id: currentId,
+            name: "Unar Solid Perfume Discovery Set",
+            price,
+            image,
+            selectedScents: sortedScents
+          }, 1);
+        }
+      } else {
+        if (!inCart) {
+          addToCart({ name, price, image }, 1);
+        }
       }
       setCheckoutOpen(true);
     }
@@ -150,7 +213,7 @@ export default function ProductDetailPage() {
         <meta name="keywords" content={`${name}, natural perfume, car fragrance, discovery set, clean beauty`} />
         <link rel="icon" href="/assets/website_assets/logo-circle.png" />
       </Head>
-      
+
       {/* Razorpay dynamic script load using next/script component to fix warning */}
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
 
@@ -159,7 +222,7 @@ export default function ProductDetailPage() {
       <CheckoutModal isOpen={checkoutOpen} onClose={() => setCheckoutOpen(false)} />
 
       <main className="bg-[#fdfbf7] pt-[120px] pb-24 font-sans">
-        
+
         {/* Breadcrumb */}
         <div className="max-w-[1300px] mx-auto px-6 mb-8">
           <nav className="text-xs font-bold tracking-widest text-[#636e72] flex items-center gap-2 uppercase">
@@ -167,7 +230,9 @@ export default function ProductDetailPage() {
             <span>/</span>
             <Link href="/#collections" className="hover:text-[#5a7c65] transition-colors">Collections</Link>
             <span>/</span>
-            <span className="hover:text-[#5a7c65] transition-colors">{categoryTitles[category] || "Products"}</span>
+            <Link href={`/?category=${category}#collections`} className="hover:text-[#5a7c65] transition-colors">
+              {categoryTitles[category] || "Products"}
+            </Link>
             <span>/</span>
             <span className="text-[#2d3436] font-extrabold">{name}</span>
           </nav>
@@ -176,163 +241,276 @@ export default function ProductDetailPage() {
         {/* HERO SECTION: Gallery and Header Details */}
         <div className="max-w-[1300px] mx-auto px-6 mb-20">
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-16 items-start">
-            
-            {/* Left Image Showcase */}
-            <div className="sticky top-[120px] flex flex-col gap-4">
-              <div className="aspect-square w-full relative bg-gradient-to-br from-[#f8f6f3] to-[#f0ebe5] rounded-3xl overflow-hidden border border-[#e8e4df] shadow-md group">
-                <img
-                  src={currentImage}
-                  alt={`${name} Product Detail Image`}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
-                />
-                <div className="absolute top-4 left-4 z-10">
-                  <span className="bg-[#285b46] text-white text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full shadow-sm">
-                    {badge}
-                  </span>
-                </div>
-                {outOfStock && (
-                  <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px] flex items-center justify-center z-10">
-                    <span className="bg-black/90 text-white text-sm font-bold uppercase tracking-widest px-6 py-3 rounded-full border border-white/10">
-                      Out of Stock
+
+            {/* Left Image Showcase & Features */}
+            <div className="relative flex flex-col-reverse md:flex-row gap-8 items-start w-full">
+
+              {/* Features list (Why Choose Unar) */}
+              <div className="flex flex-row md:flex-col justify-around md:justify-start md:gap-8 w-full md:w-auto flex-shrink-0 pt-4 md:pt-0">
+                {FEATURES.map((f, idx) => (
+                  <div key={idx} className="relative group flex flex-col items-center">
+                    {/* Circular Icon Wrapper */}
+                    <div className="w-12 h-12 rounded-full bg-white border border-[#e8e4df] shadow-sm flex items-center justify-center text-[#5a7c65] hover:border-[#5a7c65] hover:bg-[#5a7c65]/5 transition-all duration-300 cursor-pointer">
+                      {!f.isSvg ? (
+                        <img src={f.icon} alt={f.title} className="w-5 h-5 object-contain" />
+                      ) : f.icon === "clock" ? (
+                        <Clock className="w-5 h-5" />
+                      ) : f.icon === "hand" ? (
+                        <Hand className="w-5 h-5" />
+                      ) : f.icon === "heart" ? (
+                        <Heart className="w-5 h-5" />
+                      ) : (
+                        <Sparkles className="w-5 h-5" />
+                      )}
+                    </div>
+                    {/* Label */}
+                    <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#636e72] text-center mt-2 max-w-[80px] leading-tight select-none">
+                      {f.title}
                     </span>
+
+                    {/* Premium Animated Tooltip */}
+                    <div className="absolute z-35 w-[220px] bg-white/98 backdrop-blur-sm border border-[#e8e4df] p-3.5 rounded-xl shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-300 transform scale-95 group-hover:scale-100
+                      bottom-full left-1/2 -translate-x-1/2 mb-3.5
+                      md:bottom-auto md:left-full md:top-1/2 md:translate-x-0 md:-translate-y-1/2 md:ml-3.5 md:mb-0">
+                      <h5 className="font-serif text-xs font-bold text-[#285b46] mb-1">{f.title}</h5>
+                      <p className="text-[11px] leading-relaxed text-[#636e72] normal-case tracking-normal font-normal">{f.desc}</p>
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
 
-              {/* Variant thumbnails - only for solid perfumes that have box/tin variants */}
-              {category === "solid-perfume" && (
-                <div className="flex gap-4">
+              {/* Main Product Image Carousel */}
+              <div className="flex-1 w-full flex flex-col gap-4">
+                <div className="aspect-square w-full relative bg-gradient-to-br from-[#f8f6f3] to-[#f0ebe5] rounded-3xl overflow-hidden border border-[#e8e4df] shadow-md group">
+                  {/* Slides */}
+                  <div className="relative w-full h-full">
+                    {slides.map((slide, index) => (
+                      <img
+                        key={index}
+                        src={slide}
+                        alt={`${name} Slide ${index + 1}`}
+                        className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-in-out ${activeSlide === index ? "opacity-100 z-10 scale-100" : "opacity-0 z-0 scale-95"
+                          }`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Badge */}
+                  <div className="absolute top-4 left-4 z-20">
+                    <span className="bg-[#285b46] text-white text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full shadow-sm">
+                      {badge}
+                    </span>
+                  </div>
+                  {outOfStock && (
+                    <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px] flex items-center justify-center z-20">
+                      <span className="bg-black/90 text-white text-sm font-bold uppercase tracking-widest px-6 py-3 rounded-full border border-white/10">
+                        Out of Stock
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Navigation Arrows */}
                   <button
-                    onClick={() => setSelectedPackage("box")}
-                    className={`w-20 h-20 rounded-xl overflow-hidden border-2 bg-gradient-to-br from-[#f8f6f3] to-[#f0ebe5] transition-all hover:scale-105 ${
-                      selectedPackage === "box" ? "border-[#5a7c65] shadow-md ring-2 ring-[#5a7c65]/20" : "border-[#e8e4df] opacity-70"
-                    }`}
+                    onClick={() => setActiveSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1))}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/80 hover:bg-white border border-[#e8e4df] shadow-md flex items-center justify-center text-[#285b46] hover:text-[#5a7c65] transition-all hover:scale-105 opacity-0 group-hover:opacity-100 cursor-pointer"
+                    title="Previous Slide"
                   >
-                    <img src={boxImage} alt="Premium Box mockup view" className="w-full h-full object-cover" />
+                    <ChevronLeft size={20} />
                   </button>
                   <button
-                    onClick={() => setSelectedPackage("tin")}
-                    className={`w-20 h-20 rounded-xl overflow-hidden border-2 bg-gradient-to-br from-[#f8f6f3] to-[#f0ebe5] transition-all hover:scale-105 ${
-                      selectedPackage === "tin" ? "border-[#5a7c65] shadow-md ring-2 ring-[#5a7c65]/20" : "border-[#e8e4df] opacity-70"
-                    }`}
+                    onClick={() => setActiveSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1))}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/80 hover:bg-white border border-[#e8e4df] shadow-md flex items-center justify-center text-[#285b46] hover:text-[#5a7c65] transition-all hover:scale-105 opacity-0 group-hover:opacity-100 cursor-pointer"
+                    title="Next Slide"
                   >
-                    <img src={tinImage} alt="Round Tin mockup view" className="w-full h-full object-cover" />
+                    <ChevronRight size={20} />
                   </button>
                 </div>
-              )}
+
+                {/* Thumbnails Gallery */}
+                <div className="flex flex-wrap justify-center gap-2.5 mt-2">
+                  {slides.map((slide, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setActiveSlide(index)}
+                      className={`w-16 h-16 rounded-xl overflow-hidden border-2 bg-white transition-all cursor-pointer shadow-sm ${activeSlide === index ? "border-[#5a7c65] scale-102 shadow-md" : "border-[#e8e4df] hover:border-[#5a7c65]/60"
+                        }`}
+                    >
+                      <img src={slide} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
             </div>
 
             {/* Right Product Options Details */}
             <div className="flex flex-col">
-              
+
               {/* Product Header */}
               <div className="border-b border-[#e8e4df] pb-6 mb-6">
                 <h1 className="font-serif text-4xl sm:text-5xl font-extrabold text-[#285b46] leading-tight mb-2">
                   {name}
                 </h1>
-                
+
                 {/* Scent tagline */}
                 <p className="text-lg italic font-serif text-[#d4a574] leading-relaxed mb-3">
                   {tagline}
                 </p>
-
-                {/* Subtitle key highlights - matching Be Minimalist style */}
-                <div className="text-sm font-bold text-[#5a7c65] bg-[#5a7c65]/5 border border-[#5a7c65]/10 rounded-xl py-2.5 px-4 mb-4 flex items-center gap-2">
-                  <Sparkle size={14} className="text-[#d4a574] flex-shrink-0 animate-pulse" />
-                  <span>{highlights}</span>
-                </div>
-
-                {/* Ratings */}
-                <div className="flex items-center gap-2">
-                  <div className="flex text-[#d4a574]">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={15} fill="currentColor" stroke="none" />
-                    ))}
-                  </div>
-                  <span className="text-sm font-bold text-[#2d3436]">{rating}</span>
-                  <span className="text-sm text-[#636e72]">({reviewCount} verified reviews)</span>
-                </div>
               </div>
 
-              {/* Price block */}
-              <div className="border-b border-[#e8e4df] pb-6 mb-6">
-                <div className="flex items-baseline gap-4 mb-1">
-                  <span className="font-serif text-4xl font-extrabold text-[#285b46]">₹{price}</span>
-                  <span className="text-lg text-[#636e72] line-through">₹{originalPrice}</span>
-                  <span className="bg-[#d4a574]/20 text-[#c28445] text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
-                    {discountPercent}% OFF
-                  </span>
-                </div>
-                <p className="text-[11px] text-[#5a7c65] font-bold">Inclusive of all taxes</p>
-
-                <div className="bg-[#5a7c65]/5 border border-[#5a7c65]/10 rounded-2xl p-4 flex items-start gap-3 mt-4">
-                  <Sparkles size={18} className="text-[#5a7c65] mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs font-bold text-[#285b46]">Special Launch Offer</p>
-                    <p className="text-xs text-[#636e72] mt-0.5">Save ₹{originalPrice - price} on this purchase. Free delivery applies for orders over ₹1000.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Variant configurations */}
-              <div className="space-y-5 border-b border-[#e8e4df] pb-6 mb-6">
-                {/* Packaging choice (only visible if solid perfume) */}
-                {category === "solid-perfume" && (
-                  <div>
-                    <label className="text-[11px] font-extrabold uppercase tracking-widest text-[#636e72] block mb-2.5">
-                      Packaging Option
-                    </label>
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => setSelectedPackage("box")}
-                        className={`flex-1 py-3 px-4 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                          selectedPackage === "box"
-                            ? "bg-[#5a7c65] border-[#5a7c65] text-white shadow-sm font-extrabold"
-                            : "border-[#e8e4df] text-[#2d3436] hover:bg-[#5a7c65]/5"
-                        }`}
-                      >
-                        Premium Box
-                      </button>
-                      <button
-                        onClick={() => setSelectedPackage("tin")}
-                        className={`flex-1 py-3 px-4 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                          selectedPackage === "tin"
-                            ? "bg-[#5a7c65] border-[#5a7c65] text-white shadow-sm font-extrabold"
-                            : "border-[#e8e4df] text-[#2d3436] hover:bg-[#5a7c65]/5"
-                        }`}
-                      >
-                        Round Tin
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Weight details */}
+              {/* Price block & Size / Net Weight */}
+              <div className="border-b border-[#e8e4df] pb-6 mb-6 flex flex-wrap items-center justify-between gap-4">
                 <div>
-                  <label className="text-[11px] font-extrabold uppercase tracking-widest text-[#636e72] block mb-2">
+                  <div className="flex items-baseline gap-4 mb-1">
+                    <span className="font-serif text-4xl font-extrabold text-[#285b46]">₹{price}</span>
+                    <span className="text-lg text-[#636e72] line-through">₹{originalPrice}</span>
+                    <span className="bg-[#d4a574]/20 text-[#c28445] text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+                      {discountPercent}% OFF
+                    </span>
+                    <span className="bg-[#d4a574]/20 text-[#c28445] text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+                      {category === "discovery-set" ? "5 x 3g Sampler Tins" : "10g (Single Tin)"}
+                    </span>
+                  </div>
+
+                  <p className="text-[11px] text-[#5a7c65] font-bold">Inclusive of all taxes</p>
+                </div>
+
+                {/* <div className="flex flex-col items-start sm:items-end gap-1.5">
+                  <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#636e72]">
                     Size / Net Weight
-                  </label>
+                  </span>
                   <div className="inline-flex py-2.5 px-5 rounded-full border border-[#5a7c65] bg-[#5a7c65]/5 text-xs font-extrabold tracking-widest text-[#285b46] uppercase">
-                    {category === "discovery-set" ? "8 x 5g Sampler Tins" : "15g / 0.5 oz (Single Tin)"}
+                    {category === "discovery-set" ? "5 x 5g Sampler Tins" : "10g (Single Tin)"}
+                  </div>
+                </div> */}
+              </div>
+
+              {/* Custom Scent Selector for Discovery Set */}
+              {category === "discovery-set" && (
+                <div className="border border-[#e8e4df] rounded-2xl p-5 mb-6 bg-[#faf8f5]">
+                  <div className="flex justify-between items-baseline mb-2">
+                    <label className="text-xs font-bold uppercase tracking-wider text-[#285b46] block">
+                      Customize Your Set (Choose Exactly 5)
+                    </label>
+                    <span className={`text-xs font-extrabold tracking-wider ${selectedScents.length === 5 ? "text-[#285b46]" : "text-[#c28445]"}`}>
+                      {selectedScents.length} / 5 selected
+                    </span>
+                  </div>
+
+                  {/* Progress bar */}
+                  <div className="w-full bg-[#e8e4df] h-2 rounded-full overflow-hidden mb-4 shadow-inner">
+                    <div
+                      className="bg-[#5a7c65] h-full transition-all duration-300 rounded-full"
+                      style={{ width: `${(selectedScents.length / 5) * 100}%` }}
+                    />
+                  </div>
+
+                  {/* Scents Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-1">
+                    {PRODUCTS.filter((p) => p.category === "solid-perfume").map((perfume) => {
+                      const isSelected = selectedScents.includes(perfume.name);
+                      const tinImg = `/assets/website_assets/round_tin/${perfume.image === "rose.jpg" ? "rose.jpg" : `${perfume.image}-r.jpg`}`;
+
+                      const handleSelect = () => {
+                        if (isSelected) {
+                          setSelectedScents(selectedScents.filter((s) => s !== perfume.name));
+                        } else {
+                          if (selectedScents.length >= 5) {
+                            toast.error("You can select up to 5 scents. Deselect one to add another.");
+                            return;
+                          }
+                          setSelectedScents([...selectedScents, perfume.name]);
+                        }
+                      };
+
+                      return (
+                        <button
+                          key={perfume.slug}
+                          onClick={handleSelect}
+                          className={`flex items-center gap-3 p-2.5 rounded-xl border text-left transition-all relative overflow-hidden group ${isSelected
+                            ? "border-[#5a7c65] bg-white shadow-sm ring-1 ring-[#5a7c65]/30"
+                            : "border-[#e8e4df] bg-white hover:bg-[#faf8f5] hover:border-[#d4a574]/60"
+                            }`}
+                        >
+                          {/* Scent Thumbnail */}
+                          <div className="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-br from-[#f8f6f3] to-[#f0ebe5] border border-[#e8e4df]/60 relative">
+                            <img
+                              src={tinImg}
+                              alt={perfume.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+
+                          {/* Scent Information */}
+                          <div className="flex-1 min-w-0">
+                            <span className="block text-xs font-bold text-[#2d3436] truncate leading-snug">
+                              {perfume.name}
+                            </span>
+                            {/* <span className="block text-[9px] text-[#636e72] truncate leading-normal">
+                              {perfume.scentNotes.heart}
+                            </span> */}
+                          </div>
+
+                          {/* Selection Checkbox */}
+                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all flex-shrink-0 ${isSelected
+                            ? "bg-[#5a7c65] border-[#5a7c65] text-white"
+                            : "border-[#ccd1d9] group-hover:border-[#5a7c65]/60"
+                            }`}>
+                            {isSelected && <Check size={10} strokeWidth={3} />}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
-              </div>
+              )}
+
+              {/* Quantity Selector */}
+              {!outOfStock && inCart && (
+                <div className="flex items-center justify-between mb-6 bg-[#faf8f5] border border-[#e8e4df] rounded-2xl p-4 animate-fade-in">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#285b46]">
+                    Select Quantity
+                  </span>
+                  <div className="flex items-center border border-[#e8e4df] bg-white rounded-full p-1 shadow-sm">
+                    <button
+                      onClick={() => updateQuantity(currentId || name, -1)}
+                      className="w-8 h-8 flex items-center justify-center rounded-full text-[#636e72] hover:bg-[#5a7c65]/5 hover:text-[#285b46] active:scale-95 transition-all font-bold cursor-pointer"
+                      title="Decrease Quantity"
+                    >
+                      -
+                    </button>
+                    <span className="w-12 text-center font-bold text-[#2d3436] text-sm select-none">
+                      {inCart.quantity}
+                    </span>
+                    <button
+                      onClick={() => updateQuantity(currentId || name, 1)}
+                      className="w-8 h-8 flex items-center justify-center rounded-full text-[#636e72] hover:bg-[#5a7c65]/5 hover:text-[#285b46] active:scale-95 transition-all font-bold cursor-pointer"
+                      title="Increase Quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Add/Buy CTA */}
               <div className="flex gap-4 border-b border-[#e8e4df] pb-8 mb-8">
                 <button
                   onClick={handleAddToCart}
-                  disabled={outOfStock}
-                  className={`flex-1 py-4 px-6 rounded-full font-bold uppercase tracking-wider text-xs transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
-                    outOfStock
-                      ? "bg-gray-200 border-gray-200 text-gray-400 cursor-not-allowed"
+                  disabled={outOfStock || (category === "discovery-set" && selectedScents.length !== 5)}
+                  className={`flex-1 py-4 px-6 rounded-full font-bold uppercase tracking-wider text-xs transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${outOfStock
+                    ? "bg-gray-200 border-gray-200 text-gray-400 cursor-not-allowed"
+                    : (category === "discovery-set" && selectedScents.length !== 5)
+                      ? "bg-[#f5f1ea] border-[#e8e4df] text-[#a59b8d] cursor-not-allowed opacity-80"
                       : inCart
                         ? "bg-green-600 hover:bg-green-700 text-white shadow-md"
                         : "border-2 border-[#5a7c65] text-[#5a7c65] hover:bg-[#5a7c65] hover:text-white"
-                  }`}
+                    }`}
                 >
                   {outOfStock ? (
                     "Sold Out"
+                  ) : (category === "discovery-set" && selectedScents.length !== 5) ? (
+                    `Select 5 Tins`
                   ) : inCart ? (
                     <>
                       <Check size={16} />
@@ -345,251 +523,137 @@ export default function ProductDetailPage() {
                     </>
                   )}
                 </button>
-                
+
                 <button
                   onClick={handleBuyNow}
-                  disabled={outOfStock}
-                  className={`flex-1 py-4 px-6 rounded-full font-bold uppercase tracking-wider text-xs transition-all duration-300 shadow-md flex items-center justify-center cursor-pointer ${
-                    outOfStock
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  disabled={outOfStock || (category === "discovery-set" && selectedScents.length !== 5)}
+                  className={`flex-1 py-4 px-6 rounded-full font-bold uppercase tracking-wider text-xs transition-all duration-300 shadow-md flex items-center justify-center cursor-pointer ${outOfStock
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : (category === "discovery-set" && selectedScents.length !== 5)
+                      ? "bg-[#e8e4df] text-[#a59b8d] cursor-not-allowed opacity-80 shadow-none"
                       : "bg-[#5a7c65] text-white hover:bg-[#475f50] hover:scale-102 hover:shadow-lg"
-                  }`}
+                    }`}
                 >
-                  Buy It Now
+                  {(category === "discovery-set" && selectedScents.length !== 5) ? "Select 5 Tins" : "Buy It Now"}
                 </button>
               </div>
 
-              {/* Scent Profile details container */}
-              <div className="bg-[#faf8f5] border border-[#e8e4df] rounded-2xl p-5 mb-8">
-                <h3 className="font-serif text-lg font-bold text-[#285b46] mb-3">Scent Profile Summary</h3>
-                <div className="space-y-2.5 text-xs">
-                  <div className="grid grid-cols-[100px_1fr]">
-                    <span className="font-bold text-[#636e72] uppercase tracking-wider text-[10px]">Family:</span>
-                    <span className="text-[#2d3436] font-semibold capitalize">{scentProfile}</span>
-                  </div>
-                  <div className="grid grid-cols-[100px_1fr]">
-                    <span className="font-bold text-[#636e72] uppercase tracking-wider text-[10px]">Top Note:</span>
-                    <span className="text-[#2d3436] italic">{scentNotes.top}</span>
-                  </div>
-                  <div className="grid grid-cols-[100px_1fr]">
-                    <span className="font-bold text-[#636e72] uppercase tracking-wider text-[10px]">Heart Note:</span>
-                    <span className="text-[#2d3436] italic font-semibold text-[#5a7c65]">{scentNotes.heart}</span>
-                  </div>
-                  <div className="grid grid-cols-[100px_1fr]">
-                    <span className="font-bold text-[#636e72] uppercase tracking-wider text-[10px]">Base Note:</span>
-                    <span className="text-[#2d3436] italic">{scentNotes.base}</span>
-                  </div>
+              {/* Quick Trust Badges */}
+              <div className="flex justify-between items-center text-[10px] text-[#636e72] font-bold uppercase tracking-wider border-y border-[#e8e4df] py-3.5 mb-8">
+                <div className="flex items-center gap-1.5">
+                  <Shield size={14} className="text-[#5a7c65]" />
+                  <span>100% Non-Toxic</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Truck size={14} className="text-[#5a7c65]" />
+                  <span>Free Shipping</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Sparkles size={14} className="text-[#5a7c65]" />
+                  <span>Pure Botanicals</span>
                 </div>
               </div>
 
-              {/* General details accordion */}
+              {/* Product Details Accordion */}
               <div className="border border-[#e8e4df] rounded-2xl overflow-hidden divide-y divide-[#e8e4df] shadow-sm">
-                
-                {/* About Section */}
-                <div>
-                  <button
-                    onClick={() => toggleAccordion("about")}
-                    className="w-full py-4 px-5 flex items-center justify-between text-left font-serif text-lg font-bold text-[#285b46] bg-white hover:bg-[#fdfbf7] transition-all"
-                  >
-                    <span>About the Scent</span>
-                    {accordions.about ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </button>
-                  {accordions.about && (
-                    <div className="p-5 bg-[#fdfbf7] text-[13px] leading-[1.7] text-[#636e72]">
-                      <p>{aboutText}</p>
-                    </div>
-                  )}
-                </div>
 
-                {/* Scent Ritual Section */}
+
+
+                {/* 2. What Makes It Special */}
+                {specialTitle && specialText && specialPoints && (
+                  <div>
+                    <button
+                      onClick={() => toggleAccordion("special")}
+                      className="w-full py-4.5 px-5 flex items-center justify-between text-left font-serif text-[17px] font-bold text-[#285b46] bg-white hover:bg-[#fdfbf7] transition-all"
+                    >
+                      <span>What Makes It Special</span>
+                      {accordions.special ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </button>
+                    {accordions.special && (
+                      <div className="p-5 bg-[#fdfbf7] text-[13px] leading-[1.7] text-[#636e72] space-y-4">
+                        <p>{specialText}</p>
+                        <div className="space-y-3 pt-2">
+                          {specialPoints.map((point, idx) => (
+                            <div key={idx} className="flex gap-3 items-start">
+                              <div className="w-5 h-5 bg-[#5a7c65]/10 rounded-full flex items-center justify-center text-[#5a7c65] font-serif text-xs font-bold flex-shrink-0">
+                                {idx + 1}
+                              </div>
+                              <div>
+                                <h4 className="font-serif text-xs font-bold text-[#285b46] mb-0.5">{point.label}</h4>
+                                <p className="text-[11px] leading-relaxed text-[#636e72]">{point.value}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* 3. How to Use & Scent Ritual */}
                 <div>
                   <button
                     onClick={() => toggleAccordion("use")}
-                    className="w-full py-4 px-5 flex items-center justify-between text-left font-serif text-lg font-bold text-[#285b46] bg-white hover:bg-[#fdfbf7] transition-all"
+                    className="w-full py-4.5 px-5 flex items-center justify-between text-left font-serif text-[17px] font-bold text-[#285b46] bg-white hover:bg-[#fdfbf7] transition-all"
                   >
                     <span>How to Use & Scent Ritual</span>
                     {accordions.use ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </button>
                   {accordions.use && (
-                    <div className="p-5 bg-[#fdfbf7] text-[13px] leading-[1.7] text-[#636e72] space-y-2">
+                    <div className="p-5 bg-[#fdfbf7] text-[13px] leading-[1.7] text-[#636e72] space-y-4">
                       <p>{howToUseText}</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Ingredients Transparency Section */}
-                <div>
-                  <button
-                    onClick={() => toggleAccordion("ingredients")}
-                    className="w-full py-4 px-5 flex items-center justify-between text-left font-serif text-lg font-bold text-[#285b46] bg-white hover:bg-[#fdfbf7] transition-all"
-                  >
-                    <span>Ingredients Transparency</span>
-                    {accordions.ingredients ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </button>
-                  {accordions.ingredients && (
-                    <div className="p-5 bg-[#fdfbf7] text-[13px] leading-[1.7] text-[#636e72] space-y-3">
-                      <p className="font-semibold text-[#2d3436]">{ingredientsText}</p>
-                      <div className="border-t border-[#e8e4df]/60 pt-3 mt-3 grid grid-cols-2 gap-3 text-[11px]">
-                        <div>
-                          <strong className="text-[#285b46] block mb-0.5">Beeswax Base</strong>
-                          Retains essential fragrance molecules, releasing aroma slowly.
-                        </div>
-                        <div>
-                          <strong className="text-[#285b46] block mb-0.5">Shea Butter</strong>
-                          Gives the perfume a luxurious texture that melts instantly.
-                        </div>
+                      <div className="relative rounded-2xl overflow-hidden border border-[#e8e4df] shadow-sm bg-white p-2.5 max-w-[380px] mx-auto mt-2">
+                        <Image
+                          src="/assets/website_assets/how_to_use.png"
+                          alt="How to Use Unar Solid Perfume"
+                          width={380}
+                          height={250}
+                          className="rounded-xl object-cover w-full h-auto"
+                        />
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* Safety Warning Section */}
+
+
+
+                {/* 6. Safety & FAQs */}
                 <div>
                   <button
                     onClick={() => toggleAccordion("safety")}
-                    className="w-full py-4 px-5 flex items-center justify-between text-left font-serif text-lg font-bold text-[#285b46] bg-white hover:bg-[#fdfbf7] transition-all"
+                    className="w-full py-4.5 px-5 flex items-center justify-between text-left font-serif text-[17px] font-bold text-[#285b46] bg-white hover:bg-[#fdfbf7] transition-all"
                   >
-                    <span>Safety & Care Warnings</span>
+                    <span>Safety & Product FAQs</span>
                     {accordions.safety ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </button>
                   {accordions.safety && (
-                    <div className="p-5 bg-[#fdfbf7] text-[13px] leading-[1.7] text-[#636e72] space-y-2">
-                      <p>{safetyText}</p>
+                    <div className="p-5 bg-[#fdfbf7] text-[13px] leading-[1.7] text-[#636e72] space-y-4">
+                      <div>
+                        <h4 className="font-bold text-[#285b46] mb-1 text-[11px] uppercase tracking-wider">Usage Precautions:</h4>
+                        <p>{safetyText}</p>
+                      </div>
+                      {faqs && faqs.length > 0 && (
+                        <div className="border-t border-[#e8e4df]/60 pt-3 mt-3 space-y-3">
+                          <h4 className="font-bold text-[#285b46] mb-2 text-[11px] uppercase tracking-wider">Frequently Asked Questions:</h4>
+                          {faqs.map((faq, idx) => (
+                            <div key={idx} className="space-y-1">
+                              <p className="font-semibold text-[#2d3436] text-[12px]">Q: {faq.q}</p>
+                              <p className="text-[12px] text-[#636e72] pl-3 border-l-2 border-[#5a7c65]/30">A: {faq.a}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
-              </div>
 
-              {/* Guarantee badges */}
-              <div className="grid grid-cols-3 gap-4 mt-8">
-                <div className="border border-[#e8e4df] rounded-xl p-3.5 text-center flex flex-col items-center">
-                  <Shield size={18} className="text-[#5a7c65] mb-1.5" />
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-[#636e72] block">100% Non-Toxic</span>
-                  <span className="text-[8px] text-[#888] mt-0.5">Alcohol-free</span>
-                </div>
-                <div className="border border-[#e8e4df] rounded-xl p-3.5 text-center flex flex-col items-center">
-                  <Truck size={18} className="text-[#5a7c65] mb-1.5" />
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-[#636e72] block">Free Shipping</span>
-                  <span className="text-[8px] text-[#888] mt-0.5">Orders above ₹1000</span>
-                </div>
-                <div className="border border-[#e8e4df] rounded-xl p-3.5 text-center flex flex-col items-center">
-                  <Sparkles size={18} className="text-[#5a7c65] mb-1.5" />
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-[#636e72] block">Pure Botanicals</span>
-                  <span className="text-[8px] text-[#888] mt-0.5">Hand-poured batch</span>
-                </div>
               </div>
 
             </div>
           </div>
         </div>
 
-        {/* ── WHAT MAKES IT SPECIAL SECTION ── */}
-        <section className="bg-white border-y border-[#e8e4df] py-20 mb-20">
-          <div className="max-w-[1100px] mx-auto px-6">
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#285b46] text-center mb-4">
-              {specialTitle}
-            </h2>
-            <p className="text-center text-[#636e72] text-[15px] max-w-[750px] mx-auto leading-relaxed mb-12">
-              {specialText}
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {specialPoints.map((point, idx) => (
-                <div key={idx} className="bg-[#fdfbf7] border border-[#e8e4df] rounded-2xl p-6.5 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center">
-                  <div className="w-12 h-12 bg-[#5a7c65]/10 rounded-full flex items-center justify-center text-[#5a7c65] font-serif text-lg font-bold mb-4 shadow-inner">
-                    {idx + 1}
-                  </div>
-                  <h4 className="font-serif text-xl font-bold text-[#285b46] mb-2">{point.label}</h4>
-                  <p className="text-xs leading-relaxed text-[#636e72]">{point.value}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── CLINICAL/AROMATHERAPY STUDY RESULTS ── */}
-        <section className="max-w-[1100px] mx-auto px-6 mb-20">
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#285b46] text-center mb-2">
-            {resultsTitle}
-          </h2>
-          <p className="text-center text-[#636e72] text-xs uppercase tracking-widest mb-12">Verified User Evaluation Studies</p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {results.map((res, idx) => (
-              <div key={idx} className="border border-[#e8e4df] rounded-2xl p-8 bg-[#fdfbf7] flex flex-col items-center justify-center text-center shadow-sm">
-                <span className="font-serif text-5xl sm:text-6xl font-extrabold text-[#d4a574] mb-3 select-none">
-                  {res.percentage}
-                </span>
-                <p className="text-xs leading-relaxed text-[#2d3436] font-medium max-w-[240px]">
-                  {res.label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ── PRODUCT-SPECIFIC FAQS ── */}
-        <section className="bg-white border-y border-[#e8e4df] py-20 mb-20">
-          <div className="max-w-[800px] mx-auto px-6">
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#285b46] text-center mb-2">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-center text-[#636e72] text-sm mb-12">Common inquiries about this specific botanical formulation</p>
-
-            <div className="space-y-4">
-              {faqs.map((faq, idx) => (
-                <div key={idx} className="border border-[#e8e4df] rounded-2xl overflow-hidden bg-[#fdfbf7] shadow-sm">
-                  <button
-                    onClick={() => toggleFaq(idx)}
-                    className="w-full py-4.5 px-6 flex items-center justify-between text-left font-serif text-[17px] font-bold text-[#285b46] hover:bg-[#5a7c65]/5 transition-all"
-                  >
-                    <span className="flex items-center gap-3">
-                      <HelpCircle size={18} className="text-[#d4a574] flex-shrink-0" />
-                      {faq.q}
-                    </span>
-                    {faqOpenIndex === idx ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </button>
-                  {faqOpenIndex === idx && (
-                    <div className="p-6 border-t border-[#e8e4df] bg-white text-[13px] leading-relaxed text-[#636e72]">
-                      <p>{faq.a}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── CUSTOMER REVIEWS ── */}
-        <section className="max-w-[1300px] mx-auto px-6 mb-20">
-          <h2 className="font-serif text-3xl font-bold text-[#285b46] mb-8 text-center sm:text-left">
-            Customer Reviews ({reviewCount})
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {reviews.map((r, idx) => (
-              <div key={idx} className="bg-white border border-[#e8e4df] rounded-2xl p-6.5 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-center mb-3">
-                  <div>
-                    <h4 className="font-bold text-sm text-[#2d3436]">{r.name}</h4>
-                    <span className="text-xs text-[#636e72]">{r.city}</span>
-                  </div>
-                  <span className="bg-[#5a7c65]/10 text-[#5a7c65] text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
-                    <Check size={10} /> Verified
-                  </span>
-                </div>
-                <div className="flex text-[#d4a574] mb-3">
-                  {[...Array(r.stars)].map((_, i) => (
-                    <Star key={i} size={14} fill="currentColor" stroke="none" />
-                  ))}
-                  {[...Array(5 - r.stars)].map((_, i) => (
-                    <Star key={i} size={14} stroke="currentColor" fill="none" className="text-gray-300" />
-                  ))}
-                </div>
-                <p className="text-[13px] italic leading-relaxed text-[#444]">&quot;{r.quote}&quot;</p>
-              </div>
-            ))}
-          </div>
-        </section>
 
         {/* ── RELATED PRODUCTS ── */}
         <section className="max-w-[1300px] mx-auto px-6 pt-16 border-t border-[#e8e4df]">

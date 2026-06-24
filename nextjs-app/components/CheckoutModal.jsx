@@ -55,7 +55,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
             customer_phone: form.phone,
             address: form.address,
             pincode: form.pincode,
-            items: cart.map((i) => `${i.name} x${i.quantity}`).join(", "),
+            items: cart.map((i) => `${i.name}${i.selectedScents ? ` (${i.selectedScents.join(", ")})` : ""} x${i.quantity}`).join(", "),
           },
         }),
       });
@@ -250,43 +250,51 @@ export default function CheckoutModal({ isOpen, onClose }) {
             </h3>
 
             <div className="flex flex-col gap-3 mb-6">
-              {cart.map((item) => (
-                <div key={item.name} className="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm">
-                  <img
-                    src={`/assets/website_assets/mockups/${item.image}`}
-                    alt={item.name}
-                    className="w-12 h-12 rounded-lg object-cover bg-gray-100 flex-shrink-0"
-                    onError={(e) => { e.target.src = "/assets/website_assets/logo-circle.png"; }}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm text-[#2d3436] truncate">{item.name}</p>
-                    <div className="flex items-center gap-1.5 mt-1">
+              {cart.map((item) => {
+                const itemId = item.id || item.name;
+                return (
+                  <div key={itemId} className="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm">
+                    <img
+                      src={`/assets/website_assets/mockups/${item.image}`}
+                      alt={item.name}
+                      className="w-12 h-12 rounded-lg object-cover bg-gray-100 flex-shrink-0"
+                      onError={(e) => { e.target.src = "/assets/website_assets/logo-circle.png"; }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm text-[#2d3436] truncate">{item.name}</p>
+                      {item.selectedScents && (
+                        <p className="text-[10px] text-[#5a7c65] font-medium leading-tight mt-0.5">
+                          Fragrances: {item.selectedScents.join(", ")}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <button
+                          onClick={() => updateQuantity(itemId, -1)}
+                          className="w-5 h-5 rounded-full border flex items-center justify-center text-xs hover:bg-[#5a7c65] hover:text-white hover:border-[#5a7c65] transition-all"
+                        >
+                          <Minus size={10} />
+                        </button>
+                        <span className="text-xs w-4 text-center">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(itemId, 1)}
+                          className="w-5 h-5 rounded-full border flex items-center justify-center text-xs hover:bg-[#5a7c65] hover:text-white hover:border-[#5a7c65] transition-all"
+                        >
+                          <Plus size={10} />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="font-bold text-[#5a7c65] text-sm">₹{item.price * item.quantity}</p>
                       <button
-                        onClick={() => updateQuantity(item.name, -1)}
-                        className="w-5 h-5 rounded-full border flex items-center justify-center text-xs hover:bg-[#5a7c65] hover:text-white hover:border-[#5a7c65] transition-all"
+                        onClick={() => removeFromCart(itemId)}
+                        className="text-red-400 hover:text-red-600 mt-1"
                       >
-                        <Minus size={10} />
-                      </button>
-                      <span className="text-xs w-4 text-center">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.name, 1)}
-                        className="w-5 h-5 rounded-full border flex items-center justify-center text-xs hover:bg-[#5a7c65] hover:text-white hover:border-[#5a7c65] transition-all"
-                      >
-                        <Plus size={10} />
+                        <Trash2 size={12} />
                       </button>
                     </div>
                   </div>
-                  <div className="text-right flex-shrink-0">
-                    <p className="font-bold text-[#5a7c65] text-sm">₹{item.price * item.quantity}</p>
-                    <button
-                      onClick={() => removeFromCart(item.name)}
-                      className="text-red-400 hover:text-red-600 mt-1"
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Totals */}

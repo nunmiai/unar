@@ -83,33 +83,33 @@ export default function Home() {
               <p className="text-lg md:text-xl leading-[1.8]">
                 A sensory brand dedicated to the art of awakening. We bridge the gap between ancient heritage and modern mindfulness through intentional, handcrafted rituals.
               </p>
-              <p className="font-['Cormorant_Garamond'] text-2xl font-semibold text-[#d4a574] italic tracking-wide">
+              <p className="font-['Cormorant_Garamond'] text-2xl font-semibold text-[#c28445] italic tracking-wide">
                 Awaken your senses. Live with intent.
               </p>
             </div>
             <div className="flex gap-4 justify-center flex-wrap mb-4">
-              <a href="#collections" onClick={(e) => { e.preventDefault(); document.querySelector("#collections")?.scrollIntoView({ behavior: "smooth" }); }} className="px-8 py-3.5 rounded-full bg-[#5a7c65] text-white font-medium hover:bg-[#475f50] transition-all hover:-translate-y-0.5 hover:shadow-lg">
+              <a href="#collections" onClick={(e) => { e.preventDefault(); document.querySelector("#collections")?.scrollIntoView({ behavior: "smooth" }); }} className="px-8 py-3.5 rounded-full bg-[#295c47] text-white font-medium hover:bg-[#475f50] transition-all hover:-translate-y-0.5 hover:shadow-lg">
                 Explore Collections
               </a>
-              <a href="#about" onClick={(e) => { e.preventDefault(); document.querySelector("#about")?.scrollIntoView({ behavior: "smooth" }); }} className="px-8 py-3.5 rounded-full border-2 border-[#5a7c65] text-[#5a7c65] font-medium hover:bg-[#5a7c65] hover:text-white transition-all hover:-translate-y-0.5">
+              <a href="#about" onClick={(e) => { e.preventDefault(); document.querySelector("#about")?.scrollIntoView({ behavior: "smooth" }); }} className="px-8 py-3.5 rounded-full border-2 border-[#295c47] text-[#295c47] font-medium hover:bg-[#295c47] hover:text-white transition-all hover:-translate-y-0.5">
                 Our Story
               </a>
             </div>
           </div>
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[30px] h-[50px] border-2 border-[#5a7c65] rounded-[20px] flex justify-center pt-2">
-            <span className="scroll-dot w-1 h-2 bg-[#5a7c65] rounded-sm" />
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[30px] h-[50px] border-2 border-[#295c47] rounded-[20px] flex justify-center pt-2">
+            <span className="scroll-dot w-1 h-2 bg-[#295c47] rounded-sm" />
           </div>
         </section>
 
         {/* ── COLLECTIONS ── */}
         <section id="collections" className="py-24 bg-[#fdfbf7]">
           <div className="max-w-[1300px] mx-auto px-10">
-            <h2 className="font-['Cormorant_Garamond'] text-5xl font-semibold text-[#5a7c65] text-center mb-3">Our Collections</h2>
-            <p className="text-center text-[#636e72] text-lg mb-8">Eight exquisite fragrances inspired by nature&apos;s finest botanicals</p>
+            <h2 className="font-['Cormorant_Garamond'] text-5xl font-semibold text-[#295c47] text-center mb-3">Our Collections</h2>
+            <p className="text-center text-[#636e72] text-lg mb-8">Nine exquisite fragrances inspired by native botanical scents from the lands of India</p>
 
             {/* Category tabs instead of package toggle */}
             <div className="flex justify-center mb-12">
-              <div className="bg-[#5a7c65]/10 p-1.5 rounded-2xl flex flex-wrap justify-center items-center gap-1.5 border border-[#5a7c65]/10 max-w-full">
+              <div className="bg-[#295c47]/10 p-1.5 rounded-2xl flex flex-wrap justify-center items-center gap-1.5 border border-[#295c47]/10 max-w-full">
                 {[
                   { id: "all", label: "All Products" },
                   { id: "solid-perfume", label: "Solid Perfumes" },
@@ -120,8 +120,8 @@ export default function Home() {
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id)}
                     className={`px-6 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-widest transition-all duration-300 cursor-pointer ${activeCategory === cat.id
-                      ? "bg-[#5a7c65] text-white shadow-md"
-                      : "text-[#285b46] hover:bg-[#5a7c65]/5"
+                      ? "bg-[#295c47] text-white shadow-md"
+                      : "text-[#285b46] hover:bg-[#295c47]/5"
                       }`}
                   >
                     {cat.label}
@@ -142,12 +142,12 @@ export default function Home() {
         {/* ── ABOUT ── */}
         <section id="about" className="py-24 bg-white">
           <div className="max-w-[800px] mx-auto px-10">
-            <h2 className="font-['Cormorant_Garamond'] text-5xl font-semibold text-[#5a7c65] mb-4 text-center">Our Story</h2>
+            <h2 className="font-['Cormorant_Garamond'] text-5xl font-semibold text-[#295c47] mb-4 text-center">Our Story</h2>
             <div className="space-y-0">
-              <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#5a7c65] mt-9 mb-4">The Name: <span className="font-edo font-normal tracking-wide">UNAR (உணர்)</span></h3>
+              <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#295c47] mt-9 mb-4">The Name: <span className="font-edo font-normal tracking-wide">UNAR (உணர்)</span></h3>
               <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5">We chose the name <strong><span className="font-edo font-normal tracking-wider text-[1.1em]">UNAR</span></strong> because it translates to more than just &ldquo;sense.&rdquo; It means to feel, to realize, and to become aware. Our brand is built on the belief that every action should be a mindful ritual—a moment where you pause to connect with yourself like our first product &ldquo;Natural Solid Perfumes&rdquo;.</p>
 
-              <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#5a7c65] mt-9 mb-4">The Story of <span className="font-edo font-normal tracking-wide">UNAR</span>: From Our Home to Your Skin</h3>
+              <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#295c47] mt-9 mb-4">The Story of <span className="font-edo font-normal tracking-wide">UNAR</span>: From Our Home to Your Skin</h3>
               <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5">We began searching for a natural fragrance because we were tired of harsh chemicals and full of guilt when the same was used by our child. Available options were limited to the fragrance of west and usage of synthetics for mass production. We missed the honest scents of our daily lives—the Champa, Frangipani, and Vetiver we walk past every day.</p>
               <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5">So, we started researching. What began as a quest for the &ldquo;right mix&rdquo; became a beautiful family ritual. We discovered that a natural scent is a powerful mood elevator that shouldn&apos;t require synthetic alcohol or artificial flavors.</p>
 
@@ -164,7 +164,7 @@ export default function Home() {
                 </video>
               </div> */}
 
-              <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#5a7c65] mt-9 mb-4">The Ritual</h3>
+              <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#295c47] mt-9 mb-4">The Ritual</h3>
               <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5"><span className="font-edo font-normal tracking-wider text-[1.1em]">UNAR</span> solid perfume is designed for the intimate areas of your life—your pulse points, your neck, and even for natural odor control in your underarms.</p>
             </div>
           </div>

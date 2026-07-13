@@ -3,7 +3,7 @@ import { toast } from "sonner";
 
 const CartContext = createContext(null);
 
-const SHIPPING_COST = 80;
+const SHIPPING_COST = 100;
 const FREE_SHIPPING_THRESHOLD = 1000;
 
 export function CartProvider({ children }) {

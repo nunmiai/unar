@@ -41,7 +41,7 @@ export default function ProductFlipCard({ product, packageType = "box" }) {
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           />
           <div className="absolute top-3 left-3 z-10">
-            <span className="bg-[#5a7c65] text-white text-[11px] font-semibold uppercase tracking-wide px-3.5 py-1.5 rounded-full">
+            <span className="bg-[#295c47] text-white text-[11px] font-semibold uppercase tracking-wide px-3.5 py-1.5 rounded-full">
               {badge}
             </span>
           </div>
@@ -57,8 +57,8 @@ export default function ProductFlipCard({ product, packageType = "box" }) {
 
         {/* BACK */}
         <div className="flip-card-back bg-[#faf8f5] rounded-2xl flex flex-col justify-center items-center p-6 text-center">
-          <h3 className="font-['Cormorant_Garamond'] text-2xl font-bold text-[#5a7c65] mb-3">{name}</h3>
-          <p className="text-[13px] font-semibold text-[#5a7c65] mb-3">Botanical Benefits:</p>
+          <h3 className="font-['Cormorant_Garamond'] text-2xl font-bold text-[#295c47] mb-3">{name}</h3>
+          <p className="text-[13px] font-semibold text-[#295c47] mb-3">Botanical Benefits:</p>
           <ul className="list-none p-0 m-0 w-full mb-3.5 text-center">
             {benefits.map((b) => (
               <li key={b} className="text-[14px] leading-[1.5] py-2 border-b border-black/5 text-[#444] last:border-0">
@@ -66,10 +66,10 @@ export default function ProductFlipCard({ product, packageType = "box" }) {
               </li>
             ))}
           </ul>
-          <div className="text-[11px] font-medium text-[#5a7c65] bg-[#5a7c65]/10 rounded px-4 py-2 mb-3.5">
+          <div className="text-[11px] font-medium text-[#295c47] bg-[#295c47]/10 rounded px-4 py-2 mb-3.5">
             100% Natural | Zero Waste | Cruelty Free
           </div>
-          <p className="font-['Cormorant_Garamond'] text-[32px] font-bold text-[#5a7c65] mb-3.5">₹{price}</p>
+          <p className="font-['Cormorant_Garamond'] text-[32px] font-bold text-[#295c47] mb-3.5">₹{price}</p>
           <div className="flex flex-col gap-2.5 items-center w-full relative z-10">
             <button
               onClick={handleAddToCart}
@@ -79,7 +79,7 @@ export default function ProductFlipCard({ product, packageType = "box" }) {
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                   : inCart
                     ? "bg-green-600 text-white hover:bg-green-700"
-                    : "bg-[#5a7c65] text-white hover:bg-[#475f50] hover:scale-105 hover:shadow-lg"
+                    : "bg-[#295c47] text-white hover:bg-[#475f50] hover:scale-105 hover:shadow-lg"
                 }`}
             >
               {outOfStock ? (
@@ -98,7 +98,7 @@ export default function ProductFlipCard({ product, packageType = "box" }) {
             </button>
             <Link
               href={`/products/${slug}`}
-              className="text-[12px] font-bold uppercase tracking-wider text-[#5a7c65] hover:text-[#285b46] underline hover:no-underline transition-colors mt-1"
+              className="text-[12px] font-bold uppercase tracking-wider text-[#295c47] hover:text-[#285b46] underline hover:no-underline transition-colors mt-1"
             >
               View Details
             </Link>

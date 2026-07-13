@@ -21,10 +21,10 @@ function VideoCard({ url, index, onPlay }) {
 
   // Gradient palettes matching UNAR brand
   const gradients = [
-    "linear-gradient(135deg, #5a7c65 0%, #3d5c49 50%, #2d3436 100%)",
-    "linear-gradient(135deg, #d4a574 0%, #b8895a 50%, #5a7c65 100%)",
-    "linear-gradient(135deg, #475f50 0%, #5a7c65 50%, #d4a574 100%)",
-    "linear-gradient(135deg, #2d3436 0%, #475f50 60%, #5a7c65 100%)",
+    "linear-gradient(135deg, #295c47 0%, #3d5c49 50%, #2d3436 100%)",
+    "linear-gradient(135deg, #d4a574 0%, #b8895a 50%, #295c47 100%)",
+    "linear-gradient(135deg, #475f50 0%, #295c47 50%, #d4a574 100%)",
+    "linear-gradient(135deg, #2d3436 0%, #475f50 60%, #295c47 100%)",
   ];
   const bg = gradients[index % gradients.length];
 

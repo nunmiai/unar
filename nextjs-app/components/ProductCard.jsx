@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/CartContext";
-import { ShoppingCart, Check, Eye } from "lucide-react";
+import { ShoppingCart, Check } from "lucide-react";
 
 export default function ProductCard({ product }) {
   const { name, price, originalPrice, badge, image, outOfStock, slug, tagline, category } = product;
@@ -37,8 +37,10 @@ export default function ProductCard({ product }) {
       onMouseLeave={() => setHovered(false)}
     >
       {/* IMAGE WRAPPER with Crossfade Hover and Zoom */}
-      <div className="relative aspect-square w-full overflow-hidden bg-[#faf8f5] border-b border-[#e8e4df]/40">
-
+      <Link
+        href={`/products/${slug}`}
+        className="block relative aspect-square w-full overflow-hidden bg-[#faf8f5] border-b border-[#e8e4df]/40 cursor-pointer"
+      >
         {/* Badge */}
         <div className="absolute top-3.5 left-3.5 z-20">
           <span className="bg-[#285b46] text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm">
@@ -72,27 +74,7 @@ export default function ProductCard({ product }) {
               }`}
           />
         )}
-
-        {/* Quick Action Overlay on Hover */}
-        <div className={`absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/50 via-black/20 to-transparent z-20 flex gap-2 transition-all duration-300 transform ${hovered && !outOfStock ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0 pointer-events-none"
-          }`}>
-          <Link
-            href={`/products/${slug}`}
-            className="flex-1 py-2.5 px-3 bg-white text-[#285b46] hover:bg-[#285b46] hover:text-white rounded-full font-bold uppercase tracking-wider text-[10px] text-center flex items-center justify-center gap-1.5 shadow-md transition-all duration-300 transform hover:scale-102"
-          >
-            <Eye size={12} />
-            Quick View
-          </Link>
-          <button
-            onClick={handleAddToCart}
-            className={`p-2.5 rounded-full text-white shadow-md transition-all duration-300 transform hover:scale-110 cursor-pointer ${inCart ? "bg-green-600 hover:bg-green-700" : "bg-[#5a7c65] hover:bg-[#285b46]"
-              }`}
-            title="Add to Cart"
-          >
-            {inCart ? <Check size={14} /> : <ShoppingCart size={14} />}
-          </button>
-        </div>
-      </div>
+      </Link>
 
       {/* INFO WRAPPER */}
       <div className="p-5 flex-1 flex flex-col justify-between">
@@ -101,7 +83,7 @@ export default function ProductCard({ product }) {
 
           {/* Product Title */}
           <h3 className="font-serif text-xl font-bold text-[#285b46] leading-snug">
-            <Link href={`/products/${slug}`} className="hover:text-[#5a7c65] transition-colors">
+            <Link href={`/products/${slug}`} className="hover:text-[#295c47] transition-colors">
               {name}
             </Link>
           </h3>
@@ -124,13 +106,26 @@ export default function ProductCard({ product }) {
             </span>
           </div>
 
-          <Link
-            href={`/products/${slug}`}
-            className="text-[11px] font-extrabold uppercase tracking-widest text-[#5a7c65] hover:text-[#285b46] flex items-center gap-0.5 group/link transition-colors"
-          >
-            Explore
-            <span className="transition-transform duration-300 transform group-hover/link:translate-x-1">→</span>
-          </Link>
+          {outOfStock ? (
+            <Link
+              href={`/products/${slug}`}
+              className="text-[11px] font-extrabold uppercase tracking-widest text-[#295c47] hover:text-[#285b46] flex items-center gap-0.5 group/link transition-colors"
+            >
+              Explore
+              <span className="transition-transform duration-300 transform group-hover/link:translate-x-1">→</span>
+            </Link>
+          ) : (
+            <button
+              onClick={handleAddToCart}
+              className={`py-2 px-4 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-1.5 shadow-sm transform hover:scale-102 ${inCart
+                ? "bg-green-600 text-white hover:bg-green-700"
+                : "border-2 border-[#295c47] text-[#295c47] hover:bg-[#295c47] hover:text-white"
+                }`}
+            >
+              {inCart ? <Check size={12} /> : <ShoppingCart size={12} />}
+              {inCart ? "In Cart" : "Add to Cart"}
+            </button>
+          )}
         </div>
       </div>
     </div>

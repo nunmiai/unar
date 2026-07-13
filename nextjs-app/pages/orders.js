@@ -62,28 +62,28 @@ export default function OrdersPage() {
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
 
       <main className="max-w-[900px] mx-auto mt-[120px] mb-16 px-5">
-        <Link href="/" className="inline-flex items-center gap-2 text-[#5a7c65] hover:text-[#475f50] text-sm font-medium mb-8 transition-colors">
+        <Link href="/" className="inline-flex items-center gap-2 text-[#295c47] hover:text-[#475f50] text-sm font-medium mb-8 transition-colors">
           <ArrowLeft size={16} /> Back to Home
         </Link>
 
         <div className="text-center mb-10">
-          <h1 className="font-['Cormorant_Garamond'] text-5xl font-semibold text-[#5a7c65] mb-2">My Orders</h1>
+          <h1 className="font-['Cormorant_Garamond'] text-5xl font-semibold text-[#295c47] mb-2">My Orders</h1>
           <p className="text-[#636e72]">Track and view your order history</p>
         </div>
 
         {loading && (
           <div className="text-center py-16">
-            <div className="w-10 h-10 border-3 border-[#e8e4df] border-t-[#5a7c65] rounded-full mx-auto mb-5 processing-ring" />
+            <div className="w-10 h-10 border-3 border-[#e8e4df] border-t-[#295c47] rounded-full mx-auto mb-5 processing-ring" />
             <p className="text-[#636e72]">Loading your orders...</p>
           </div>
         )}
 
         {!loading && !isLoggedIn && (
           <div className="bg-white rounded-2xl shadow-md p-16 text-center">
-            <Package size={64} className="mx-auto text-[#5a7c65]/30 mb-5" />
-            <h2 className="font-['Cormorant_Garamond'] text-3xl text-[#5a7c65] mb-3">Please Log In</h2>
+            <Package size={64} className="mx-auto text-[#295c47]/30 mb-5" />
+            <h2 className="font-['Cormorant_Garamond'] text-3xl text-[#295c47] mb-3">Please Log In</h2>
             <p className="text-[#636e72] mb-6">You need to be logged in to view your order history.</p>
-            <Link href="/login" className="inline-block px-8 py-3 rounded-full bg-[#5a7c65] text-white font-medium hover:bg-[#475f50] transition-all">
+            <Link href="/login" className="inline-block px-8 py-3 rounded-full bg-[#295c47] text-white font-medium hover:bg-[#475f50] transition-all">
               Log In
             </Link>
           </div>
@@ -91,9 +91,9 @@ export default function OrdersPage() {
 
         {!loading && isLoggedIn && error && (
           <div className="bg-white rounded-2xl shadow-md p-16 text-center">
-            <h2 className="font-['Cormorant_Garamond'] text-3xl text-[#5a7c65] mb-3">Error Loading Orders</h2>
+            <h2 className="font-['Cormorant_Garamond'] text-3xl text-[#295c47] mb-3">Error Loading Orders</h2>
             <p className="text-[#636e72] mb-6">{error}</p>
-            <Link href="/" className="inline-block px-8 py-3 rounded-full bg-[#5a7c65] text-white font-medium hover:bg-[#475f50] transition-all">
+            <Link href="/" className="inline-block px-8 py-3 rounded-full bg-[#295c47] text-white font-medium hover:bg-[#475f50] transition-all">
               Go Home
             </Link>
           </div>
@@ -101,10 +101,10 @@ export default function OrdersPage() {
 
         {!loading && isLoggedIn && !error && orders.length === 0 && (
           <div className="bg-white rounded-2xl shadow-md p-16 text-center">
-            <ShoppingBag size={64} className="mx-auto text-[#5a7c65]/30 mb-5" />
-            <h2 className="font-['Cormorant_Garamond'] text-3xl text-[#5a7c65] mb-3">No Orders Yet</h2>
+            <ShoppingBag size={64} className="mx-auto text-[#295c47]/30 mb-5" />
+            <h2 className="font-['Cormorant_Garamond'] text-3xl text-[#295c47] mb-3">No Orders Yet</h2>
             <p className="text-[#636e72] mb-6">You haven&apos;t placed any orders yet. Start shopping to see your orders here!</p>
-            <Link href="/#collections" className="inline-block px-8 py-3 rounded-full bg-[#5a7c65] text-white font-medium hover:bg-[#475f50] transition-all">
+            <Link href="/#collections" className="inline-block px-8 py-3 rounded-full bg-[#295c47] text-white font-medium hover:bg-[#475f50] transition-all">
               Shop Now
             </Link>
           </div>
@@ -120,7 +120,7 @@ export default function OrdersPage() {
                   {/* Header */}
                   <div className="bg-[#fdfbf7] px-5 py-4 flex flex-wrap justify-between items-center gap-4 border-b border-[#e8e4df]">
                     <div>
-                      <div className="font-['Cormorant_Garamond'] text-[#5a7c65] text-lg font-semibold">
+                      <div className="font-['Cormorant_Garamond'] text-[#295c47] text-lg font-semibold">
                         Order #{(order.order_id || "").slice(-8).toUpperCase()}
                       </div>
                       <div className="text-[#636e72] text-sm">{dateStr}</div>
@@ -141,7 +141,7 @@ export default function OrdersPage() {
                               <div className="font-medium text-[#2d3436]">{item.name}</div>
                               <div className="text-[#636e72] text-sm">Qty: {item.quantity || 1}</div>
                             </div>
-                            <div className="font-semibold text-[#5a7c65]">₹{(item.price || 0) * (item.quantity || 1)}</div>
+                            <div className="font-semibold text-[#295c47]">₹{(item.price || 0) * (item.quantity || 1)}</div>
                           </div>
                         ))}
                       </div>
@@ -149,7 +149,7 @@ export default function OrdersPage() {
 
                     <div className="flex justify-between items-center pt-4 border-t-2 border-[#fdfbf7]">
                       <span className="text-[#636e72] text-sm">Total Amount</span>
-                      <span className="text-[#5a7c65] font-bold text-xl">₹{order.amount || 0}</span>
+                      <span className="text-[#295c47] font-bold text-xl">₹{order.amount || 0}</span>
                     </div>
 
                     {order.address && (

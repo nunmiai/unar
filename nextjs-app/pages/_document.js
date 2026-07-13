@@ -10,6 +10,7 @@ export default function Document() {
           href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Cinzel:wght@400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap"
           rel="stylesheet"
         />
+        <link href="https://fonts.cdnfonts.com/css/urbanist" rel="stylesheet" />
         <link rel="icon" href="/assets/website_assets/logo-circle.png" />
       </Head>
       <body className="antialiased">

@@ -7,38 +7,29 @@ export const PRODUCTS = [
     "badge": "Native",
     "image": "jas.jpg",
     "category": "solid-perfume",
-    "tagline": "Exquisite & euphoric jasmine aroma for mood elevation",
+    "tagline": "A graceful expression of beauty and gentle intimacy",
     "scentNotes": {
       "heart": "Madurai Jasmine (Jasmine Grandiflorum) absolute"
     },
     "specialTitle": "What makes Jasmine Solid Perfume special?",
-    "specialText": "Our Jasmine Solid Perfume captures the authentic aroma of fresh night-blooming jasmine flowers. Made with pure jasmine absolute and organic plant oils, it provides a clean, green, and heady scent profile that elevates your mood and relieves stress without synthetic heavy alcohols. It acts as an intimate perfume that melts beautifully onto your skin.",
-    "specialPoints": [
-      {
-        "label": "Jasmine Absolute",
-        "value": "Provides a pure, natural floral scent without synthetics"
-      },
-      {
-        "label": "Mood Elevator",
-        "value": "Promotes feelings of romance, positivity, and euphoria"
-      },
-      {
-        "label": "Pure Jojoba Oil",
-        "value": "Nourishes the skin and locks in scent naturally"
-      }
-    ],
+    "specialText": "Jasmine is one of the flowers that can speak without words. Worn in braided hair, woven into garlands, and carried through life's celebrations, Jasmine gently speaks of the beautiful bond between fragrance and the traditions passed down through generations. It's graceful fragrance outlives its bloom, becoming a gentle embrace that stays with you long after the flowers are gone. Long admired for its naturally alluring fragrance, Jasmine awakens the senses and makes every shared moment feel a little more intimate. Carefully crafted as a solid perfume, we preserve its delicate character in a nourishing blend of beeswax, jojoba oil, and shea butter, allowing its fragrance to unfold beautifully wherever you go.",
+
+    "howToUse": {
+      "steps": [
+        "Use the Spatula to take a small amount.",
+        "Glide it gently until absorbed."
+      ],
+      "areas": [
+        "Wrists",
+        "Neck",
+        "Behind ears",
+        "Underarms",
+        "Over the heart center"
+      ]
+    },
     "howToUseText": "Swipe a clean finger across the wax, melting a small amount. Rub gently on pulse points such as wrists and behind ears. Reapply as desired.",
-    "safetyText": "For external use only. Patch test before use. Avoid eye contact. Store in a cool, dry place. If pregnant, consult a doctor before use.",
-    "faqs": [
-      {
-        "q": "Is the jasmine scent synthetic?",
-        "a": "No, we use 100% natural jasmine absolute oil extracted from hand-picked jasmine blossoms, avoiding synthetic fragrance chemicals completely."
-      },
-      {
-        "q": "How should I store this solid perfume?",
-        "a": "Keep the tin closed in a cool, dry place. Avoid direct sunlight and extreme heat to maintain its solid consistency."
-      }
-    ]
+    "safetyText": "For External use only. Avoid contact with eyes. Store in a cool place. If pregnant, consult your physician before use.",
+
   },
   {
     "slug": "rose",
@@ -48,38 +39,29 @@ export const PRODUCTS = [
     "badge": "Native",
     "image": "rose.jpg",
     "category": "solid-perfume",
-    "tagline": "Timeless & soothing rose fragrance for emotional harmony",
+    "tagline": "A floral fragrance that brings hearts closer",
     "scentNotes": {
       "heart": "Damask Rose (Rosa Damascena) absolute"
     },
     "specialTitle": "What makes Rose Solid Perfume special?",
-    "specialText": "Unar Rose Solid Perfume features pure Damask rose oil, renowned for its complex and deeply relaxing aroma. We combine this with jojoba oil and beeswax to create an exquisite floral scent profile that opens the heart, reduces emotional irritation, and supports inner peace, all while acting as a gentle, nourishing skin balm.",
-    "specialPoints": [
-      {
-        "label": "Damask Rose",
-        "value": "Precious rose absolute oil for true emotional balance"
-      },
-      {
-        "label": "Heart Opener",
-        "value": "Promotes self-compassion, love, and stress relief"
-      },
-      {
-        "label": "Vitamin E Boost",
-        "value": "Nourishes and protects skin cells at pulse points"
-      }
-    ],
+    "specialText": "If love ever had a fragrance, it would carry the scent of a blooming rose. From petals scattered across celebrations to rose water welcoming guests and blooms offered in quiet devotion, its fragrance has been inseparable from the moments that bring hearts together. Its soft floral fragrance helps bring confidence and self-expression, adding a romantic touch to the way you carry yourself. Enriched with a natural blend of beeswax, jojoba oil, and shea butter, our Rose Solid Perfume lets this beloved fragrance bloom gently on your skin.",
+
+    "howToUse": {
+      "steps": [
+        "Use the Spatula to take a small amount.",
+        "Glide it gently until absorbed."
+      ],
+      "areas": [
+        "Wrists",
+        "Neck",
+        "Behind ears",
+        "Underarms",
+        "Over the heart center"
+      ]
+    },
     "howToUseText": "Warm a small amount of solid wax between your fingertips and dab gently onto wrists, neck, and chest pulse points.",
-    "safetyText": "External use only. Avoid contact with eyes. Store in a cool place. If pregnant, consult your physician before use.",
-    "faqs": [
-      {
-        "q": "Does this contain alcohol?",
-        "a": "No. All Unar perfumes are 100% alcohol-free, water-free, and chemical preservative-free. They are made strictly of natural waxes, plant oils, and essential oils."
-      },
-      {
-        "q": "Is the rose scent overpowering?",
-        "a": "No, natural rose oil is soft, velvety, and rests close to the skin, unlike synthetic alcohol sprays which can be sharp and cause headaches."
-      }
-    ]
+    "safetyText": "For External use only. Avoid contact with eyes. Store in a cool place. If pregnant, consult your physician before use.",
+
   },
   {
     "slug": "champa",
@@ -89,42 +71,29 @@ export const PRODUCTS = [
     "badge": "Sacred",
     "image": "cha.jpg",
     "category": "solid-perfume",
-    "tagline": "Warming & calming champa perfume for stress relief",
+    "tagline": "A nostalgic floral scent to lift your spirits",
     "scentNotes": {
       "heart": "Golden Champa flowers (Magnolia Champaca)"
     },
     "specialTitle": "What makes Champa Solid Perfume special?",
-    "specialText": "Our Champa Solid Perfume is a conscious alternative to chemical spray perfumes. It combines the calming aromatherapy of golden champa essential oil with the skin-nourishing properties of beeswax and shea butter. Unlike alcohol-based scents that evaporate quickly and dry out the skin, our wax base holds the scent close and releases it slowly with your body heat, maintaining a subtle and warm aroma throughout the day.",
-    "specialPoints": [
-      {
-        "label": "Beeswax Base",
-        "value": "Holds fragrance oils securely for slow release"
-      },
-      {
-        "label": "Champa Extract",
-        "value": "Naturally relieves anxiety and tension"
-      },
-      {
-        "label": "Shea Butter",
-        "value": "Locks moisture and creates a silky melting texture"
-      }
-    ],
+    "specialText": "Before perfumes came in bottles, Champa lived through the rich fragrance traditions of India. From collecting fallen flowers as children to tucking them behind our ears, its gentle aroma carries the innocence and comfort of childhood. Bringing back pure nostalgia, our Champa Solid Perfume gives a quiet pause from the rush of everyday life, taking you back to where we truly belong. The warm floral fragrance of Champa helps lift your spirits and refresh your mind, making it a comforting companion through busy days. Its nourishing blend of beeswax, shea butter and jojoba oil melts gently into your skin, releasing the fragrance slowly and letting you carry its soft, comforting aroma throughout the day.",
+
+    "howToUse": {
+      "steps": [
+        "Use the Spatula to take a small amount.",
+        "Glide it gently until absorbed."
+      ],
+      "areas": [
+        "Wrists",
+        "Neck",
+        "Behind ears",
+        "Underarms",
+        "Over the heart center"
+      ]
+    },
     "howToUseText": "Gently swipe a clean fingertip across the solid perfume to warm and soften the wax. Dab and rub onto your pulse points: wrists, inner elbows, neck base, behind earlobes, or collarbone. Reapply as desired throughout the day. Scent activates with body heat.",
-    "safetyText": "For external use only. Patch test on a small area before use. Avoid eye contact. If irritation occurs, wash off and discontinue use. Store in a cool, dry place. If pregnant or nursing, consult a physician before use.",
-    "faqs": [
-      {
-        "q": "How long does the scent last?",
-        "a": "A single application usually lasts between 4 to 6 hours. Since it contains natural essential oils and no synthetic fixatives, it is designed to react with your body chemistry, releasing the scent gradually."
-      },
-      {
-        "q": "Can I use it on sensitive skin?",
-        "a": "Yes. Our base ingredients (beeswax, jojoba oil, and shea butter) are hypoallergenic and highly skin-friendly. However, since it contains pure essential oils, we always recommend patch-testing before full use."
-      },
-      {
-        "q": "Will it melt in hot weather?",
-        "a": "The tin is airtight and pocket-safe. Beeswax has a high melting point (around 62-64°C), so it will not run or melt under normal summer conditions. However, avoid leaving it in a hot car."
-      }
-    ]
+    "safetyText": "For External use only. Avoid contact with eyes. Store in a cool place. If pregnant, consult your physician before use.",
+
   },
   {
     "slug": "frangipani",
@@ -134,34 +103,29 @@ export const PRODUCTS = [
     "badge": "Sacred",
     "image": "fra.jpg",
     "category": "solid-perfume",
-    "tagline": "Exotic & uplifting frangipani scent for mental clarity",
+    "tagline": "A beautiful way to awaken the romance within",
     "scentNotes": {
       "heart": "White Frangipani (Plumeria Alba) extract"
     },
     "specialTitle": "What makes Frangipani Solid Perfume special?",
-    "specialText": "Our Frangipani Solid Perfume is made from organic Plumeria extract, which has a distinct tropical, creamy, and fruity-floral fragrance. Celebrated as a sacred temple flower, Frangipani helps clear mental clutter, inspires a creative spirit, and stimulates romantic feelings, wrapped in a smooth, eco-friendly beeswax base.",
-    "specialPoints": [
-      {
-        "label": "Plumeria Extract",
-        "value": "Releases a rich, sweet tropical floral scent profile"
-      },
-      {
-        "label": "Mental Clarity",
-        "value": "Promotes focus, creativity, and inner calm"
-      },
-      {
-        "label": "Eco-Friendly",
-        "value": "Completely zero-waste, plastic-free round tin packaging"
-      }
-    ],
+    "specialText": "Frangipani grew around the places that shaped our childhood, from sacred groves and temple courtyards to the paths we knew by heart. The familiarity of its fragrance brings back the little moments we grew up with, from temple mornings to the joy of tucking a flower behind the ear of someone we love. Its gentle floral scent inspires a romantic spirit, bringing out feelings of love, tenderness, and a desire to notice the beauty around us. Created with a natural blend of beeswax, shea butter, and jojoba oil, our Frangipani Solid Perfume is made to bring you closer to those moments, when a single frangipani flower in your hands was enough to make the world feel beautiful.",
+
+    "howToUse": {
+      "steps": [
+        "Use the Spatula to take a small amount.",
+        "Glide it gently until absorbed."
+      ],
+      "areas": [
+        "Wrists",
+        "Neck",
+        "Behind ears",
+        "Underarms",
+        "Over the heart center"
+      ]
+    },
     "howToUseText": "Gently run your finger over the wax to warm it, and apply to neck, wrists, or underarms.",
-    "safetyText": "For external use only. Patch test before use. Store in a cool place.",
-    "faqs": [
-      {
-        "q": "Can I travel with this?",
-        "a": "Absolutely. Our solid formula is spill-proof, leak-proof, and TSA-approved for flights, making it perfect for your handbag or travel pouch."
-      }
-    ]
+    "safetyText": "For External use only. Avoid contact with eyes. Store in a cool place. If pregnant, consult your physician before use.",
+
   },
   {
     "slug": "blue-lotus",
@@ -171,34 +135,29 @@ export const PRODUCTS = [
     "badge": "Sacred",
     "image": "lot.jpg",
     "category": "solid-perfume",
-    "tagline": "Mystical & serene blue lotus fragrance for deep relaxation",
+    "tagline": "A serene escape for pure joy",
     "scentNotes": {
       "heart": "Blue Lotus petals (Nymphaea Caerulea) absolute"
     },
     "specialTitle": "What makes Blue Lotus Solid Perfume special?",
-    "specialText": "Celebrate ancient wellness with our Blue Lotus Solid Perfume. Crafted with pure Blue Lotus absolute (Nymphaea Caerulea), this scent helps calm the nervous system and invites a meditative state. It is the perfect natural support for winding down in the evening, relieving fear, and inviting quiet thoughts.",
-    "specialPoints": [
-      {
-        "label": "Blue Lotus",
-        "value": "Rare absolute oil traditionally used for spiritual calm"
-      },
-      {
-        "label": "Meditative State",
-        "value": "Perfect for yoga, mindfulness, or bedtime rituals"
-      },
-      {
-        "label": "Nourishing Base",
-        "value": "Melts cleanly onto skin without artificial colors or solvents"
-      }
-    ],
+    "specialText": "There is something deeply comforting about the Blue Lotus and the way it follows the rhythm of nature. Its fragrance moves at its own pace, bringing a quiet sense of balance and ease. By encouraging you to slow down, it gently guides you back to your natural rhythm, helping you reconnect with yourself. Resting on a nourishing base of beeswax, jojoba oil, and shea butter, our Blue Lotus Solid Perfume keeps moments of calm within reach, wherever the day takes you.",
+
+    "howToUse": {
+      "steps": [
+        "Use the Spatula to take a small amount.",
+        "Glide it gently until absorbed."
+      ],
+      "areas": [
+        "Wrists",
+        "Neck",
+        "Behind ears",
+        "Underarms",
+        "Over the heart center"
+      ]
+    },
     "howToUseText": "Dab onto temples, wrists, and neck before meditation, yoga, or sleep.",
-    "safetyText": "For external use only. Patch test before use. If pregnant, consult a physician.",
-    "faqs": [
-      {
-        "q": "What does Blue Lotus smell like?",
-        "a": "Blue Lotus has a unique, ethereal floral scent with slightly sweet, earthy, and green aquatic undertones. It is very grounding."
-      }
-    ]
+    "safetyText": "For External use only. Avoid contact with eyes. Store in a cool place. If pregnant, consult your physician before use.",
+
   },
   {
     "slug": "vetiver",
@@ -208,34 +167,29 @@ export const PRODUCTS = [
     "badge": "Sacred",
     "image": "veti.jpg",
     "category": "solid-perfume",
-    "tagline": "Deeply earthy & grounding vetiver for nervous system support",
+    "tagline": "Earthy fragrance for thoughtful minds",
     "scentNotes": {
       "heart": "Wild Vetiver roots (Vetiveria Zizanioides)"
     },
     "specialTitle": "What makes Vetiver Solid Perfume special?",
-    "specialText": "Wild Vetiver is often called the 'Oil of Tranquility.' Our solid perfume uses pure vetiver root distillates to offer a stabilizing, deeply grounding scent profile. It helps shield the nervous system against daily stress, stabilizes fluctuating emotions, and aids in deep concentration.",
-    "specialPoints": [
-      {
-        "label": "Oil of Tranquility",
-        "value": "Distilled vetiver roots offer grounding emotional support"
-      },
-      {
-        "label": "Brain & Focus",
-        "value": "Improves concentration, memory, and cognitive calm"
-      },
-      {
-        "label": "100% Clean",
-        "value": "Zero chemical synthetics, zero artificial colors, vegan-adjacent"
-      }
-    ],
+    "specialText": "Before modern comforts changed the way we lived, Vetiver brought the coolness of the earth into our homes through simple traditions passed down over generations. Its fragrant roots were a familiar part of summer days, bringing comfort to the homes we grew up in. Its earthy fragrance helps clear the mind and sharpen creative focus, making space for fresh ideas and thoughtful moments. Created with a nourishing blend of beeswax, shea butter, and jojoba oil, our Vetiver Solid Perfume lets you carry this deep earthy fragrance, bringing a sense of peace and freshness into your everyday moments.",
+
+    "howToUse": {
+      "steps": [
+        "Use the Spatula to take a small amount.",
+        "Glide it gently until absorbed."
+      ],
+      "areas": [
+        "Wrists",
+        "Neck",
+        "Behind ears",
+        "Underarms",
+        "Over the heart center"
+      ]
+    },
     "howToUseText": "Apply to wrists, inner elbows, and neck base. Take a deep breath to inhale the grounding aromas.",
-    "safetyText": "For external use only. Patch test before use. Store in a cool dry place.",
-    "faqs": [
-      {
-        "q": "Is this scent unisex?",
-        "a": "Yes, Vetiver has a rich, smoky, and woody scent that is highly popular with both men and women who love earthy fragrances."
-      }
-    ]
+    "safetyText": "For External use only. Avoid contact with eyes. Store in a cool place. If pregnant, consult your physician before use.",
+
   },
   {
     "slug": "oud",
@@ -245,34 +199,29 @@ export const PRODUCTS = [
     "badge": "Forest",
     "image": "oud.jpg",
     "category": "solid-perfume",
-    "tagline": "Resinous & luxurious oud for majestic calm",
+    "tagline": "The classic woody scent for moments of relaxation",
     "scentNotes": {
       "heart": "Precious Agarwood (Oud) resin extract"
     },
     "specialTitle": "What makes Oud Solid Perfume special?",
-    "specialText": "Oud is one of the rarest and most expensive fragrance oils on Earth, often called liquid gold. We combine pure Agarwood resin extracts with warm spices (saffron, cardamom) and balsams (myrrh, frankincense) in our premium wax base to deliver a majestic, warm, and resinous scent profile that elevates your presence and calms the spirit.",
-    "specialPoints": [
-      {
-        "label": "Agarwood (Oud)",
-        "value": "Precious resinous extract that delivers unparalleled scent depth"
-      },
-      {
-        "label": "Opulent Calm",
-        "value": "Promotes luxurious peace, majestically relaxing the nervous system"
-      },
-      {
-        "label": "Premium Tin Packaging",
-        "value": "Housed in a gorgeous, travel-friendly golden tin box"
-      }
-    ],
+    "specialText": "Oud has travelled through generations of Indian fragrance traditions. From the hands of attar makers who shaped its legacy to the fragrance enthusiasts who rediscover it today, Oud’s deep woody fragrance carries the feeling of opening an old wooden treasure, where the art of traditional perfumery has been carefully preserved over time. The earthy depth of Oud creates a soothing sensory experience, helping calm the nervous system. Created with a nourishing blend of beeswax, shea butter, and jojoba oil, our Oud Solid Perfume lets you carry this grounding fragrance heritage, bringing the wisdom of traditional perfumery into your everyday moments.",
+
+    "howToUse": {
+      "steps": [
+        "Use the Spatula to take a small amount.",
+        "Glide it gently until absorbed."
+      ],
+      "areas": [
+        "Wrists",
+        "Neck",
+        "Behind ears",
+        "Underarms",
+        "Over the heart center"
+      ]
+    },
     "howToUseText": "Warm a tiny dab of Oud solid perfume on your finger and apply to hot pulse points.",
-    "safetyText": "For external use only. Store in a cool dry place. Consult a doctor if pregnant.",
-    "faqs": [
-      {
-        "q": "Why is Oud more expensive?",
-        "a": "Oud is sourced from the resinous heartwood of Agarwood trees, which is rare and requires a delicate extraction process. It is one of the most luxury materials in high perfumery."
-      }
-    ]
+    "safetyText": "For External use only. Avoid contact with eyes. Store in a cool place. If pregnant, consult your physician before use.",
+
   },
   {
     "slug": "sandalwood",
@@ -282,72 +231,60 @@ export const PRODUCTS = [
     "badge": "Forest",
     "image": "sand.jpg",
     "category": "solid-perfume",
-    "tagline": "Warm & creamy sandalwood for mental grounding",
+    "tagline": "A grounding scent for calm and clarity",
     "scentNotes": {
       "heart": "Pure East Indian Sandalwood (Santalum Album) oil"
     },
     "specialTitle": "What makes Sandalwood Solid Perfume special?",
-    "specialText": "Crafted with pure East Indian Sandalwood oil (Santalum Album), our Sandalwood solid perfume is a classic grounding agent. Its creamy, warm, and soft woody notes soothe the nervous system, relieve stress-induced tension, and encourage a quiet, mindful state of awareness.",
-    "specialPoints": [
-      {
-        "label": "Santalum Album",
-        "value": "Pure Mysore-style sandalwood oil for authentic scent"
-      },
-      {
-        "label": "Mental Grounding",
-        "value": "Quietens mental noise and aids in meditation and sleep"
-      },
-      {
-        "label": "Nourishing Wax",
-        "value": "Moisturizes dry pulse points with shea butter and jojoba"
-      }
-    ],
+    "specialText": "For many of us, the fragrance of sandalwood first arrived through our mothers' hands, as they gently traced chandan across our foreheads on early morning temple visits. The cool touch stayed only for a while, but its warm, woody fragrance has remained with us, carrying the same sense of peace every time we breathe it in. Its rich woody scent help create a grounded feeling, bringing a sense of calm and clarity to the mind. Our Sandalwood Solid Perfume is our way of holding on to a fragrance that has always felt like home. Crafted with a nourishing blend of beeswax, jojoba oil, and shea butter, it's made to stay close, just like the memories that inspired it.",
+
+    "howToUse": {
+      "steps": [
+        "Use the Spatula to take a small amount.",
+        "Glide it gently until absorbed."
+      ],
+      "areas": [
+        "Wrists",
+        "Neck",
+        "Behind ears",
+        "Underarms",
+        "Over the heart center"
+      ]
+    },
     "howToUseText": "Apply a small amount to neck, chest, and wrists, rubbing gently in a circular motion.",
-    "safetyText": "For external use only. Patch test before use. Store in a cool dry place.",
-    "faqs": [
-      {
-        "q": "Is this product in stock?",
-        "a": "Our Sandalwood perfume is currently sold out due to high demand. You can request a restock alert via our contact form!"
-      }
-    ],
+    "safetyText": "For External use only. Avoid contact with eyes. Store in a cool place. If pregnant, consult your physician before use.",
     "outOfStock": false
   },
   {
-    "slug": "parijatham",
-    "name": "Parijatham",
+    "slug": "Parijat",
+    "name": "Parijat",
     "price": 1999,
     "originalPrice": 3999,
     "badge": "Heritage",
     "image": "par.jpg",
     "category": "solid-perfume",
-    "tagline": "Celestial & hypnotic parijatham fragrance for spiritual tranquility",
+    "tagline": "A gentle companion for creative focus",
     "scentNotes": {
       "heart": "Pure East Indian Sandalwood (Santalum Album) oil"
     },
-    "specialTitle": "What makes Sandalwood Solid Perfume special?",
-    "specialText": "Crafted with pure East Indian Sandalwood oil (Santalum Album), our Sandalwood solid perfume is a classic grounding agent. Its creamy, warm, and soft woody notes soothe the nervous system, relieve stress-induced tension, and encourage a quiet, mindful state of awareness.",
-    "specialPoints": [
-      {
-        "label": "Santalum Album",
-        "value": "Pure Mysore-style sandalwood oil for authentic scent"
-      },
-      {
-        "label": "Mental Grounding",
-        "value": "Quietens mental noise and aids in meditation and sleep"
-      },
-      {
-        "label": "Nourishing Wax",
-        "value": "Moisturizes dry pulse points with shea butter and jojoba"
-      }
-    ],
+    "specialTitle": "What makes Parijat Solid Perfume special?",
+    "specialText": "The fragrance of Parijat has a way of taking us back to our childhood, to the afternoons we spent gathering fallen blossoms and weaving little garlands. Somehow, its fragrance always found us first, leading us to the tiny white blossoms waiting beneath the tree. The same fragrance that once led us to fallen blossoms is now brought to life in our Parijat Solid Perfume, enriched with a nourishing blend of beeswax, jojoba oil, and shea butter. Its soothing floral scent help clear distractions and support a focused mind, allowing creativity to flow naturally.",
+
+    "howToUse": {
+      "steps": [
+        "Use the Spatula to take a small amount.",
+        "Glide it gently until absorbed."
+      ],
+      "areas": [
+        "Wrists",
+        "Neck",
+        "Behind ears",
+        "Underarms",
+        "Over the heart center"
+      ]
+    },
     "howToUseText": "Apply a small amount to neck, chest, and wrists, rubbing gently in a circular motion.",
-    "safetyText": "For external use only. Patch test before use. Store in a cool dry place.",
-    "faqs": [
-      {
-        "q": "Is this product in stock?",
-        "a": "Our Sandalwood perfume is currently sold out due to high demand. You can request a restock alert via our contact form!"
-      }
-    ],
+    "safetyText": "For External use only. Avoid contact with eyes. Store in a cool place. If pregnant, consult your physician before use.",
     "outOfStock": false
   },
   // {
@@ -399,33 +336,57 @@ export const PRODUCTS = [
     "badge": "Best Seller",
     "image": "discovery_set.png",
     "category": "discovery-set",
-    "tagline": "Exquisite sampler of any 5 botanical solid perfumes",
+    "tagline": "Exquisite sampler of any 5 solid perfumes",
     "scentNotes": {
       "heart": "Blue Lotus, Vetiver"
     },
     "specialTitle": "What makes the Discovery Set special?",
     "specialText": "Can't decide on just one fragrance? Our Unar Solid Perfume Discovery Set is the ultimate curation of conscious scents. It features all 8 of our handcrafted solid perfumes in mini 5g round tins, beautifully presented in a recycled botanical box. Discover Champa, Jasmine, Rose, Frangipani, Blue Lotus, Vetiver, Oud, and Sandalwood, and see how they interact with your skin's unique chemistry.",
-    "specialPoints": [
-      {
-        "label": "All 5 Fragrances",
-        "value": "Features all our premium botanical perfume blends in one set"
-      },
-      {
-        "label": "Find Your Scent",
-        "value": "Allows you to test scents over weeks to find your signature match"
-      },
-      {
-        "label": "Gifting Luxury",
-        "value": "Comes in a luxurious, sustainable presentation gift box"
-      }
-    ],
+
+    "howToUse": {
+      "text": "Test each tin on your skin for a few days to see how the fragrance notes settle over hours with your natural body oils."
+    },
+
     "howToUseText": "Test each tin on your skin for a few days to see how the fragrance notes settle over hours with your natural body oils.",
-    "safetyText": "For external use only. Store in a cool dry place. Consult individual tins for ingredient notes.",
-    "faqs": [
-      {
-        "q": "What is the size of each tin?",
-        "a": "Each tin contains 5g of natural solid perfume, providing plenty of applications to thoroughly evaluate each scent."
-      }
-    ]
+    "safetyText": "For External use only. Avoid contact with eyes. Store in a cool place. If pregnant, consult your physician before use."
+  }
+];
+
+export const FAQS = [
+  {
+    "q": "How long does the scent last?",
+    "a": "A single application usually lasts between 4 to 6 hours. Since it contains natural essential oils and no synthetic fixatives, it is designed to react with your body chemistry, releasing the scent gradually."
+  },
+  {
+    "q": "Can I use it on sensitive skin?",
+    "a": "Yes. Our base ingredients (beeswax, jojoba oil, and shea butter) are hypoallergenic and highly skin-friendly. However, since it contains pure essential oils, we always recommend patch-testing before full use."
+  },
+  {
+    "q": "Will it melt in hot weather?",
+    "a": "The tin is airtight and pocket-safe. Beeswax has a high melting point (around 62-64°C), so it will not run or melt under normal summer conditions. However, avoid leaving it in direct sunlight or in a hot car."
+  },
+  {
+    "q": "How should I store this solid perfume?",
+    "a": "Keep the tin closed in a cool, dry place. Avoid direct sunlight and extreme heat to maintain its solid consistency."
+  },
+  {
+    "q": "Does this contain alcohol?",
+    "a": "No. All Unar perfumes are 100% alcohol-free, water-free, and chemical preservative-free. They are made strictly of natural waxes, plant oils, and essential oils."
+  },
+  {
+    "q": "Can I travel with this?",
+    "a": "Absolutely. Our solid formula is spill-proof, leak-proof, and TSA-approved for flights, making it perfect for your handbag or travel pouch."
+  },
+  {
+    "q": "Are the scents synthetic?",
+    "a": "No. We use 100% natural absolute oils and essential oils extracted from hand-picked botanical blossoms and roots, avoiding synthetic fragrance chemicals completely."
+  },
+  {
+    "q": "Are these fragrances unisex?",
+    "a": "Yes. Our botanical fragrances are created for everyone. They interact with your skin's unique chemistry to create a highly personal scent profile."
+  },
+  {
+    "q": "Can I apply this solid perfume on clothes?",
+    "a": "No, we recommend applying solid perfume directly onto your skin. Because it is formulated with natural waxes and skin-nourishing oils, applying it directly to fabrics may leave an oily residue or stain clothes."
   }
 ];

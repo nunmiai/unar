@@ -29,7 +29,7 @@ export default function CartSidebar({ isOpen, onClose }) {
       <div className="fixed top-0 right-0 h-full w-full max-w-[420px] bg-white z-50 shadow-2xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-[#e8e4df]">
-          <h3 className="font-['Cormorant_Garamond'] text-2xl font-semibold text-[#5a7c65]">
+          <h3 className="font-['Cormorant_Garamond'] text-2xl font-semibold text-[#295c47]">
             Your Cart
           </h3>
           <button
@@ -49,7 +49,7 @@ export default function CartSidebar({ isOpen, onClose }) {
               <p className="text-lg">Your cart is empty</p>
               <button
                 onClick={onClose}
-                className="px-6 py-2.5 border-2 border-[#5a7c65] text-[#5a7c65] rounded-full font-medium hover:bg-[#5a7c65] hover:text-white transition-all"
+                className="px-6 py-2.5 border-2 border-[#295c47] text-[#295c47] rounded-full font-medium hover:bg-[#295c47] hover:text-white transition-all"
               >
                 Browse Products
               </button>
@@ -57,7 +57,7 @@ export default function CartSidebar({ isOpen, onClose }) {
           ) : (
             <div className="flex flex-col gap-4">
               {cartSubtotal < FREE_SHIPPING_THRESHOLD && (
-                <div className="bg-[#5a7c65]/10 rounded-lg p-3 text-sm text-[#5a7c65]">
+                <div className="bg-[#295c47]/10 rounded-lg p-3 text-sm text-[#295c47]">
                   Add ₹{FREE_SHIPPING_THRESHOLD - cartSubtotal} more for{" "}
                   <strong>FREE shipping!</strong>
                 </div>
@@ -79,22 +79,22 @@ export default function CartSidebar({ isOpen, onClose }) {
                         {item.name}
                       </h4>
                       {item.selectedScents && (
-                        <p className="text-[11px] text-[#5a7c65] mt-0.5 leading-tight font-medium">
+                        <p className="text-[11px] text-[#295c47] mt-0.5 leading-tight font-medium">
                           Fragrances: {item.selectedScents.join(", ")}
                         </p>
                       )}
-                      <p className="text-[#5a7c65] font-semibold mt-0.5">₹{item.price}</p>
+                      <p className="text-[#295c47] font-semibold mt-0.5">₹{item.price}</p>
                       <div className="flex items-center gap-2 mt-2">
                         <button
                           onClick={() => updateQuantity(itemId, -1)}
-                          className="w-7 h-7 rounded-full border border-[#e8e4df] flex items-center justify-center hover:bg-[#5a7c65] hover:text-white hover:border-[#5a7c65] transition-all"
+                          className="w-7 h-7 rounded-full border border-[#e8e4df] flex items-center justify-center hover:bg-[#295c47] hover:text-white hover:border-[#295c47] transition-all"
                         >
                           <Minus size={12} />
                         </button>
                         <span className="w-6 text-center font-medium">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(itemId, 1)}
-                          className="w-7 h-7 rounded-full border border-[#e8e4df] flex items-center justify-center hover:bg-[#5a7c65] hover:text-white hover:border-[#5a7c65] transition-all"
+                          className="w-7 h-7 rounded-full border border-[#e8e4df] flex items-center justify-center hover:bg-[#295c47] hover:text-white hover:border-[#295c47] transition-all"
                         >
                           <Plus size={12} />
                         </button>
@@ -154,7 +154,7 @@ function CheckoutButton({ onClose }) {
         // The checkout dialog is managed in the parent page
         document.dispatchEvent(new CustomEvent("openCheckout"));
       }}
-      className="w-full py-3.5 rounded-full bg-[#5a7c65] text-white font-semibold text-base hover:bg-[#475f50] transition-all hover:-translate-y-0.5 hover:shadow-lg"
+      className="w-full py-3.5 rounded-full bg-[#295c47] text-white font-semibold text-base hover:bg-[#475f50] transition-all hover:-translate-y-0.5 hover:shadow-lg"
     >
       Proceed to Checkout
     </button>

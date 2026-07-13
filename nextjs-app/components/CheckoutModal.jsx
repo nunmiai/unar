@@ -103,7 +103,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
           }
         },
         prefill: { name: form.name, email: form.email, contact: form.phone },
-        theme: { color: "#5a7c65" },
+        theme: { color: "#295c47" },
         modal: {
           ondismiss: () => {
             toast.error("Payment cancelled");
@@ -168,7 +168,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
                     placeholder="Your full name"
                     value={form.name}
                     onChange={handleChange}
-                    className="border-[#e8e4df] focus:border-[#5a7c65] focus:ring-[#5a7c65]/20"
+                    className="border-[#e8e4df] focus:border-[#295c47] focus:ring-[#295c47]/20"
                   />
                 </div>
                 <div>
@@ -183,7 +183,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
                     placeholder="you@email.com"
                     value={form.email}
                     onChange={handleChange}
-                    className="border-[#e8e4df] focus:border-[#5a7c65]"
+                    className="border-[#e8e4df] focus:border-[#295c47]"
                   />
                 </div>
               </div>
@@ -203,7 +203,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
                   maxLength={10}
                   value={form.phone}
                   onChange={handleChange}
-                  className="border-[#e8e4df] focus:border-[#5a7c65]"
+                  className="border-[#e8e4df] focus:border-[#295c47]"
                 />
               </div>
 
@@ -219,7 +219,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
                   rows={3}
                   value={form.address}
                   onChange={handleChange}
-                  className="border-[#e8e4df] focus:border-[#5a7c65] resize-none"
+                  className="border-[#e8e4df] focus:border-[#295c47] resize-none"
                 />
               </div>
 
@@ -237,7 +237,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
                   maxLength={6}
                   value={form.pincode}
                   onChange={handleChange}
-                  className="border-[#e8e4df] focus:border-[#5a7c65]"
+                  className="border-[#e8e4df] focus:border-[#295c47]"
                 />
               </div>
             </form>
@@ -263,28 +263,28 @@ export default function CheckoutModal({ isOpen, onClose }) {
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm text-[#2d3436] truncate">{item.name}</p>
                       {item.selectedScents && (
-                        <p className="text-[10px] text-[#5a7c65] font-medium leading-tight mt-0.5">
+                        <p className="text-[10px] text-[#295c47] font-medium leading-tight mt-0.5">
                           Fragrances: {item.selectedScents.join(", ")}
                         </p>
                       )}
                       <div className="flex items-center gap-1.5 mt-1">
                         <button
                           onClick={() => updateQuantity(itemId, -1)}
-                          className="w-5 h-5 rounded-full border flex items-center justify-center text-xs hover:bg-[#5a7c65] hover:text-white hover:border-[#5a7c65] transition-all"
+                          className="w-5 h-5 rounded-full border flex items-center justify-center text-xs hover:bg-[#295c47] hover:text-white hover:border-[#295c47] transition-all"
                         >
                           <Minus size={10} />
                         </button>
                         <span className="text-xs w-4 text-center">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(itemId, 1)}
-                          className="w-5 h-5 rounded-full border flex items-center justify-center text-xs hover:bg-[#5a7c65] hover:text-white hover:border-[#5a7c65] transition-all"
+                          className="w-5 h-5 rounded-full border flex items-center justify-center text-xs hover:bg-[#295c47] hover:text-white hover:border-[#295c47] transition-all"
                         >
                           <Plus size={10} />
                         </button>
                       </div>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <p className="font-bold text-[#5a7c65] text-sm">₹{item.price * item.quantity}</p>
+                      <p className="font-bold text-[#295c47] text-sm">₹{item.price * item.quantity}</p>
                       <button
                         onClick={() => removeFromCart(itemId)}
                         className="text-red-400 hover:text-red-600 mt-1"
@@ -317,7 +317,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
               type="submit"
               form="checkoutForm"
               disabled={loading || cart.length === 0}
-              className="mt-6 w-full py-3.5 rounded-full bg-[#5a7c65] text-white font-semibold text-base hover:bg-[#475f50] transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+              className="mt-6 w-full py-3.5 rounded-full bg-[#295c47] text-white font-semibold text-base hover:bg-[#475f50] transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
             >
               {loading ? "Processing..." : "Pay Now"}
             </button>
@@ -326,6 +326,9 @@ export default function CheckoutModal({ isOpen, onClose }) {
               <Shield size={12} />
               Secure Checkout — SSL Encrypted
             </div>
+            <p className="text-[10px] text-center text-[#95a5a6] mt-2 max-w-xs mx-auto leading-normal select-none">
+              Note: Due to hygiene standards, solid perfumes are non-returnable. If your order is damaged, contact us within 48 hours for a replacement.
+            </p>
           </div>
         </div>
       </div>

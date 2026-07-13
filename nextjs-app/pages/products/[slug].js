@@ -10,7 +10,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartSidebar from "@/components/CartSidebar";
 import CheckoutModal from "@/components/CheckoutModal";
-import { PRODUCTS } from "@/config/products";
+import { PRODUCTS, FAQS } from "@/config/products";
 import { ShoppingCart, Check, ChevronDown, ChevronUp, Shield, Truck, Sparkles, AlertCircle, HelpCircle, Sparkle, Clock, Hand, Heart, ChevronLeft, ChevronRight } from "lucide-react";
 
 const FEATURES = [
@@ -39,13 +39,15 @@ export default function ProductDetailPage() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [selectedScents, setSelectedScents] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [relatedProducts, setRelatedProducts] = useState([]);
 
   // General Accordion states
   const [accordions, setAccordions] = useState({
     special: false,
     use: false,
     features: false,
-    safety: false
+    safety: false,
+    shipping: false
   });
 
   // FAQs Accordion states
@@ -69,6 +71,53 @@ export default function ProductDetailPage() {
         // Reset selected scents
         setSelectedScents([]);
         setActiveSlide(0);
+
+        // Get related products based on category scenarios (stable on load)
+        let related = [];
+        const category = found.category;
+        if (category === "solid-perfume") {
+          // Scenario 1: Shuffle pick 1 from top 3 lowest priced, 1 from top 3 highest priced, and add Discovery Set
+          const solidCandidates = PRODUCTS.filter((p) => p.slug !== slug && p.category === "solid-perfume");
+          if (solidCandidates.length > 0) {
+            const sortedSolidsAsc = [...solidCandidates].sort((a, b) => a.price - b.price);
+            const lowestThree = sortedSolidsAsc.slice(0, 3);
+            
+            const sortedSolidsDesc = [...solidCandidates].sort((a, b) => b.price - a.price);
+            const highestThree = sortedSolidsDesc.slice(0, 3);
+            
+            const minItem = lowestThree[Math.floor(Math.random() * lowestThree.length)];
+            
+            let highestCandidates = highestThree.filter((p) => p.slug !== minItem.slug);
+            if (highestCandidates.length === 0) {
+              highestCandidates = highestThree;
+            }
+            const maxItem = highestCandidates[Math.floor(Math.random() * highestCandidates.length)];
+            
+            const discoverySetItem = PRODUCTS.find((p) => p.slug === "discovery-set");
+            
+            related.push(maxItem);
+            if (minItem.slug !== maxItem.slug) {
+              related.push(minItem);
+            }
+            if (discoverySetItem && discoverySetItem.slug !== slug) {
+              related.push(discoverySetItem);
+            }
+          }
+
+        } else if (category === "discovery-set") {
+          // Scenario 2: Shuffle pick 3 from top 6 highest priced solid perfumes, excluding self
+          const solidCandidates = PRODUCTS.filter((p) => p.slug !== slug && p.category === "solid-perfume");
+          if (solidCandidates.length > 0) {
+            const sortedSolidsDesc = [...solidCandidates].sort((a, b) => b.price - a.price);
+            const topSix = sortedSolidsDesc.slice(0, 6);
+            const shuffled = [...topSix].sort(() => Math.random() - 0.5);
+            related = shuffled.slice(0, 3);
+          }
+        } else {
+          // Fallback logic
+          related = PRODUCTS.filter((p) => p.slug !== slug).slice(0, 3);
+        }
+        setRelatedProducts(related);
       }
     }
   }, [slug]);
@@ -93,7 +142,7 @@ export default function ProductDetailPage() {
           <AlertCircle className="w-16 h-16 text-[#d4a574] mx-auto mb-4" />
           <h2 className="font-serif text-3xl font-semibold text-[#285b46] mb-2">Product Not Found</h2>
           <p className="text-[#636e72] mb-8">We couldn&apos;t find the product details you were looking for. It might be currently unavailable.</p>
-          <Link href="/" className="px-8 py-3 rounded-full bg-[#5a7c65] text-white font-semibold hover:bg-[#475f50] transition-all">
+          <Link href="/" className="px-8 py-3 rounded-full bg-[#295c47] text-white font-semibold hover:bg-[#475f50] transition-all">
             Back to Home
           </Link>
         </div>
@@ -114,13 +163,26 @@ export default function ProductDetailPage() {
     specialText,
     specialPoints,
     howToUseText,
+    howToUse,
     safetyText,
-    faqs,
     category
   } = product;
 
   // Resolve active image
   const currentImage = `/assets/website_assets/mockups/${image}`;
+  
+  const hasCustomSlides = [
+    "jasmine",
+    "rose",
+    "champa",
+    "frangipani",
+    "vetiver",
+    "blue-lotus",
+    "oud",
+    "parijat",
+    "sandalwood"
+  ].includes(slug);
+
   const slides = slug === "discovery-set"
     ? [
       currentImage,
@@ -132,13 +194,22 @@ export default function ProductDetailPage() {
       "/assets/website_assets/round_tin/veti.jpg-r.jpg",
       "/assets/website_assets/round_tin/oud.jpg-r.jpg",
       "/assets/website_assets/round_tin/sand.jpg-r.jpg",
-      "/assets/website_assets/round_tin/par.jpg-r.jpg"
+      "/assets/website_assets/round_tin/par.jpg-r.jpg",
+      "/assets/website_assets/mockups/d_set_aux.png"
     ]
-    : [
-      currentImage,
-      "/assets/website_assets/mockups/pomelli_4_5.png",
-      "/assets/website_assets/mockups/pomelli_9_16.png"
-    ];
+    : hasCustomSlides
+      ? [
+        currentImage,
+        `/assets/product_slides/${slug}-2.png`,
+        "/assets/website_assets/mockups/pomelli_4_5.png",
+        `/assets/product_slides/${slug}-4.png`,
+        "/assets/website_assets/mockups/pomelli_9_16.png"
+      ]
+      : [
+        currentImage,
+        "/assets/website_assets/mockups/pomelli_4_5.png",
+        "/assets/website_assets/mockups/pomelli_9_16.png"
+      ];
 
   const currentId = category === "discovery-set"
     ? `discovery-set-${[...selectedScents].sort().map((s) => s.toLowerCase().replace(/\s+/g, "-")).join("-")}`
@@ -193,8 +264,7 @@ export default function ProductDetailPage() {
     }
   };
 
-  // Get related products (excluding current one)
-  const relatedProducts = PRODUCTS.filter((p) => p.slug !== slug).slice(0, 3);
+  // relatedProducts is handled dynamically in useEffect on load
 
   const discountPercent = Math.round(((originalPrice - price) / originalPrice) * 100);
 
@@ -212,6 +282,7 @@ export default function ProductDetailPage() {
         <meta name="description" content={`${name} - ${tagline}. Handcrafted with pure beeswax and natural essential oils.`} />
         <meta name="keywords" content={`${name}, natural perfume, car fragrance, discovery set, clean beauty`} />
         <link rel="icon" href="/assets/website_assets/logo-circle.png" />
+        <link href="https://fonts.cdnfonts.com/css/urbanist" rel="stylesheet" />
       </Head>
 
       {/* Razorpay dynamic script load using next/script component to fix warning */}
@@ -226,11 +297,11 @@ export default function ProductDetailPage() {
         {/* Breadcrumb */}
         <div className="max-w-[1300px] mx-auto px-6 mb-8">
           <nav className="text-xs font-bold tracking-widest text-[#636e72] flex items-center gap-2 uppercase">
-            <Link href="/" className="hover:text-[#5a7c65] transition-colors">Home</Link>
+            <Link href="/" className="hover:text-[#295c47] transition-colors">Home</Link>
             <span>/</span>
-            <Link href="/#collections" className="hover:text-[#5a7c65] transition-colors">Collections</Link>
+            <Link href="/#collections" className="hover:text-[#295c47] transition-colors">Collections</Link>
             <span>/</span>
-            <Link href={`/?category=${category}#collections`} className="hover:text-[#5a7c65] transition-colors">
+            <Link href={`/?category=${category}#collections`} className="hover:text-[#295c47] transition-colors">
               {categoryTitles[category] || "Products"}
             </Link>
             <span>/</span>
@@ -250,17 +321,17 @@ export default function ProductDetailPage() {
                 {FEATURES.map((f, idx) => (
                   <div key={idx} className="relative group flex flex-col items-center">
                     {/* Circular Icon Wrapper */}
-                    <div className="w-12 h-12 rounded-full bg-white border border-[#e8e4df] shadow-sm flex items-center justify-center text-[#5a7c65] hover:border-[#5a7c65] hover:bg-[#5a7c65]/5 transition-all duration-300 cursor-pointer">
+                    <div className="w-12 h-12 rounded-full bg-white border border-[#e8e4df] shadow-sm flex items-center justify-center text-[#295c47] hover:border-[#295c47] hover:bg-[#295c47]/5 transition-all duration-300 cursor-pointer p-1">
                       {!f.isSvg ? (
-                        <img src={f.icon} alt={f.title} className="w-5 h-5 object-contain" />
+                        <img src={f.icon} alt={f.title} className="w-full h-full object-contain" />
                       ) : f.icon === "clock" ? (
-                        <Clock className="w-5 h-5" />
+                        <Clock className="w-full h-full" />
                       ) : f.icon === "hand" ? (
-                        <Hand className="w-5 h-5" />
+                        <Hand className="w-full h-full" />
                       ) : f.icon === "heart" ? (
-                        <Heart className="w-5 h-5" />
+                        <Heart className="w-full h-full" />
                       ) : (
-                        <Sparkles className="w-5 h-5" />
+                        <Sparkles className="w-full h-full" />
                       )}
                     </div>
                     {/* Label */}
@@ -312,14 +383,14 @@ export default function ProductDetailPage() {
                   {/* Navigation Arrows */}
                   <button
                     onClick={() => setActiveSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1))}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/80 hover:bg-white border border-[#e8e4df] shadow-md flex items-center justify-center text-[#285b46] hover:text-[#5a7c65] transition-all hover:scale-105 opacity-0 group-hover:opacity-100 cursor-pointer"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/80 hover:bg-white border border-[#e8e4df] shadow-md flex items-center justify-center text-[#285b46] hover:text-[#295c47] transition-all hover:scale-105 opacity-0 group-hover:opacity-100 cursor-pointer"
                     title="Previous Slide"
                   >
                     <ChevronLeft size={20} />
                   </button>
                   <button
                     onClick={() => setActiveSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1))}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/80 hover:bg-white border border-[#e8e4df] shadow-md flex items-center justify-center text-[#285b46] hover:text-[#5a7c65] transition-all hover:scale-105 opacity-0 group-hover:opacity-100 cursor-pointer"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/80 hover:bg-white border border-[#e8e4df] shadow-md flex items-center justify-center text-[#285b46] hover:text-[#295c47] transition-all hover:scale-105 opacity-0 group-hover:opacity-100 cursor-pointer"
                     title="Next Slide"
                   >
                     <ChevronRight size={20} />
@@ -332,7 +403,7 @@ export default function ProductDetailPage() {
                     <button
                       key={index}
                       onClick={() => setActiveSlide(index)}
-                      className={`w-16 h-16 rounded-xl overflow-hidden border-2 bg-white transition-all cursor-pointer shadow-sm ${activeSlide === index ? "border-[#5a7c65] scale-102 shadow-md" : "border-[#e8e4df] hover:border-[#5a7c65]/60"
+                      className={`w-16 h-16 rounded-xl overflow-hidden border-2 bg-white transition-all cursor-pointer shadow-sm ${activeSlide === index ? "border-[#295c47] scale-102 shadow-md" : "border-[#e8e4df] hover:border-[#295c47]/60"
                         }`}
                     >
                       <img src={slide} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
@@ -372,14 +443,14 @@ export default function ProductDetailPage() {
                     </span>
                   </div>
 
-                  <p className="text-[11px] text-[#5a7c65] font-bold">Inclusive of all taxes</p>
+                  <p className="text-[11px] text-[#295c47] font-bold">Inclusive of all taxes</p>
                 </div>
 
                 {/* <div className="flex flex-col items-start sm:items-end gap-1.5">
                   <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#636e72]">
                     Size / Net Weight
                   </span>
-                  <div className="inline-flex py-2.5 px-5 rounded-full border border-[#5a7c65] bg-[#5a7c65]/5 text-xs font-extrabold tracking-widest text-[#285b46] uppercase">
+                  <div className="inline-flex py-2.5 px-5 rounded-full border border-[#295c47] bg-[#295c47]/5 text-xs font-extrabold tracking-widest text-[#285b46] uppercase">
                     {category === "discovery-set" ? "5 x 5g Sampler Tins" : "10g (Single Tin)"}
                   </div>
                 </div> */}
@@ -400,7 +471,7 @@ export default function ProductDetailPage() {
                   {/* Progress bar */}
                   <div className="w-full bg-[#e8e4df] h-2 rounded-full overflow-hidden mb-4 shadow-inner">
                     <div
-                      className="bg-[#5a7c65] h-full transition-all duration-300 rounded-full"
+                      className="bg-[#295c47] h-full transition-all duration-300 rounded-full"
                       style={{ width: `${(selectedScents.length / 5) * 100}%` }}
                     />
                   </div>
@@ -428,7 +499,7 @@ export default function ProductDetailPage() {
                           key={perfume.slug}
                           onClick={handleSelect}
                           className={`flex items-center gap-3 p-2.5 rounded-xl border text-left transition-all relative overflow-hidden group ${isSelected
-                            ? "border-[#5a7c65] bg-white shadow-sm ring-1 ring-[#5a7c65]/30"
+                            ? "border-[#295c47] bg-white shadow-sm ring-1 ring-[#295c47]/30"
                             : "border-[#e8e4df] bg-white hover:bg-[#faf8f5] hover:border-[#d4a574]/60"
                             }`}
                         >
@@ -453,8 +524,8 @@ export default function ProductDetailPage() {
 
                           {/* Selection Checkbox */}
                           <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all flex-shrink-0 ${isSelected
-                            ? "bg-[#5a7c65] border-[#5a7c65] text-white"
-                            : "border-[#ccd1d9] group-hover:border-[#5a7c65]/60"
+                            ? "bg-[#295c47] border-[#295c47] text-white"
+                            : "border-[#ccd1d9] group-hover:border-[#295c47]/60"
                             }`}>
                             {isSelected && <Check size={10} strokeWidth={3} />}
                           </div>
@@ -474,7 +545,7 @@ export default function ProductDetailPage() {
                   <div className="flex items-center border border-[#e8e4df] bg-white rounded-full p-1 shadow-sm">
                     <button
                       onClick={() => updateQuantity(currentId || name, -1)}
-                      className="w-8 h-8 flex items-center justify-center rounded-full text-[#636e72] hover:bg-[#5a7c65]/5 hover:text-[#285b46] active:scale-95 transition-all font-bold cursor-pointer"
+                      className="w-8 h-8 flex items-center justify-center rounded-full text-[#636e72] hover:bg-[#295c47]/5 hover:text-[#285b46] active:scale-95 transition-all font-bold cursor-pointer"
                       title="Decrease Quantity"
                     >
                       -
@@ -484,7 +555,7 @@ export default function ProductDetailPage() {
                     </span>
                     <button
                       onClick={() => updateQuantity(currentId || name, 1)}
-                      className="w-8 h-8 flex items-center justify-center rounded-full text-[#636e72] hover:bg-[#5a7c65]/5 hover:text-[#285b46] active:scale-95 transition-all font-bold cursor-pointer"
+                      className="w-8 h-8 flex items-center justify-center rounded-full text-[#636e72] hover:bg-[#295c47]/5 hover:text-[#285b46] active:scale-95 transition-all font-bold cursor-pointer"
                       title="Increase Quantity"
                     >
                       +
@@ -504,7 +575,7 @@ export default function ProductDetailPage() {
                       ? "bg-[#f5f1ea] border-[#e8e4df] text-[#a59b8d] cursor-not-allowed opacity-80"
                       : inCart
                         ? "bg-green-600 hover:bg-green-700 text-white shadow-md"
-                        : "border-2 border-[#5a7c65] text-[#5a7c65] hover:bg-[#5a7c65] hover:text-white"
+                        : "border-2 border-[#295c47] text-[#295c47] hover:bg-[#295c47] hover:text-white"
                     }`}
                 >
                   {outOfStock ? (
@@ -531,26 +602,48 @@ export default function ProductDetailPage() {
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                     : (category === "discovery-set" && selectedScents.length !== 5)
                       ? "bg-[#e8e4df] text-[#a59b8d] cursor-not-allowed opacity-80 shadow-none"
-                      : "bg-[#5a7c65] text-white hover:bg-[#475f50] hover:scale-102 hover:shadow-lg"
+                      : "bg-[#295c47] text-white hover:bg-[#475f50] hover:scale-102 hover:shadow-lg"
                     }`}
                 >
                   {(category === "discovery-set" && selectedScents.length !== 5) ? "Select 5 Tins" : "Buy It Now"}
                 </button>
               </div>
 
-              {/* Quick Trust Badges */}
-              <div className="flex justify-between items-center text-[10px] text-[#636e72] font-bold uppercase tracking-wider border-y border-[#e8e4df] py-3.5 mb-8">
+              {/* Trust badges */}
+              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[10px] font-bold uppercase tracking-wider text-[#636e72] font-['Urbanist'] mb-6 select-none">
                 <div className="flex items-center gap-1.5">
-                  <Shield size={14} className="text-[#5a7c65]" />
-                  <span>100% Non-Toxic</span>
+                  <Truck size={13} className="text-[#295c47]" />
+                  <span>Free shipping above ₹999</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Truck size={14} className="text-[#5a7c65]" />
-                  <span>Free Shipping</span>
+                  <Shield size={13} className="text-[#295c47]" />
+                  <span>Non-Returnable (Hygiene Standards)</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <Sparkles size={14} className="text-[#5a7c65]" />
-                  <span>Pure Botanicals</span>
+              </div>
+
+              {/* Clean formulation guarantees: ZERO */}
+              <div className="border border-[#e8e4df] rounded-2xl py-5 flex items-center justify-center gap-4 bg-[#faf8f5]/50 px-4 sm:px-6 mb-8">
+                {/* Left: ZERO */}
+                <div className="flex flex-col items-center justify-center pr-5 border-r border-[#e8e4df] select-none">
+                  <span className="font-serif font-extrabold text-[#c28445] leading-none select-none flex items-baseline">
+                    <span className="text-6xl">ZERO</span>
+                  </span>
+                </div>
+
+                {/* Right: Items in a column list */}
+                <div className="font-['Urbanist'] text-xs font-bold uppercase text-[#2d3436] space-y-1">
+                  <div className="flex items-center">
+                    <span>Phthalates</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span>Parabens</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span>Synthetics Preservatives</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span>Alcohol</span>
+                  </div>
                 </div>
               </div>
 
@@ -560,7 +653,7 @@ export default function ProductDetailPage() {
 
 
                 {/* 2. What Makes It Special */}
-                {specialTitle && specialText && specialPoints && (
+                {specialTitle && specialText && (
                   <div>
                     <button
                       onClick={() => toggleAccordion("special")}
@@ -572,19 +665,21 @@ export default function ProductDetailPage() {
                     {accordions.special && (
                       <div className="p-5 bg-[#fdfbf7] text-[13px] leading-[1.7] text-[#636e72] space-y-4">
                         <p>{specialText}</p>
-                        <div className="space-y-3 pt-2">
-                          {specialPoints.map((point, idx) => (
-                            <div key={idx} className="flex gap-3 items-start">
-                              <div className="w-5 h-5 bg-[#5a7c65]/10 rounded-full flex items-center justify-center text-[#5a7c65] font-serif text-xs font-bold flex-shrink-0">
-                                {idx + 1}
+                        {specialPoints && specialPoints.length > 0 && (
+                          <div className="space-y-3 pt-2">
+                            {specialPoints.map((point, idx) => (
+                              <div key={idx} className="flex gap-3 items-start">
+                                <div className="w-5 h-5 bg-[#295c47]/10 rounded-full flex items-center justify-center text-[#295c47] font-serif text-xs font-bold flex-shrink-0">
+                                  {idx + 1}
+                                </div>
+                                <div>
+                                  <h4 className="font-serif text-xs font-bold text-[#285b46] mb-0.5">{point.label}</h4>
+                                  <p className="text-[11px] leading-relaxed text-[#636e72]">{point.value}</p>
+                                </div>
                               </div>
-                              <div>
-                                <h4 className="font-serif text-xs font-bold text-[#285b46] mb-0.5">{point.label}</h4>
-                                <p className="text-[11px] leading-relaxed text-[#636e72]">{point.value}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -601,7 +696,28 @@ export default function ProductDetailPage() {
                   </button>
                   {accordions.use && (
                     <div className="p-5 bg-[#fdfbf7] text-[13px] leading-[1.7] text-[#636e72] space-y-4">
-                      <p>{howToUseText}</p>
+                      {howToUse ? (
+                        howToUse.steps && howToUse.areas ? (
+                          <div className="space-y-3 text-left">
+                            {howToUse.steps.map((step, idx) => (
+                              <div key={idx} className="flex items-start gap-2.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#295c47] mt-2 flex-shrink-0" />
+                                <span className="font-semibold text-[#2d3436]">{step}</span>
+                              </div>
+                            ))}
+                            {howToUse.areas.map((area, idx) => (
+                              <div key={idx} className="flex items-start gap-2.5 pl-6">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#d4a574] mt-2 flex-shrink-0" />
+                                <span className="font-semibold text-[#636e72] font-['Urbanist'] tracking-wide">{area}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p>{howToUse.text || howToUse}</p>
+                        )
+                      ) : (
+                        <p>{howToUseText}</p>
+                      )}
                       <div className="relative rounded-2xl overflow-hidden border border-[#e8e4df] shadow-sm bg-white p-2.5 max-w-[380px] mx-auto mt-2">
                         <Image
                           src="/assets/website_assets/how_to_use.png"
@@ -618,6 +734,30 @@ export default function ProductDetailPage() {
 
 
 
+                {/* 5. Shipping & Returns Policy */}
+                <div>
+                  <button
+                    onClick={() => toggleAccordion("shipping")}
+                    className="w-full py-4.5 px-5 flex items-center justify-between text-left font-serif text-[17px] font-bold text-[#285b46] bg-white hover:bg-[#fdfbf7] transition-all"
+                  >
+                    <span>Shipping & Returns Policy</span>
+                    {accordions.shipping ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
+                  {accordions.shipping && (
+                    <div className="p-5 bg-[#fdfbf7] text-[13px] leading-[1.7] text-[#636e72] space-y-4 text-left">
+                      <div>
+                        <h4 className="font-bold text-[#285b46] mb-1 text-[11px] uppercase tracking-wider">Shipping Details:</h4>
+                        <p>Orders are dispatched within 24-48 hours. Delivery takes 3-5 business days across India. Free shipping is automatically applied on all orders above ₹999.</p>
+                      </div>
+                      <div className="border-t border-[#e8e4df]/60 pt-3 mt-3">
+                        <h4 className="font-bold text-[#285b46] mb-1 text-[11px] uppercase tracking-wider">Return & Refund Policy:</h4>
+                        <p>Due to the personal care and hygiene standards of natural solid perfumes, we maintain a strict <strong>no returns, no exchanges, and no refunds policy</strong>. All sales are final.</p>
+                        <p className="mt-2 text-xs">If you receive a damaged, broken, or incorrect product, please email us with receipt details and photos at <a href="mailto:unar.consciousliving@gmail.com" className="text-[#295c47] font-semibold underline hover:text-[#475f50]">unar.consciousliving@gmail.com</a> or <a href="mailto:unar@unar.in" className="text-[#295c47] font-semibold underline hover:text-[#475f50]">unar@unar.in</a> within <strong>48 hours of delivery</strong>. We will happily replace it for you.</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* 6. Safety & FAQs */}
                 <div>
                   <button
@@ -633,15 +773,17 @@ export default function ProductDetailPage() {
                         <h4 className="font-bold text-[#285b46] mb-1 text-[11px] uppercase tracking-wider">Usage Precautions:</h4>
                         <p>{safetyText}</p>
                       </div>
-                      {faqs && faqs.length > 0 && (
+                      {FAQS && FAQS.length > 0 && (
                         <div className="border-t border-[#e8e4df]/60 pt-3 mt-3 space-y-3">
                           <h4 className="font-bold text-[#285b46] mb-2 text-[11px] uppercase tracking-wider">Frequently Asked Questions:</h4>
-                          {faqs.map((faq, idx) => (
-                            <div key={idx} className="space-y-1">
-                              <p className="font-semibold text-[#2d3436] text-[12px]">Q: {faq.q}</p>
-                              <p className="text-[12px] text-[#636e72] pl-3 border-l-2 border-[#5a7c65]/30">A: {faq.a}</p>
-                            </div>
-                          ))}
+                          <div className="faq-scroll-container space-y-3">
+                            {FAQS.map((faq, idx) => (
+                              <div key={idx} className="space-y-1">
+                                <p className="font-semibold text-[#2d3436] text-[12px]">Q: {faq.q}</p>
+                                <p className="text-[12px] text-[#636e72] pl-3 border-l-2 border-[#295c47]/30">A: {faq.a}</p>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -658,7 +800,7 @@ export default function ProductDetailPage() {
         {/* ── RELATED PRODUCTS ── */}
         <section className="max-w-[1300px] mx-auto px-6 pt-16 border-t border-[#e8e4df]">
           <h2 className="font-serif text-3xl font-bold text-[#285b46] text-center mb-2">You May Also Like</h2>
-          <p className="text-center text-[#636e72] text-sm mb-12">Discover other botanical scent blends from the Unar collection</p>
+          <p className="text-center text-[#636e72] text-sm mb-12">Discover other solid perfumes from UNAR collection</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {relatedProducts.map((p) => {
               const relImage = `/assets/website_assets/mockups/${p.image}`;
@@ -679,7 +821,7 @@ export default function ProductDetailPage() {
                   <div className="p-5 flex-1 flex flex-col justify-between">
                     <div>
                       <h3 className="font-serif text-xl font-bold text-[#285b46] mb-1">
-                        <Link href={`/products/${p.slug}`} className="hover:text-[#5a7c65] transition-colors">{p.name}</Link>
+                        <Link href={`/products/${p.slug}`} className="hover:text-[#295c47] transition-colors">{p.name}</Link>
                       </h3>
                       <p className="text-xs text-[#636e72] line-clamp-2 mb-4 leading-relaxed">{p.tagline}</p>
                     </div>
@@ -687,7 +829,7 @@ export default function ProductDetailPage() {
                       <span className="font-serif text-xl font-bold text-[#285b46]">₹{p.price}</span>
                       <Link
                         href={`/products/${p.slug}`}
-                        className="text-xs font-bold uppercase tracking-wider text-[#5a7c65] hover:text-[#285b46] flex items-center gap-1"
+                        className="text-xs font-bold uppercase tracking-wider text-[#295c47] hover:text-[#285b46] flex items-center gap-1"
                       >
                         View Details →
                       </Link>

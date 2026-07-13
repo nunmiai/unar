@@ -131,8 +131,8 @@ export default function Navbar({ onCartOpen }) {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-          ? "bg-[#fdfbf7]/95 backdrop-blur-md shadow-md"
-          : "bg-[#fdfbf7]/95 backdrop-blur-sm shadow-sm"
+        ? "bg-[#fdfbf7]/95 backdrop-blur-md shadow-md"
+        : "bg-[#fdfbf7]/95 backdrop-blur-sm shadow-sm"
         }`}
     >
       <nav className="max-w-[1300px] mx-auto flex items-center justify-between px-6 py-4">
@@ -150,23 +150,22 @@ export default function Navbar({ onCartOpen }) {
         {/* Desktop Nav */}
         <ul className="hidden md:flex list-none gap-10 items-center mb-0 pl-0">
           {/* Shop with Mega Menu Trigger */}
-          <li 
+          <li
             className="relative"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
             <button
-              className={`nav-link-hover text-[15px] tracking-wide transition-all duration-300 bg-transparent border-none cursor-pointer flex items-center gap-1 font-semibold hover:text-[#5a7c65] ${
-                isMegaOpen ? "text-[#285b46]" : "text-[#2d3436]"
-              }`}
+              className={`nav-link-hover text-[15px] tracking-wide transition-all duration-300 bg-transparent border-none cursor-pointer flex items-center gap-1 font-semibold hover:text-[#295c47] ${isMegaOpen ? "text-[#285b46]" : "text-[#2d3436]"
+                }`}
             >
               Shop
               <ChevronDown size={14} className={`transition-transform duration-300 ${isMegaOpen ? "rotate-180 text-[#285b46]" : "text-gray-400"}`} />
             </button>
-            
+
             {/* Desktop Mega Menu Dropdown */}
             {isMegaOpen && (
-              <div 
+              <div
                 className="absolute top-full -left-20 w-[840px] bg-[#fdfbf7]/98 backdrop-blur-md border border-[#e8e4df] rounded-2xl shadow-xl z-50 animate-fade-in-down p-6 mt-2"
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
@@ -174,17 +173,17 @@ export default function Navbar({ onCartOpen }) {
                 <div className="grid grid-cols-[1.85fr_1fr_1fr] gap-6">
                   {/* Column 1: Solid Perfumes List (2-column layout) */}
                   <div className="flex flex-col gap-3">
-                    <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-[#5a7c65] border-b border-[#e8e4df]/60 pb-1.5 mb-1">Solid Perfumes</h4>
+                    <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-[#295c47] border-b border-[#e8e4df]/60 pb-1.5 mb-1">Solid Perfumes</h4>
                     <div className="grid grid-cols-2 gap-x-5 gap-y-2">
                       {PRODUCTS.filter(p => p.category === "solid-perfume").map(p => (
-                        <Link 
+                        <Link
                           key={p.slug}
                           href={`/products/${p.slug}`}
                           onClick={() => setIsMegaOpen(false)}
-                          className="flex items-center gap-2.5 p-1 rounded-xl hover:bg-[#5a7c65]/5 transition-all duration-200 group/item text-left"
+                          className="flex items-center gap-2.5 p-1 rounded-xl hover:bg-[#295c47]/5 transition-all duration-200 group/item text-left"
                         >
-                          <img 
-                            src={`/assets/website_assets/mockups/${p.image}`} 
+                          <img
+                            src={`/assets/website_assets/mockups/${p.image}`}
                             alt={p.name}
                             className="w-9 h-9 rounded-lg object-cover border border-[#e8e4df] bg-white group-hover/item:scale-102 transition-transform"
                           />
@@ -202,13 +201,13 @@ export default function Navbar({ onCartOpen }) {
                     <div className="bg-gradient-to-br from-[#faf8f5] to-[#f5f1ea] border border-[#e8e4df] rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow group/car text-left">
                       <div className="relative">
                         <div className="aspect-square w-full rounded-xl overflow-hidden bg-white border border-[#e8e4df] mb-2.5">
-                          <img 
-                            src={`/assets/website_assets/mockups/${carProduct.image}`} 
+                          <img
+                            src={`/assets/website_assets/mockups/${carProduct.image}`}
                             alt={carProduct.name}
                             className="w-full h-full object-cover group-hover/car:scale-103 transition-transform duration-500"
                           />
                         </div>
-                        <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#5a7c65] block mb-1">Car Perfume</span>
+                        <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#295c47] block mb-1">Car Perfume</span>
                         <h5 className="font-serif text-sm font-bold text-[#285b46] leading-snug">{carProduct.name}</h5>
                         <p className="text-[10px] text-[#636e72] mt-1 leading-normal line-clamp-2">{carProduct.tagline}</p>
                       </div>
@@ -217,10 +216,10 @@ export default function Navbar({ onCartOpen }) {
                           <span className="font-serif text-sm font-extrabold text-[#285b46]">₹{carProduct.price}</span>
                           <span className="text-[9px] text-[#636e72] line-through">₹{carProduct.originalPrice}</span>
                         </div>
-                        <Link 
+                        <Link
                           href={`/products/${carProduct.slug}`}
                           onClick={() => setIsMegaOpen(false)}
-                          className="py-1.5 px-3.5 bg-[#5a7c65] hover:bg-[#285b46] text-white text-[9px] font-extrabold uppercase tracking-widest rounded-full transition-colors duration-200 shadow-sm"
+                          className="py-1.5 px-3.5 bg-[#295c47] hover:bg-[#285b46] text-white text-[9px] font-extrabold uppercase tracking-widest rounded-full transition-colors duration-200 shadow-sm"
                         >
                           Shop
                         </Link>
@@ -236,8 +235,8 @@ export default function Navbar({ onCartOpen }) {
                       </div>
                       <div className="relative">
                         <div className="aspect-square w-full rounded-xl overflow-hidden bg-white border border-[#e8e4df] mb-2.5">
-                          <img 
-                            src={`/assets/website_assets/mockups/${discoveryProduct.image}`} 
+                          <img
+                            src={`/assets/website_assets/mockups/${discoveryProduct.image}`}
                             alt={discoveryProduct.name}
                             className="w-full h-full object-cover group-hover/discovery:scale-103 transition-transform duration-500"
                           />
@@ -251,10 +250,10 @@ export default function Navbar({ onCartOpen }) {
                           <span className="font-serif text-sm font-extrabold text-[#285b46]">₹{discoveryProduct.price}</span>
                           <span className="text-[9px] text-[#636e72] line-through">₹{discoveryProduct.originalPrice}</span>
                         </div>
-                        <Link 
+                        <Link
                           href={`/products/${discoveryProduct.slug}`}
                           onClick={() => setIsMegaOpen(false)}
-                          className="py-1.5 px-3.5 bg-[#5a7c65] hover:bg-[#285b46] text-white text-[9px] font-extrabold uppercase tracking-widest rounded-full transition-colors duration-200 shadow-sm"
+                          className="py-1.5 px-3.5 bg-[#295c47] hover:bg-[#285b46] text-white text-[9px] font-extrabold uppercase tracking-widest rounded-full transition-colors duration-200 shadow-sm"
                         >
                           Shop
                         </Link>
@@ -272,11 +271,10 @@ export default function Navbar({ onCartOpen }) {
               <li key={href}>
                 <button
                   onClick={() => scrollToSection(href)}
-                  className={`nav-link-hover text-[15px] tracking-wide transition-all duration-300 bg-transparent border-none cursor-pointer ${
-                    isActive
+                  className={`nav-link-hover text-[15px] tracking-wide transition-all duration-300 bg-transparent border-none cursor-pointer ${isActive
                       ? "text-[#285b46] font-bold"
-                      : "text-[#2d3436] font-medium hover:text-[#5a7c65]"
-                  }`}
+                      : "text-[#2d3436] font-medium hover:text-[#295c47]"
+                    }`}
                 >
                   {label}
                 </button>
@@ -287,7 +285,7 @@ export default function Navbar({ onCartOpen }) {
             <li>
               <Link
                 href="/orders"
-                className="nav-link-hover text-[#2d3436] font-medium text-[15px] hover:text-[#5a7c65] transition-colors duration-300"
+                className="nav-link-hover text-[#2d3436] font-medium text-[15px] hover:text-[#295c47] transition-colors duration-300"
               >
                 My Orders
               </Link>
@@ -296,9 +294,9 @@ export default function Navbar({ onCartOpen }) {
           <li>
             {user ? (
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 bg-[#5a7c65]/10 border border-[#5a7c65]/20 rounded-full px-3 py-1.5">
-                  <User size={14} className="text-[#5a7c65]" />
-                  <span className="text-[#5a7c65] font-semibold text-sm">
+                <div className="flex items-center gap-2 bg-[#295c47]/10 border border-[#295c47]/20 rounded-full px-3 py-1.5">
+                  <User size={14} className="text-[#295c47]" />
+                  <span className="text-[#295c47] font-semibold text-sm">
                     {user.name ? user.name.split(" ")[0] : user.email.split("@")[0]}
                   </span>
                 </div>
@@ -313,7 +311,7 @@ export default function Navbar({ onCartOpen }) {
             ) : (
               <Link
                 href="/login"
-                className="nav-link-hover text-[#2d3436] font-medium text-[15px] hover:text-[#5a7c65] transition-colors duration-300"
+                className="nav-link-hover text-[#2d3436] font-medium text-[15px] hover:text-[#295c47] transition-colors duration-300"
               >
                 Login
               </Link>
@@ -328,11 +326,11 @@ export default function Navbar({ onCartOpen }) {
             id="cartIcon"
             onClick={onCartOpen}
             aria-label="Shopping Cart"
-            className="relative p-2 rounded-full hover:bg-[#5a7c65]/10 transition-colors"
+            className="relative p-2 rounded-full hover:bg-[#295c47]/10 transition-colors"
           >
             <ShoppingCart size={24} className="text-[#2d3436]" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[20px] h-5 bg-[#5a7c65] text-white text-xs font-bold rounded-full flex items-center justify-center px-1">
+              <span className="absolute -top-1 -right-1 min-w-[20px] h-5 bg-[#295c47] text-white text-xs font-bold rounded-full flex items-center justify-center px-1">
                 {cartCount}
               </span>
             )}
@@ -345,12 +343,12 @@ export default function Navbar({ onCartOpen }) {
             aria-label="Toggle navigation"
           >
             {mobileOpen ? (
-              <X size={24} className="text-[#5a7c65]" />
+              <X size={24} className="text-[#295c47]" />
             ) : (
               <>
-                <span className="w-6 h-0.5 bg-[#5a7c65] block" />
-                <span className="w-6 h-0.5 bg-[#5a7c65] block" />
-                <span className="w-6 h-0.5 bg-[#5a7c65] block" />
+                <span className="w-6 h-0.5 bg-[#295c47] block" />
+                <span className="w-6 h-0.5 bg-[#295c47] block" />
+                <span className="w-6 h-0.5 bg-[#295c47] block" />
               </>
             )}
           </button>
@@ -364,17 +362,17 @@ export default function Navbar({ onCartOpen }) {
           <div className="border-b border-[#e8e4df]/60 pb-2.5">
             <button
               onClick={() => setMobileShopOpen(!mobileShopOpen)}
-              className="w-full flex items-center justify-between text-left text-base font-semibold text-[#2d3436] hover:text-[#5a7c65] py-1.5 border-none bg-transparent cursor-pointer"
+              className="w-full flex items-center justify-between text-left text-base font-semibold text-[#2d3436] hover:text-[#295c47] py-1.5 border-none bg-transparent cursor-pointer"
             >
               <span>Shop Products</span>
               {mobileShopOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </button>
-            
+
             {mobileShopOpen && (
               <div className="pl-3 flex flex-col gap-4 border-l border-[#e8e4df] mt-2 mb-1">
                 {/* Solid Perfumes */}
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#5a7c65] block mb-2">Solid Perfumes</span>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#295c47] block mb-2">Solid Perfumes</span>
                   <div className="grid grid-cols-1 gap-2.5">
                     {PRODUCTS.filter(p => p.category === "solid-perfume").map(p => (
                       <Link
@@ -384,7 +382,7 @@ export default function Navbar({ onCartOpen }) {
                           setMobileOpen(false);
                           setMobileShopOpen(false);
                         }}
-                        className="flex items-center gap-2.5 py-1 px-1 rounded-lg active:bg-[#5a7c65]/5 text-left"
+                        className="flex items-center gap-2.5 py-1 px-1 rounded-lg active:bg-[#295c47]/5 text-left"
                       >
                         <img src={`/assets/website_assets/mockups/${p.image}`} alt={p.name} className="w-8 h-8 rounded object-cover border border-[#e8e4df] bg-white" />
                         <div className="flex flex-col">
@@ -395,18 +393,18 @@ export default function Navbar({ onCartOpen }) {
                     ))}
                   </div>
                 </div>
-                
+
                 {/* Car Perfumes */}
                 {carProduct && (
                   <div>
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#5a7c65] block mb-2">Car Perfumes</span>
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#295c47] block mb-2">Car Perfumes</span>
                     <Link
                       href={`/products/${carProduct.slug}`}
                       onClick={() => {
                         setMobileOpen(false);
                         setMobileShopOpen(false);
                       }}
-                      className="flex items-center gap-2.5 py-1 px-1 rounded-lg active:bg-[#5a7c65]/5 text-left"
+                      className="flex items-center gap-2.5 py-1 px-1 rounded-lg active:bg-[#295c47]/5 text-left"
                     >
                       <img src={`/assets/website_assets/mockups/${carProduct.image}`} alt={carProduct.name} className="w-8 h-8 rounded object-cover border border-[#e8e4df] bg-white" />
                       <div className="flex flex-col">
@@ -416,18 +414,18 @@ export default function Navbar({ onCartOpen }) {
                     </Link>
                   </div>
                 )}
-                
+
                 {/* Discovery Sets */}
                 {discoveryProduct && (
                   <div>
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#5a7c65] block mb-2">Discovery Sets</span>
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#295c47] block mb-2">Discovery Sets</span>
                     <Link
                       href={`/products/${discoveryProduct.slug}`}
                       onClick={() => {
                         setMobileOpen(false);
                         setMobileShopOpen(false);
                       }}
-                      className="flex items-center gap-2.5 py-1 px-1 rounded-lg active:bg-[#5a7c65]/5 text-left"
+                      className="flex items-center gap-2.5 py-1 px-1 rounded-lg active:bg-[#295c47]/5 text-left"
                     >
                       <img src={`/assets/website_assets/mockups/${discoveryProduct.image}`} alt={discoveryProduct.name} className="w-8 h-8 rounded object-cover border border-[#e8e4df] bg-white" />
                       <div className="flex flex-col">
@@ -447,11 +445,10 @@ export default function Navbar({ onCartOpen }) {
               <button
                 key={href}
                 onClick={() => scrollToSection(href)}
-                className={`text-left text-base transition-colors py-1.5 border-none bg-transparent cursor-pointer ${
-                  isActive
+                className={`text-left text-base transition-colors py-1.5 border-none bg-transparent cursor-pointer ${isActive
                     ? "text-[#285b46] font-bold"
-                    : "text-[#2d3436] font-medium hover:text-[#5a7c65]"
-                }`}
+                    : "text-[#2d3436] font-medium hover:text-[#295c47]"
+                  }`}
               >
                 {label}
               </button>
@@ -461,14 +458,14 @@ export default function Navbar({ onCartOpen }) {
             <>
               <Link
                 href="/orders"
-                className="text-left text-base font-medium text-[#2d3436] hover:text-[#5a7c65] py-1.5"
+                className="text-left text-base font-medium text-[#2d3436] hover:text-[#295c47] py-1.5"
                 onClick={() => setMobileOpen(false)}
               >
                 My Orders
               </Link>
-              <div className="flex items-center gap-2 bg-[#5a7c65]/10 border border-[#5a7c65]/20 rounded-full px-4 py-2 w-fit mt-2">
-                <User size={16} className="text-[#5a7c65]" />
-                <span className="text-[#5a7c65] font-semibold text-[15px]">
+              <div className="flex items-center gap-2 bg-[#295c47]/10 border border-[#295c47]/20 rounded-full px-4 py-2 w-fit mt-2">
+                <User size={16} className="text-[#295c47]" />
+                <span className="text-[#295c47] font-semibold text-[15px]">
                   {user.name ? user.name.split(" ")[0] : user.email.split("@")[0]}
                 </span>
               </div>
@@ -483,7 +480,7 @@ export default function Navbar({ onCartOpen }) {
           ) : (
             <Link
               href="/login"
-              className="mt-2 text-[16px] font-semibold text-[#5a7c65] border-2 border-[#5a7c65] rounded-full px-8 py-2 hover:bg-[#5a7c65] hover:text-white transition-all duration-300 w-fit text-center block"
+              className="mt-2 text-[16px] font-semibold text-[#295c47] border-2 border-[#295c47] rounded-full px-8 py-2 hover:bg-[#295c47] hover:text-white transition-all duration-300 w-fit text-center block"
               onClick={() => setMobileOpen(false)}
             >
               Login

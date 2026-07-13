@@ -122,39 +122,40 @@ export default function LoginPage() {
       </Head>
 
       {/* Home button */}
-      <Link href="/" className="fixed top-5 right-[400px] z-50 hidden md:flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 text-sm font-medium text-[#5a7c65] shadow hover:bg-[#faf8f5] hover:-translate-y-px transition-all">
+      <Link href="/" className="fixed top-5 right-[400px] z-50 hidden md:flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 text-sm font-medium text-[#295c47] shadow hover:bg-[#faf8f5] hover:-translate-y-px transition-all">
         <Home size={15} />
         Home
       </Link>
 
       <div className="flex min-h-screen">
         {/* Left brand panel */}
-        <div className="hidden md:flex w-[42%] flex-shrink-0 relative overflow-hidden flex-col items-center justify-center px-12 py-16" style={{ background: "linear-gradient(160deg, #5a7c65 0%, #3d5a47 55%, #2c4234 100%)" }}>
+        <div className="hidden md:flex w-[42%] flex-shrink-0 relative overflow-hidden flex-col items-center justify-center px-12 py-16 bg-[#ffffff]">
           {/* Decorative circles */}
-          <div className="absolute w-[480px] h-[480px] rounded-full border border-white/7 top-[-140px] right-[-140px] pointer-events-none" />
-          <div className="absolute w-[340px] h-[340px] rounded-full border border-white/5 bottom-[-100px] left-[-80px] pointer-events-none" />
 
-          <div className="text-center text-white relative z-10">
-            <div className="font-['Cormorant_Garamond'] text-[72px] font-normal tracking-[14px] leading-none mb-2.5">UNAR</div>
-            <div className="text-[10px] tracking-[5px] uppercase text-[#d4a574] mb-9">Natural Solid Perfumes</div>
-            <div className="w-9 h-px bg-white/30 mx-auto mb-7" />
-            <p className="text-[14px] leading-[1.9] text-white/62 max-w-[260px] mx-auto">Hand-crafted botanical solid perfumes. Pure, natural, and free from alcohol &amp; synthetic chemicals.</p>
-            <div className="inline-flex items-center gap-1.5 mt-10 bg-white/8 border border-white/15 rounded-full px-[18px] py-2 text-[11px] tracking-wide text-white/75">
-              <Shield size={12} />
+          <div className="text-center text-[#295c47] relative z-10 flex flex-col items-center">
+            <img
+              src="/assets/website_assets/mockups/logo_tagline.png"
+              alt="UNAR - Natural Solid Perfumes"
+              className="w-[260px] h-auto object-contain mb-9 select-none"
+            />
+            <div className="w-9 h-px bg-[#295c47]/30 mx-auto mb-7" />
+            <p className="text-[14px] leading-[1.9] text-[#295c47]/80 max-w-[280px] mx-auto font-medium">A sensory brand dedicated to the art of awakening. We bridge the gap between ancient heritage and modern mindfulness through intentional, handcrafted rituals.</p>
+            <div className="inline-flex items-center gap-1.5 mt-10 bg-[#295c47]/8 border border-[#295c47]/15 rounded-full px-[18px] py-2 text-[11px] tracking-wide text-[#295c47]/90 font-semibold">
+              <Shield size={12} className="text-[#295c47]" />
               100% Natural · Zero Waste · Cruelty Free
             </div>
           </div>
 
-          <Link href="/" className="mt-8 flex items-center gap-2 text-white/60 hover:text-white text-sm transition-colors relative z-10">
+          <Link href="/" className="mt-8 flex items-center gap-2 text-[#295c47]/70 hover:text-[#295c47] text-sm font-semibold transition-colors relative z-10">
             ← Back to Home
           </Link>
         </div>
 
         {/* Right form panel */}
-        <div className="flex-1 flex items-center justify-center bg-[#faf8f5] p-6 overflow-y-auto">
+        <div className="flex-1 flex items-center justify-center bg-[#ffffff] p-6 overflow-y-auto">
           <div className="w-full max-w-[420px]">
             {/* Mobile home link */}
-            <Link href="/" className="flex md:hidden items-center gap-2 text-[#5a7c65] mb-6 text-sm font-medium">
+            <Link href="/" className="flex md:hidden items-center gap-2 text-[#295c47] mb-6 text-sm font-medium">
               <Home size={15} /> Back to Home
             </Link>
 
@@ -167,7 +168,7 @@ export default function LoginPage() {
                 {!verifyMode && (
                   <div className="flex bg-[#faf8f5] rounded-lg p-1 mb-7">
                     {["login", "signup"].map((tab) => (
-                      <button key={tab} onClick={() => setActiveTab(tab)} className={`flex-1 py-3 rounded-md text-[14px] font-medium transition-all capitalize ${activeTab === tab ? "bg-white text-[#5a7c65] shadow-sm" : "text-[#5a5a5a]"}`}>
+                      <button key={tab} onClick={() => setActiveTab(tab)} className={`flex-1 py-3 rounded-md text-[14px] font-medium transition-all capitalize ${activeTab === tab ? "bg-white text-[#295c47] shadow-sm" : "text-[#5a5a5a]"}`}>
                         {tab === "login" ? "Sign In" : "Sign Up"}
                       </button>
                     ))}
@@ -180,9 +181,9 @@ export default function LoginPage() {
                     <p className="text-center text-[#5a5a5a] text-sm mb-5">We&apos;ve sent a verification code to <strong>{pendingEmail}</strong>. Please enter it below.</p>
                     <div>
                       <Label htmlFor="verifyCode" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">Verification Code</Label>
-                      <Input id="verifyCode" placeholder="Enter 6-digit code" maxLength={6} required value={verifyForm.code} onChange={(e) => setVerifyForm({ code: e.target.value })} className="border-gray-200 focus:border-[#5a7c65]" />
+                      <Input id="verifyCode" placeholder="Enter 6-digit code" maxLength={6} required value={verifyForm.code} onChange={(e) => setVerifyForm({ code: e.target.value })} className="border-gray-200 focus:border-[#295c47]" />
                     </div>
-                    <button type="submit" disabled={loading} className="w-full py-3.5 rounded-lg bg-gradient-to-br from-[#5a7c65] to-[#4a6b55] text-white font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:opacity-70 disabled:transform-none">
+                    <button type="submit" disabled={loading} className="w-full py-3.5 rounded-lg bg-gradient-to-br from-[#295c47] to-[#4a6b55] text-white font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:opacity-70 disabled:transform-none">
                       {loading ? "Verifying..." : "Verify Email"}
                     </button>
                   </form>
@@ -193,12 +194,12 @@ export default function LoginPage() {
                   <form onSubmit={handleLogin} className="space-y-5">
                     <div>
                       <Label htmlFor="loginEmail" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">Email Address</Label>
-                      <Input id="loginEmail" name="email" type="email" required placeholder="Enter your email" value={loginForm.email} onChange={handleLoginChange} className="border-gray-200 focus:border-[#5a7c65]" />
+                      <Input id="loginEmail" name="email" type="email" required placeholder="Enter your email" value={loginForm.email} onChange={handleLoginChange} className="border-gray-200 focus:border-[#295c47]" />
                     </div>
                     <div>
                       <Label htmlFor="loginPassword" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">Password</Label>
                       <div className="relative">
-                        <Input id="loginPassword" name="password" type={showLoginPwd ? "text" : "password"} required placeholder="Enter your password" value={loginForm.password} onChange={handleLoginChange} className="border-gray-200 focus:border-[#5a7c65] pr-10" />
+                        <Input id="loginPassword" name="password" type={showLoginPwd ? "text" : "password"} required placeholder="Enter your password" value={loginForm.password} onChange={handleLoginChange} className="border-gray-200 focus:border-[#295c47] pr-10" />
                         <button type="button" onClick={() => setShowLoginPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                           {showLoginPwd ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
@@ -206,12 +207,12 @@ export default function LoginPage() {
                     </div>
                     <div className="flex justify-between items-center text-[13px]">
                       <label className="flex items-center gap-2 text-[#5a5a5a] cursor-pointer">
-                        <input type="checkbox" name="remember" checked={loginForm.remember} onChange={handleLoginChange} className="w-4 h-4 accent-[#5a7c65]" />
+                        <input type="checkbox" name="remember" checked={loginForm.remember} onChange={handleLoginChange} className="w-4 h-4 accent-[#295c47]" />
                         Remember me
                       </label>
-                      <button type="button" className="text-[#5a7c65] font-medium hover:underline bg-transparent border-none cursor-pointer">Forgot Password?</button>
+                      <button type="button" className="text-[#295c47] font-medium hover:underline bg-transparent border-none cursor-pointer">Forgot Password?</button>
                     </div>
-                    <button type="submit" disabled={loading} className="w-full py-3.5 rounded-lg bg-gradient-to-br from-[#5a7c65] to-[#4a6b55] text-white font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:opacity-70">
+                    <button type="submit" disabled={loading} className="w-full py-3.5 rounded-lg bg-gradient-to-br from-[#295c47] to-[#4a6b55] text-white font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:opacity-70">
                       {loading ? "Signing in..." : "Sign In"}
                     </button>
                     <div className="flex items-center gap-3 my-2">
@@ -233,13 +234,13 @@ export default function LoginPage() {
                     ].map(({ id, name, label, type, placeholder, value }) => (
                       <div key={id}>
                         <Label htmlFor={id} className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">{label}</Label>
-                        <Input id={id} name={name} type={type} required placeholder={placeholder} value={value} onChange={handleSignupChange} className="border-gray-200 focus:border-[#5a7c65]" />
+                        <Input id={id} name={name} type={type} required placeholder={placeholder} value={value} onChange={handleSignupChange} className="border-gray-200 focus:border-[#295c47]" />
                       </div>
                     ))}
                     <div>
                       <Label htmlFor="signupPassword" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">Password</Label>
                       <div className="relative">
-                        <Input id="signupPassword" name="password" type={showSignupPwd ? "text" : "password"} required minLength={8} placeholder="Create a password" value={signupForm.password} onChange={handleSignupChange} className="border-gray-200 focus:border-[#5a7c65] pr-10" />
+                        <Input id="signupPassword" name="password" type={showSignupPwd ? "text" : "password"} required minLength={8} placeholder="Create a password" value={signupForm.password} onChange={handleSignupChange} className="border-gray-200 focus:border-[#295c47] pr-10" />
                         <button type="button" onClick={() => setShowSignupPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
                           {showSignupPwd ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
@@ -248,13 +249,13 @@ export default function LoginPage() {
                     <div>
                       <Label htmlFor="confirmPassword" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">Confirm Password</Label>
                       <div className="relative">
-                        <Input id="confirmPassword" name="confirmPassword" type={showConfirmPwd ? "text" : "password"} required placeholder="Confirm your password" value={signupForm.confirmPassword} onChange={handleSignupChange} className="border-gray-200 focus:border-[#5a7c65] pr-10" />
+                        <Input id="confirmPassword" name="confirmPassword" type={showConfirmPwd ? "text" : "password"} required placeholder="Confirm your password" value={signupForm.confirmPassword} onChange={handleSignupChange} className="border-gray-200 focus:border-[#295c47] pr-10" />
                         <button type="button" onClick={() => setShowConfirmPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
                           {showConfirmPwd ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                       </div>
                     </div>
-                    <button type="submit" disabled={loading} className="w-full py-3.5 rounded-lg bg-gradient-to-br from-[#5a7c65] to-[#4a6b55] text-white font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:opacity-70">
+                    <button type="submit" disabled={loading} className="w-full py-3.5 rounded-lg bg-gradient-to-br from-[#295c47] to-[#4a6b55] text-white font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:opacity-70">
                       {loading ? "Creating Account..." : "Create Account"}
                     </button>
                     <div className="flex items-center gap-3 my-2">
@@ -269,8 +270,8 @@ export default function LoginPage() {
 
               <div className="px-8 py-5 border-t border-[#f5f0e8] text-center text-[13px] text-[#5a5a5a]">
                 {activeTab === "login"
-                  ? <p>Don&apos;t have an account? <button className="text-[#5a7c65] font-medium hover:underline bg-transparent border-none cursor-pointer" onClick={() => setActiveTab("signup")}>Sign up</button></p>
-                  : <p>Already have an account? <button className="text-[#5a7c65] font-medium hover:underline bg-transparent border-none cursor-pointer" onClick={() => setActiveTab("login")}>Sign in</button></p>
+                  ? <p>Don&apos;t have an account? <button className="text-[#295c47] font-medium hover:underline bg-transparent border-none cursor-pointer" onClick={() => setActiveTab("signup")}>Sign up</button></p>
+                  : <p>Already have an account? <button className="text-[#295c47] font-medium hover:underline bg-transparent border-none cursor-pointer" onClick={() => setActiveTab("login")}>Sign in</button></p>
                 }
               </div>
             </div>

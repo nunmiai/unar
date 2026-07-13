@@ -260,6 +260,20 @@ body {
   box-shadow: 0 0 0 3px rgba(90, 124, 101, 0.1);
 }
 
+.float-label-group input::placeholder,
+.float-label-group textarea::placeholder,
+.float-label-group select::placeholder {
+  color: #999;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.float-label-group input:focus::placeholder,
+.float-label-group textarea:focus::placeholder,
+.float-label-group select:focus::placeholder {
+  opacity: 0.6;
+}
+
 .float-label-group label {
   position: absolute;
   left: 16px;
@@ -365,6 +379,17 @@ select.custom-arrow {
   padding-right: 40px;
 }
 
+select.custom-arrow optgroup {
+  color: #295c47;
+  font-weight: 700;
+  font-style: normal;
+}
+
+select.custom-arrow option {
+  color: #2d3436;
+  font-weight: normal;
+}
+
 /* ========================
    TERMS TOOLTIP
    ======================== */
@@ -427,6 +452,32 @@ select.custom-arrow {
 .checkout-modal-content::-webkit-scrollbar-thumb {
   background: var(--unar-primary);
   border-radius: 3px;
+}
+
+/* ========================
+   FAQ ACCORDION SCROLLBAR
+   ======================== */
+.faq-scroll-container {
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.faq-scroll-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.faq-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.faq-scroll-container::-webkit-scrollbar-thumb {
+  background: #e8e4df;
+  border-radius: 2px;
+}
+
+.faq-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: var(--unar-primary);
 }
 
 /* ========================
@@ -601,7 +652,7 @@ select.custom-arrow {
 
 .video-review-card:hover .video-play-btn {
   transform: scale(1.15);
-  background: #5a7c65;
+  background: #295c47;
 }
 
 /* ========================
@@ -637,8 +688,8 @@ select.custom-arrow {
 }
 
 .igc-handle:hover {
-  border-color: #5a7c65;
-  color: #5a7c65;
+  border-color: #295c47;
+  color: #295c47;
 }
 
 /* Horizontally scrollable card track */
@@ -756,7 +807,7 @@ select.custom-arrow {
   height: 64px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.92);
-  color: #5a7c65;
+  color: #295c47;
   border: none;
   display: flex;
   align-items: center;
@@ -912,7 +963,7 @@ select.custom-arrow {
 }
 
 .igc-modal-close:hover {
-  background: #5a7c65;
+  background: #295c47;
   color: white;
   transform: scale(1.1) rotate(90deg);
 }

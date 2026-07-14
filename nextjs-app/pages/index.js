@@ -7,7 +7,6 @@ import Navbar from "@/components/Navbar";
 import CartSidebar from "@/components/CartSidebar";
 import CheckoutModal from "@/components/CheckoutModal";
 import ProductCard from "@/components/ProductCard";
-import ContactForm from "@/components/ContactForm";
 import GoldenPollenParticles from "@/components/GoldenPollenParticles";
 
 import Footer from "@/components/Footer";
@@ -143,40 +142,43 @@ export default function Home() {
         <section id="about" className="py-24 bg-white">
           <div className="max-w-[800px] mx-auto px-10">
             <h2 className="font-['Cormorant_Garamond'] text-5xl font-semibold text-[#295c47] mb-4 text-center">Our Story</h2>
-            <div className="space-y-0">
-              <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#295c47] mt-9 mb-4">The Name: <span className="font-edo font-normal tracking-wide">UNAR (உணர்)</span></h3>
-              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5">We chose the name <strong><span className="font-edo font-normal tracking-wider text-[1.1em]">UNAR</span></strong> because it translates to more than just &ldquo;sense.&rdquo; It means to feel, to realize, and to become aware. Our brand is built on the belief that every action should be a mindful ritual—a moment where you pause to connect with yourself like our first product &ldquo;Natural Solid Perfumes&rdquo;.</p>
+            <div className="space-y-0 text-justify md:text-left">
+              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-6">
+                <strong>UNAR</strong> began with a simple concern that turned into a serious question: what are we really surrounding ourselves with every day — on our skin, in our hair, in our homes?
+              </p>
+              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-6">
+                Perfumes and fresheners had become part of daily life, but they were also bringing discomfort and headaches for our loved ones, due to the strong mix of alcohol and synthetic chemicals. We realised we weren’t just looking for “good fragrance” anymore; we were looking for fragrance that felt safe, gentle, and honest.
+              </p>
+              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-6">
+                In our older traditions, fragrance was deeply personal. It was worn close to the body, used in homes and rituals, for calm, prayer, and inner joy — not to overpower a room or shout for attention. Somewhere along the way, fragrance moved from being a soulful experience for the self to attract strangers.
+              </p>
 
-              <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#295c47] mt-9 mb-4">The Story of <span className="font-edo font-normal tracking-wide">UNAR</span>: From Our Home to Your Skin</h3>
-              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5">We began searching for a natural fragrance because we were tired of harsh chemicals and full of guilt when the same was used by our child. Available options were limited to the fragrance of west and usage of synthetics for mass production. We missed the honest scents of our daily lives—the Champa, Frangipani, and Vetiver we walk past every day.</p>
-              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5">So, we started researching. What began as a quest for the &ldquo;right mix&rdquo; became a beautiful family ritual. We discovered that a natural scent is a powerful mood elevator that shouldn&apos;t require synthetic alcohol or artificial flavors.</p>
+              <p className="text-[21px] leading-[1.8] text-[#295c47] my-9 font-serif italic font-semibold text-center border-y border-[#295c47]/10 py-6">
+                UNAR is our way of bringing that original intention back.
+              </p>
 
-              {/* Story Video */}
-              {/* <div className="my-8 rounded-2xl overflow-hidden shadow-lg border border-[#e8e4df] bg-[#fdfbf7] aspect-video relative">
-                <video
-                  className="w-full h-full object-cover"
-                  controls
-                  playsInline
-                  preload="metadata"
-                  src="https://unarassets.s3.us-east-1.amazonaws.com/The_Name_UNAR_%E0%AE%89%E0%AE%A3%E0%AE%B0%E0%AF%8D__We_chose.mp4"
-                >
-                  Your browser does not support the video tag.
-                </video>
-              </div> */}
+              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-6">
+                The idea took shape in a flower market, when the scent of golden champa pulled us straight into a childhood memory — a single flower in the hair, its quiet fragrance lasting all day, with no alcohol, no harshness, just pure happiness close to the body. That moment showed us what we truly wanted: fragrance that is alive, botanical, and rooted in our own land.
+              </p>
+              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-6">
+                UNAR creates conscious fragrances using native botanicals, plant-based ingredients, and mindful formulations — whether in solid perfumes, hair fragrances, car scents, or room fresheners.
+              </p>
+              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-6">
+                Whatever the format, our aim is the same: to keep the experience intimate, clean, and deeply connected to you and your space.
+              </p>
+              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-6">
+                UNAR is not just about grabbing attention. It is a daily ritual of choosing fragrances that are softer on the senses, kinder to the body, and more in tune with how we really want to live.
+              </p>
 
-              <h3 className="font-['Cormorant_Garamond'] text-2xl text-[#295c47] mt-9 mb-4">The Ritual</h3>
-              <p className="text-[17px] leading-[1.9] text-[#636e72] mb-5"><span className="font-edo font-normal tracking-wider text-[1.1em]">UNAR</span> solid perfume is designed for the intimate areas of your life—your pulse points, your neck, and even for natural odor control in your underarms.</p>
+              <div className="pt-8 border-t border-[#e8e4df]/60 mt-10 text-left">
+                <p className="text-[17px] font-medium text-[#636e72] italic mb-2">
+                  This is where conscious living begins.
+                </p>
+                <h3 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-bold text-[#295c47] tracking-wide mt-1">
+                  Welcome to UNAR
+                </h3>
+              </div>
             </div>
-          </div>
-        </section>
-
-
-
-
-        {/* ── CONTACT ── */}
-        <section id="contact" className="py-24 bg-gradient-to-br from-[#fdfbf7] to-[#f0ebe5]">
-          <div className="max-w-[1300px] mx-auto px-10">
-            <ContactForm />
           </div>
         </section>
       </main>

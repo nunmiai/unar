@@ -30,16 +30,7 @@ const PRODUCT_CATEGORIES = {
     "Madurai Manam"
   ]
 };
-const CONTACT_ITEMS = [
-  { icon: Phone, label: "Phone", value: "+91 9600522437", href: "tel:+919600522437" },
-  { 
-    icon: Mail, 
-    label: "Email", 
-    value: ["unar.consciousliving@gmail.com", "unar@unar.in"], 
-    href: ["mailto:unar.consciousliving@gmail.com", "mailto:unar@unar.in"] 
-  },
-  { icon: Globe, label: "Website", value: "www.unar.in", href: "http://www.unar.in" },
-];
+
 
 const TERMS = [
   { title: "1. Patch Test Requirement", body: "Our perfumes are handcrafted using Natural Oils, Waxes, and Essential Oils. Because everyone's skin is unique, you agree to perform a patch test before full application. Apply a small amount to the inside of your wrist or elbow and wait 24 hours. If irritation occurs, discontinue use immediately." },
@@ -99,50 +90,10 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-      {/* Left – Info */}
-      <div>
-        <h2 className="font-['Cormorant_Garamond'] text-5xl font-semibold text-[#295c47] mb-4">Get in Touch</h2>
-        <p className="text-[17px] text-[#636e72] leading-[1.8] mb-8">Have questions or want to learn more about our natural perfumes? We&apos;d love to hear from you.</p>
-        <div className="flex flex-col gap-6">
-          {CONTACT_ITEMS.map(({ icon: Icon, label, value, href }) => (
-            <div key={label} className="flex gap-4 items-start">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#295c47] to-[#475f50] rounded-xl flex items-center justify-center text-white flex-shrink-0">
-                <Icon size={20} />
-              </div>
-              <div>
-                <h4 className="text-[14px] uppercase tracking-wide text-[#636e72] mb-1 font-semibold">{label}</h4>
-                {Array.isArray(value) ? (
-                  <div className="flex flex-col gap-1.5 items-start">
-                    {value.map((val, idx) => (
-                      <a 
-                        key={idx} 
-                        href={href[idx]} 
-                        className="text-[#295c47] font-medium text-[16px] hover:text-[#475f50] hover:underline transition-colors block"
-                      >
-                        {val}
-                      </a>
-                    ))}
-                  </div>
-                ) : (
-                  <a 
-                    href={href} 
-                    target={label === "Website" ? "_blank" : undefined} 
-                    rel="noopener noreferrer" 
-                    className="text-[#295c47] font-medium text-[16px] hover:text-[#475f50] hover:underline transition-colors"
-                  >
-                    {value}
-                  </a>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Right – Form */}
-      <div className="bg-white p-12 rounded-2xl shadow-2xl">
-        <h3 className="font-['Cormorant_Garamond'] text-3xl text-[#295c47] mb-8">Send a Message</h3>
+    <div className="max-w-2xl mx-auto w-full">
+      {/* Centered Form */}
+      <div className="bg-white p-6 sm:p-12 rounded-2xl shadow-2xl">
+        <h3 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl text-[#295c47] mb-8 text-center font-bold">Send a Message</h3>
         <form onSubmit={handleSubmit} className="space-y-7">
           {/* Name */}
           <div className="float-label-group">
@@ -164,13 +115,13 @@ export default function ContactForm() {
             <button
               type="button"
               onClick={() => setIsOpen(!isOpen)}
-              className="w-full text-left bg-[#faf8f5] hover:bg-white border-2 border-[#e8e4df] focus:border-[#295c47] rounded-lg px-4 py-3.5 text-[15px] text-[#2d3436] outline-none flex justify-between items-center transition-all shadow-sm"
+              className={`custom-select-btn flex justify-between items-center ${isOpen ? "active" : ""}`}
               style={{ minHeight: "54px" }}
             >
               <span>{form.fragrance || " "}</span>
               <ChevronDown size={16} className={`text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
             </button>
-            <label className={`absolute left-4 transition-all duration-300 pointer-events-none bg-white px-1.5 ${form.fragrance || isOpen ? "top-[-10px] left-3 text-xs text-[#295c47] font-medium" : "top-3.5 text-[15px] text-[#636e72]"}`}>
+            <label className={`absolute left-4 transition-all duration-300 pointer-events-none px-1.5 ${form.fragrance || isOpen ? "top-[-10px] left-3 text-xs text-[#285b46] font-medium bg-white" : "top-3.5 text-[15px] text-[#285b46]"}`}>
               Products
             </label>
 

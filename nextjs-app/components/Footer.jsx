@@ -1,13 +1,29 @@
+import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Footer() {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyLink = () => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText("https://www.unar.in");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   const scrollToSection = (href) => {
     if (typeof window !== "undefined") {
-      const el = document.querySelector(href);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
+      if (href.startsWith("#")) {
+        const el = document.querySelector(href);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        } else {
+          // If not on the main page, navigate back home first
+          window.location.href = `/${href}`;
+        }
       } else {
-        // If not on the main page, navigate back home first
         window.location.href = `/${href}`;
       }
     }
@@ -16,25 +32,19 @@ export default function Footer() {
   return (
     <footer className="bg-[#295c47] text-white">
       <div className="max-w-[1300px] mx-auto px-10 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12 text-center md:text-left">
-          <div className="flex flex-col items-center md:items-start">
-            <Image src="/assets/website_assets/mockups/logo_tagline.png" alt="UNAR" width={180} height={100} className="mb-3 [filter:brightness(0)_saturate(100%)_invert(98%)_sepia(8%)_saturate(301%)_hue-rotate(345deg)_brightness(105%)_contrast(97%)] object-contain" />
-          </div>
-          <div className="flex flex-col items-center md:items-start">
-            <h4 className="text-[#d4a574] font-semibold mb-4 uppercase text-sm tracking-widest">Quick Links</h4>
-            <ul className="space-y-2 flex flex-col items-center md:items-start">
-              {["#home", "#about", "#collections", "#contact"].map((href) => (
-                <li key={href}>
-                  <button onClick={() => scrollToSection(href)} className="text-white/60 hover:text-white transition-colors text-sm bg-transparent border-none cursor-pointer capitalize">
-                    {href.replace("#", "")}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="flex flex-col items-center md:items-start">
-            <h4 className="text-[#d4a574] font-semibold mb-4 uppercase text-sm tracking-widest">Contact</h4>
-            <div className="flex gap-3 items-center justify-center md:justify-start flex-wrap">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-center sm:text-left items-start">
+          {/* Col 1: Logo & Social Icons */}
+          <div className="flex flex-col items-center sm:items-start gap-5">
+            <Image 
+              src="/assets/website_assets/mockups/logo_tagline.png" 
+              alt="UNAR" 
+              width={160} 
+              height={90} 
+              className="[filter:brightness(0)_saturate(100%)_invert(98%)_sepia(8%)_saturate(301%)_hue-rotate(345deg)_brightness(105%)_contrast(97%)] object-contain" 
+            />
+            
+            {/* Social & Contact Icons */}
+            <div className="flex gap-3 items-center justify-center sm:justify-start flex-wrap mt-2">
               {/* Phone */}
               <a href="tel:+919600522437" title="Phone: +91 9600522437" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:bg-[#1e4233] hover:text-white transition-all duration-300 hover:scale-105">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -56,21 +66,86 @@ export default function Footer() {
                 </svg>
               </a>
               {/* Email */}
-              <a href="mailto:unar.consciousliving@gmail.com,unar@unar.in" title="Email: unar.consciousliving@gmail.com, unar@unar.in" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:bg-[#d4a574] hover:text-white transition-all duration-300 hover:scale-105">
+              <a href="mailto:unar@unar.in" title="Email: unar@unar.in" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:bg-[#d4a574] hover:text-white transition-all duration-300 hover:scale-105">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                   <polyline points="22,6 12,13 2,6" />
                 </svg>
               </a>
-              {/* Website */}
-              <a href="http://www.unar.in" target="_blank" rel="noopener noreferrer" title="Website: www.unar.in" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:bg-[#1e4233] hover:text-white transition-all duration-300 hover:scale-105">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="2" y1="12" x2="22" y2="12" />
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                </svg>
-              </a>
+              {/* Copy URL Link Icon */}
+              <div className="relative">
+                <button 
+                  onClick={handleCopyLink} 
+                  title="Copy Website Link" 
+                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:bg-[#1e4233] hover:text-white transition-all duration-300 hover:scale-105 cursor-pointer border-none"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                  </svg>
+                </button>
+                
+                {copied && (
+                  <div className="absolute bottom-12 left-1/2 -translate-x-1/2 bg-white text-[#295c47] text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg border border-[#e8e4df] whitespace-nowrap z-50 transition-all animate-bounce">
+                    Copied Link!
+                    {/* Tooltip triangle indicator */}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-white" />
+                  </div>
+                )}
+              </div>
             </div>
+          </div>
+
+          {/* Col 2: Quick Links */}
+          <div className="flex flex-col items-center sm:items-start">
+            <h4 className="text-[#d4a574] font-semibold mb-4 uppercase text-sm tracking-widest">Quick Links</h4>
+            <ul className="space-y-2 flex flex-col items-center sm:items-start">
+              {["home", "about", "collections", "contact"].map((link) => (
+                <li key={link}>
+                  <button onClick={() => scrollToSection(link === "contact" ? "contact" : `#${link}`)} className="text-white/60 hover:text-white transition-colors text-sm bg-transparent border-none cursor-pointer capitalize">
+                    {link}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Col 3: Direct Contact */}
+          <div className="flex flex-col items-center sm:items-start">
+            <h4 className="text-[#d4a574] font-semibold mb-4 uppercase text-sm tracking-widest">Connect</h4>
+            <ul className="space-y-3 flex flex-col items-center sm:items-start text-sm text-white/70">
+              <li className="flex gap-2 items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4a574" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0" title="Phone">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+                <a href="tel:+919600522437" className="hover:text-white transition-colors">+91 9600522437</a>
+              </li>
+              <li className="flex gap-2 items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4a574" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0" title="Email">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+                <a href="mailto:unar@unar.in" className="hover:text-white transition-colors">unar@unar.in</a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 4: Get in Touch */}
+          <div className="flex flex-col items-center sm:items-start w-full">
+            <h4 className="text-[#d4a574] font-semibold mb-4 uppercase text-sm tracking-widest">Get In Touch</h4>
+            <p className="text-white/60 text-sm leading-relaxed mb-6 italic max-w-xs">
+              "Every fragrance tells a story. Let us help you find yours."
+            </p>
+            <Link 
+              href="/contact" 
+              className="inline-flex items-center gap-2 group text-white hover:text-[#d4a574] transition-all duration-300 text-xs font-semibold tracking-wider uppercase cursor-pointer"
+            >
+              <span>Send a Message</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 transition-transform duration-300">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </Link>
           </div>
         </div>
         <div className="border-t border-white/10 pt-6 text-center text-white/40 text-sm">

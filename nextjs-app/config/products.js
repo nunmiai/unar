@@ -330,18 +330,18 @@ export const PRODUCTS = [
   // },
   {
     "slug": "discovery-set",
-    "name": "Unar Solid Perfume Discovery Set",
-    "price": 999,
-    "originalPrice": 1999,
+    "name": "Unar Solid Perfumes Discovery Set",
+    "price": 1499,
+    "originalPrice": 2999,
     "badge": "Best Seller",
-    "image": "discovery_set.png",
+    "image": "d_set_aux.png",
     "category": "discovery-set",
     "tagline": "Exquisite sampler of any 5 solid perfumes",
     "scentNotes": {
       "heart": "Blue Lotus, Vetiver"
     },
     "specialTitle": "What makes the Discovery Set special?",
-    "specialText": "Can't decide on just one fragrance? Our Unar Solid Perfume Discovery Set is the ultimate curation of conscious scents. It features all 8 of our handcrafted solid perfumes in mini 5g round tins, beautifully presented in a recycled botanical box. Discover Champa, Jasmine, Rose, Frangipani, Blue Lotus, Vetiver, Oud, and Sandalwood, and see how they interact with your skin's unique chemistry.",
+    "specialText": "Can't decide on just one fragrance? Our Unar Solid Perfumes Discovery Set is the ultimate curation of conscious scents. It features all 8 of our handcrafted solid perfumes in mini 5g round tins, beautifully presented in a recycled botanical box. Discover Champa, Jasmine, Rose, Frangipani, Blue Lotus, Vetiver, Oud, and Sandalwood, and see how they interact with your skin's unique chemistry.",
 
     "howToUse": {
       "text": "Test each tin on your skin for a few days to see how the fragrance notes settle over hours with your natural body oils."

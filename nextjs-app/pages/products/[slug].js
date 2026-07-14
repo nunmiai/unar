@@ -185,7 +185,7 @@ export default function ProductDetailPage() {
 
   const slides = slug === "discovery-set"
     ? [
-      currentImage,
+      "/assets/website_assets/mockups/d_set_aux.png",
       "/assets/website_assets/round_tin/jas.jpg-r.jpg",
       "/assets/website_assets/round_tin/rose.jpg",
       "/assets/website_assets/round_tin/cha.jpg-r.jpg",
@@ -194,8 +194,7 @@ export default function ProductDetailPage() {
       "/assets/website_assets/round_tin/veti.jpg-r.jpg",
       "/assets/website_assets/round_tin/oud.jpg-r.jpg",
       "/assets/website_assets/round_tin/sand.jpg-r.jpg",
-      "/assets/website_assets/round_tin/par.jpg-r.jpg",
-      "/assets/website_assets/mockups/d_set_aux.png"
+      "/assets/website_assets/round_tin/par.jpg-r.jpg"
     ]
     : hasCustomSlides
       ? [
@@ -227,7 +226,7 @@ export default function ProductDetailPage() {
         const sortedScents = [...selectedScents].sort();
         addToCart({
           id: currentId,
-          name: "Unar Solid Perfume Discovery Set",
+          name: "Unar Solid Perfumes Discovery Set",
           price,
           image,
           selectedScents: sortedScents
@@ -249,7 +248,7 @@ export default function ProductDetailPage() {
         if (!inCart) {
           addToCart({
             id: currentId,
-            name: "Unar Solid Perfume Discovery Set",
+            name: "Unar Solid Perfumes Discovery Set",
             price,
             image,
             selectedScents: sortedScents
@@ -574,7 +573,7 @@ export default function ProductDetailPage() {
                     : (category === "discovery-set" && selectedScents.length !== 5)
                       ? "bg-[#f5f1ea] border-[#e8e4df] text-[#a59b8d] cursor-not-allowed opacity-80"
                       : inCart
-                        ? "bg-green-600 hover:bg-green-700 text-white shadow-md"
+                        ? "bg-[#295c47] hover:bg-[#1c4536] text-white shadow-md"
                         : "border-2 border-[#295c47] text-[#295c47] hover:bg-[#295c47] hover:text-white"
                     }`}
                 >

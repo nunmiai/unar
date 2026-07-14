@@ -91,17 +91,18 @@ export default function Navbar({ onCartOpen }) {
 
   const navLinks = [
     { href: "#about", label: "Our Story" },
-    { href: "#contact", label: "Contact" },
   ];
 
   const scrollToSection = (href) => {
-    if (isHomePage) {
-      if (href.startsWith("#")) {
+    if (href.startsWith("#")) {
+      if (isHomePage) {
         const el = document.querySelector(href);
         if (el) {
           const headerH = document.querySelector("header")?.offsetHeight || 80;
           window.scrollTo({ top: el.offsetTop - headerH, behavior: "smooth" });
         }
+      } else {
+        router.push(`/${href}`);
       }
     } else {
       router.push(`/${href}`);

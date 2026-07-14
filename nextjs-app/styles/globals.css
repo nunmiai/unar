@@ -300,6 +300,32 @@ body {
   font-weight: 500;
 }
 
+.custom-select-btn {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--unar-border);
+  border-radius: 8px;
+  font-family: "Inter", sans-serif;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  background-color: var(--unar-bg-light) !important;
+  color: #2d3436;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.custom-select-btn:hover {
+  background-color: white !important;
+}
+
+.custom-select-btn.active {
+  border-color: var(--unar-primary);
+  background-color: white !important;
+  box-shadow: 0 0 0 3px rgba(90, 124, 101, 0.1);
+}
+
 /* ========================
    CART & CHECKOUT
    ======================== */

@@ -118,7 +118,7 @@ export default function ProductCard({ product }) {
             <button
               onClick={handleAddToCart}
               className={`py-2 px-4 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-1.5 shadow-sm transform hover:scale-102 ${inCart
-                ? "bg-green-600 text-white hover:bg-green-700"
+                ? "bg-[#295c47] text-white hover:bg-[#1c4536]"
                 : "border-2 border-[#295c47] text-[#295c47] hover:bg-[#295c47] hover:text-white"
                 }`}
             >

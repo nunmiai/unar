@@ -58,13 +58,13 @@ def send_test_customer_email():
     <head><meta charset="UTF-8"></head>
     <body style="margin: 0; padding: 0; font-family: Georgia, serif; background-color: #faf8f5;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-            <div style="background: linear-gradient(135deg, #5a7c65 0%, #4a6b55 100%); padding: 30px; text-align: center;">
+            <div style="background: linear-gradient(135deg, #295c47 0%, #4a6b55 100%); padding: 30px; text-align: center;">
                 <h1 style="color: #ffffff; margin: 0; font-size: 32px; letter-spacing: 3px;">UNAR</h1>
                 <p style="color: #d4a574; margin: 5px 0 0 0; font-size: 12px; letter-spacing: 2px;">NATURAL SOLID PERFUMES</p>
             </div>
             
             <div style="padding: 40px 30px 20px 30px;">
-                <h2 style="color: #5a7c65; margin: 0 0 10px 0;">Thank you, {first_name}!</h2>
+                <h2 style="color: #295c47; margin: 0 0 10px 0;">Thank you, {first_name}!</h2>
                 <p style="color: #6b6b6b; line-height: 1.6;">Your order has been confirmed. Here's your order summary:</p>
             </div>
             
@@ -86,25 +86,25 @@ def send_test_customer_email():
             </div>
             
             <div style="padding: 30px;">
-                <h3 style="color: #5a7c65; margin: 0 0 15px 0; border-bottom: 2px solid #d4a574; padding-bottom: 10px;">Order Details</h3>
+                <h3 style="color: #295c47; margin: 0 0 15px 0; border-bottom: 2px solid #d4a574; padding-bottom: 10px;">Order Details</h3>
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr style="background-color: #faf8f5;">
-                            <th style="padding: 12px; text-align: left; color: #5a7c65;">Item</th>
-                            <th style="padding: 12px; text-align: center; color: #5a7c65;">Qty</th>
-                            <th style="padding: 12px; text-align: right; color: #5a7c65;">Price</th>
+                            <th style="padding: 12px; text-align: left; color: #295c47;">Item</th>
+                            <th style="padding: 12px; text-align: center; color: #295c47;">Qty</th>
+                            <th style="padding: 12px; text-align: right; color: #295c47;">Price</th>
                         </tr>
                     </thead>
                     <tbody>{items_html}</tbody>
                 </table>
                 
                 <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #e8e0d5; text-align: right;">
-                    <span style="color: #5a7c65; font-size: 20px; font-weight: bold;">Total: ₹{amount}</span>
+                    <span style="color: #295c47; font-size: 20px; font-weight: bold;">Total: ₹{amount}</span>
                 </div>
             </div>
             
             <div style="background-color: #faf8f5; margin: 0 30px; padding: 20px; border-radius: 8px;">
-                <h4 style="color: #5a7c65; margin: 0 0 10px 0; font-size: 14px;">DELIVERY ADDRESS</h4>
+                <h4 style="color: #295c47; margin: 0 0 10px 0; font-size: 14px;">DELIVERY ADDRESS</h4>
                 <p style="color: #333; margin: 0; line-height: 1.6;">
                     {customer_name}<br>{address}<br>Pincode: {pincode}<br>Phone: {phone}
                 </p>
@@ -114,7 +114,7 @@ def send_test_customer_email():
                 <p style="color: #d4a574; font-style: italic;">"Embrace nature's essence, one fragrance at a time."</p>
             </div>
             
-            <div style="background-color: #5a7c65; padding: 25px; text-align: center;">
+            <div style="background-color: #295c47; padding: 25px; text-align: center;">
                 <p style="color: #ffffff; margin: 0 0 5px 0; font-size: 14px;">Need help? Contact us at</p>
                 <a href="mailto:unar.consciousliving@gmail.com" style="color: #d4a574; text-decoration: none;">unar.consciousliving@gmail.com</a>
                 <p style="color: rgba(255,255,255,0.7); margin: 15px 0 0 0; font-size: 11px;">100% Natural | Zero Waste | Cruelty Free</p>
@@ -169,16 +169,16 @@ def send_test_admin_email():
     <head><meta charset="UTF-8"></head>
     <body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; background-color: #f5f5f5;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <div style="background-color: #5a7c65; padding: 20px; text-align: center;">
+            <div style="background-color: #295c47; padding: 20px; text-align: center;">
                 <h1 style="color: #ffffff; margin: 0; font-size: 20px;">🛒 New Order Received!</h1>
             </div>
             
             <div style="padding: 25px;">
                 <div style="background-color: #f0f7f2; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <h2 style="color: #5a7c65; margin: 0 0 10px 0; font-size: 16px;">Order #{order_short}</h2>
+                    <h2 style="color: #295c47; margin: 0 0 10px 0; font-size: 16px;">Order #{order_short}</h2>
                     <p style="margin: 5px 0; color: #666;"><strong>Payment ID:</strong> {payment_id}</p>
                     <p style="margin: 5px 0; color: #666;"><strong>Method:</strong> {payment_method}</p>
-                    <p style="margin: 5px 0; color: #666;"><strong>Amount:</strong> <span style="font-size: 18px; color: #5a7c65; font-weight: bold;">₹{amount}</span></p>
+                    <p style="margin: 5px 0; color: #666;"><strong>Amount:</strong> <span style="font-size: 18px; color: #295c47; font-weight: bold;">₹{amount}</span></p>
                 </div>
                 
                 <h3 style="color: #333; border-bottom: 2px solid #d4a574; padding-bottom: 8px;">Customer Details</h3>

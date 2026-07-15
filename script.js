@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const header = document.querySelector('.header');
     const navToggle = document.querySelector('.nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
@@ -9,11 +9,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ==================== USER AUTHENTICATION ====================
     const unarUser = JSON.parse(localStorage.getItem('unarUser'));
-    
+
     function updateAuthUI() {
         const authLink = document.getElementById('authLink');
         const ordersLink = document.getElementById('ordersLink');
-        
+
         if (authLink) {
             if (unarUser && unarUser.email) {
                 const firstName = unarUser.name ? unarUser.name.split(' ')[0] : unarUser.email.split('@')[0];
@@ -39,14 +39,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
+
     updateAuthUI();
 
     // ==================== CART FUNCTIONALITY ====================
     let cart = JSON.parse(localStorage.getItem('unarCart')) || [];
-    const SHIPPING_COST = 80; // Default shipping cost
-    const FREE_SHIPPING_THRESHOLD = 1000; // Free shipping above this amount
-    
+    const SHIPPING_COST = 100; // Default shipping cost
+    const FREE_SHIPPING_THRESHOLD = 900; // Free shipping above this amount
+
     // Lambda API URL for payment processing
     const LAMBDA_API_URL = 'https://vfl2536p7nvialuiwcgt22s6iu0noirr.lambda-url.us-east-1.on.aws';
 
@@ -76,8 +76,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const couponMessage = document.getElementById('couponMessage');
 
     // Coupon state
-    const VALID_COUPONS = {  };
-    const COUPON_ELIGIBLE = { };
+    const VALID_COUPONS = {};
+    const COUPON_ELIGIBLE = {};
     let appliedDiscount = 0;
     let appliedCouponCode = '';
 
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Open cart sidebar
     if (cartIcon) {
-        cartIcon.addEventListener('click', function() {
+        cartIcon.addEventListener('click', function () {
             openCart();
         });
     }
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add to cart functionality
     const addToCartBtns = document.querySelectorAll('.add-to-cart-btn');
     addToCartBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function (e) {
             e.stopPropagation();
             const name = this.dataset.name;
             const price = parseInt(this.dataset.price);
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
         addToCartBtns.forEach(btn => {
             const name = btn.dataset.name;
             const cartItem = cart.find(item => item.name === name);
-            
+
             if (cartItem && cartItem.quantity > 0) {
                 btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> In Cart (${cartItem.quantity})`;
                 btn.classList.add('added');
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function addToCart(product) {
         const existingItem = cart.find(item => item.name === product.name);
-        
+
         if (existingItem) {
             existingItem.quantity += 1;
         } else {
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Checkout button
     if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', function() {
+        checkoutBtn.addEventListener('click', function () {
             closeCart();
             openCheckout();
         });
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
         checkoutClose.addEventListener('click', closeCheckout);
     }
     if (checkoutModal) {
-        checkoutModal.addEventListener('click', function(e) {
+        checkoutModal.addEventListener('click', function (e) {
             if (e.target === checkoutModal) {
                 closeCheckout();
             }
@@ -391,8 +391,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Checkout quantity controls (event delegation)
     if (checkoutSummary) {
-        checkoutSummary.addEventListener('click', function(e) {
-            const plusBtn  = e.target.closest('.sq-plus');
+        checkoutSummary.addEventListener('click', function (e) {
+            const plusBtn = e.target.closest('.sq-plus');
             const minusBtn = e.target.closest('.sq-minus');
             const removeBtn = e.target.closest('.sq-remove');
 
@@ -423,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // "Use" coupon chip button - auto-fills and applies
     const useCouponBtn = document.getElementById('useCouponBtn');
     if (useCouponBtn) {
-        useCouponBtn.addEventListener('click', function() {
+        useCouponBtn.addEventListener('click', function () {
             if (appliedCouponCode) {
                 unapplyCoupon();
             } else {
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Coupon apply logic
     if (applyCouponBtn) {
-        applyCouponBtn.addEventListener('click', function() {
+        applyCouponBtn.addEventListener('click', function () {
             if (!couponInput.value.trim()) {
                 couponMessage.textContent = 'Please enter a coupon code.';
                 couponMessage.className = 'coupon-message error';
@@ -488,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Checkout form submission with Razorpay via Lambda
     if (checkoutForm) {
-        checkoutForm.addEventListener('submit', async function(e) {
+        checkoutForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const formData = new FormData(checkoutForm);
@@ -559,7 +559,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     name: 'Unar',
                     description: 'Natural Solid Perfumes',
                     image: 'assets/logo.png',
-                    handler: async function(response) {
+                    handler: async function (response) {
                         // Step 3: Verify payment via Lambda
                         try {
                             const verifyResponse = await fetch(`${LAMBDA_API_URL}/verify-payment`, {
@@ -597,10 +597,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         contact: customerData.phone
                     },
                     theme: {
-                        color: '#5a7c65'
+                        color: '#295c47'
                     },
                     modal: {
-                        ondismiss: function() {
+                        ondismiss: function () {
                             showNotification('Payment cancelled', 'error');
                             payBtn.textContent = originalBtnText;
                             payBtn.disabled = false;
@@ -609,7 +609,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
 
                 const rzp = new Razorpay(options);
-                rzp.on('payment.failed', function(response) {
+                rzp.on('payment.failed', function (response) {
                     showNotification('Payment failed. Please try again.', 'error');
                     console.error('Payment failed:', response.error);
                     payBtn.textContent = originalBtnText;
@@ -653,9 +653,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ==================== END CART FUNCTIONALITY ====================
 
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', function () {
         let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
+
         if (scrollTop > 100) {
             header.classList.add('scrolled');
         } else {
@@ -665,9 +665,9 @@ document.addEventListener('DOMContentLoaded', function() {
         lastScrollTop = scrollTop;
     });
 
-    navToggle.addEventListener('click', function() {
+    navToggle.addEventListener('click', function () {
         navMenu.classList.toggle('active');
-        
+
         const spans = navToggle.querySelectorAll('span');
         if (navMenu.classList.contains('active')) {
             spans[0].style.transform = 'rotate(45deg) translateY(7px)';
@@ -681,21 +681,21 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
             const targetId = this.getAttribute('href');
-            
+
             // Only handle anchor links (starting with #), let other links navigate normally
             if (!targetId || !targetId.startsWith('#')) {
                 return; // Allow normal navigation for non-anchor links
             }
-            
+
             e.preventDefault();
             const targetSection = document.querySelector(targetId);
-            
+
             if (targetSection) {
                 const headerHeight = header.offsetHeight;
                 const targetPosition = targetSection.offsetTop - headerHeight;
-                
+
                 window.scrollTo({
                     top: targetPosition,
                     behavior: 'smooth'
@@ -717,7 +717,7 @@ document.addEventListener('DOMContentLoaded', function() {
         rootMargin: '0px 0px -100px 0px'
     };
 
-    const observer = new IntersectionObserver(function(entries) {
+    const observer = new IntersectionObserver(function (entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.style.opacity = '1';
@@ -741,11 +741,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitBtn = document.getElementById('submitBtn');
 
     if (termsLink && termsTooltip) {
-        termsLink.addEventListener('mouseenter', function() {
+        termsLink.addEventListener('mouseenter', function () {
             termsTooltip.classList.add('show');
         });
 
-        termsLink.addEventListener('mouseleave', function() {
+        termsLink.addEventListener('mouseleave', function () {
             setTimeout(() => {
                 if (!termsTooltip.matches(':hover')) {
                     termsTooltip.classList.remove('show');
@@ -753,11 +753,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 200);
         });
 
-        termsTooltip.addEventListener('mouseleave', function() {
+        termsTooltip.addEventListener('mouseleave', function () {
             termsTooltip.classList.remove('show');
         });
 
-        termsLink.addEventListener('click', function(e) {
+        termsLink.addEventListener('click', function (e) {
             e.preventDefault();
             termsTooltip.classList.toggle('show');
         });
@@ -770,11 +770,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const fragrance = document.getElementById('fragrance');
         const termsChecked = agreeTerms ? agreeTerms.checked : false;
 
-        const isValid = name && name.value.trim() && 
-                       email && email.value.trim() && 
-                       fragrance && fragrance.value && 
-                       termsChecked;
-        
+        const isValid = name && name.value.trim() &&
+            email && email.value.trim() &&
+            fragrance && fragrance.value &&
+            termsChecked;
+
         console.log('Form validation:', {
             name: name?.value,
             email: email?.value,
@@ -817,9 +817,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycby1PbOkJZVBbk0SPiPkW64Q7lZFUp-pTRvH0H8FJWx-izJxNKFSfVObuuk-MDJZMj6E/exec';
 
     if (contactForm) {
-        contactForm.addEventListener('submit', async function(e) {
+        contactForm.addEventListener('submit', async function (e) {
             e.preventDefault();
-            
+
             const submitBtn = contactForm.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.textContent;
             submitBtn.textContent = 'Sending...';
@@ -864,7 +864,7 @@ document.addEventListener('DOMContentLoaded', function() {
             position: fixed;
             top: 100px;
             right: 20px;
-            background-color: ${type === 'success' ? '#5a7c65' : '#e74c3c'};
+            background-color: ${type === 'success' ? '#295c47' : '#e74c3c'};
             color: white;
             padding: 16px 24px;
             border-radius: 8px;
@@ -914,9 +914,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Sticky Sample Button - always visible, hide only when contact section is in view
     const stickySampleBtn = document.getElementById('stickySampleBtn');
     const contactSection = document.getElementById('contact');
-    
+
     if (stickySampleBtn && contactSection) {
-        const contactObserver = new IntersectionObserver(function(entries) {
+        const contactObserver = new IntersectionObserver(function (entries) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     stickySampleBtn.style.display = 'none';
@@ -932,7 +932,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const flipCards = document.querySelectorAll('.flip-card');
     flipCards.forEach(card => {
         // Toggle flip on card click
-        card.addEventListener('click', function(e) {
+        card.addEventListener('click', function (e) {
             // Don't flip if clicking on any button
             if (e.target.closest('.order-btn') || e.target.closest('.add-to-cart-btn')) {
                 return;
@@ -944,13 +944,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Ensure order buttons work properly
     const orderBtns = document.querySelectorAll('.order-btn');
     orderBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function (e) {
             e.stopPropagation(); // Prevent card flip
         });
     });
 });
 
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     document.body.style.opacity = '0';
     document.body.style.transition = 'opacity 0.3s ease';
     setTimeout(() => {
@@ -961,10 +961,10 @@ window.addEventListener('load', function() {
 // Logout function (global scope for onclick)
 async function logoutUser() {
     const AUTH_API_URL = 'https://hxr7qp46qicsvrlnale5v7z34m0crgjm.lambda-url.us-east-1.on.aws/'; // Same as in login.html
-    
+
     try {
         const tokens = JSON.parse(localStorage.getItem('unarTokens') || '{}');
-        
+
         if (tokens.access_token) {
             await fetch(`${AUTH_API_URL}/logout`, {
                 method: 'POST',
@@ -975,7 +975,7 @@ async function logoutUser() {
     } catch (error) {
         console.error('Logout error:', error);
     }
-    
+
     localStorage.removeItem('unarUser');
     localStorage.removeItem('unarTokens');
     window.location.href = 'login.html';

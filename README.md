@@ -87,7 +87,7 @@ unar/
 ## 🎨 Design Highlights
 
 - **Color Palette:**
-  - Primary: Natural green (#5a7c65)
+  - Primary: Natural green (#295c47)
   - Secondary: Warm gold (#d4a574)
   - Accent: Cream beige (#e8d5c4)
 
@@ -115,7 +115,7 @@ Edit `index.html` and modify the text within the HTML tags.
 Edit `styles.css` and update the CSS variables at the top:
 ```css
 :root {
-    --primary-color: #5a7c65;
+    --primary-color: #295c47;
     --secondary-color: #d4a574;
     /* etc. */
 }

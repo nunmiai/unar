@@ -1,5 +1,5 @@
 :root {
-    --primary-color: #5a7c65;
+    --primary-color: #295c47;
     --primary-dark: #475f50;
     --secondary-color: #d4a574;
     --accent-color: #e8d5c4;
@@ -302,7 +302,7 @@ body {
     font-family: var(--font-serif);
     font-size: 22px;
     font-weight: 600;
-    color: var(--secondary-color);
+    color: #c28445;
     font-style: italic;
 }
 
@@ -1412,6 +1412,13 @@ section {
 .form-group textarea::placeholder,
 .form-group select::placeholder {
     color: #999;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.form-group input:focus::placeholder,
+.form-group textarea:focus::placeholder,
+.form-group select:focus::placeholder {
     opacity: 0.6;
 }
 
@@ -1689,6 +1696,19 @@ section {
     .footer-content {
         grid-template-columns: 1fr;
         gap: 32px;
+        text-align: center;
+    }
+
+    .footer-brand,
+    .footer-links,
+    .footer-contact {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-logo-img {
+        margin: 0 auto -12px;
     }
 }
 

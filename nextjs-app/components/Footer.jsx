@@ -148,9 +148,14 @@ export default function Footer() {
             </Link>
           </div>
         </div>
-        <div className="border-t border-white/10 pt-6 text-center text-white/40 text-sm">
-          © {new Date().getFullYear()} <span className="font-edo font-normal tracking-wider text-[1.1em]">UNAR</span>. All rights reserved. | Handcrafted with ❤️ by team{" "}
-          <a href="https://nunmi.in/" target="_blank" rel="noopener noreferrer" className="text-[#d4a574] hover:text-[#e8c9a8] transition-colors">NuNmi</a>
+        <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left text-white/40 text-sm">
+          <div>
+            © {new Date().getFullYear()} <span className="font-edo font-normal tracking-wider text-[1.1em]">UNAR</span>. All rights reserved. | Handcrafted with ❤️ by team{" "}
+            <a href="https://nunmi.in/" target="_blank" rel="noopener noreferrer" className="text-[#d4a574] hover:text-[#e8c9a8] transition-colors">NuNmi</a>
+          </div>
+          <div className="text-white/60 text-[10px] font-bold uppercase tracking-widest border border-white/10 px-3.5 py-1.5 rounded-full bg-white/5 select-none hover:bg-white/10 transition-colors">
+            ISO 9001:2015 Certified
+          </div>
         </div>
       </div>
     </footer>

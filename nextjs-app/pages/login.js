@@ -142,7 +142,7 @@ export default function LoginPage() {
             <p className="text-[14px] leading-[1.9] text-[#295c47]/80 max-w-[280px] mx-auto font-medium">A sensory brand dedicated to the art of awakening. We bridge the gap between ancient heritage and modern mindfulness through intentional, handcrafted rituals.</p>
             <div className="inline-flex items-center gap-1.5 mt-10 bg-[#295c47]/8 border border-[#295c47]/15 rounded-full px-[18px] py-2 text-[11px] tracking-wide text-[#295c47]/90 font-semibold">
               <Shield size={12} className="text-[#295c47]" />
-              100% Natural · Zero Waste · Cruelty Free
+              100% Natural · Cruelty Free
             </div>
           </div>
 

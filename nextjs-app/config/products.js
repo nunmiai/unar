@@ -341,10 +341,20 @@ export const PRODUCTS = [
       "heart": "Blue Lotus, Vetiver"
     },
     "specialTitle": "What makes the Discovery Set special?",
-    "specialText": "Can't decide on just one fragrance? Our Unar Solid Perfumes Discovery Set is the ultimate curation of conscious scents. It features all 8 of our handcrafted solid perfumes in mini 5g round tins, beautifully presented in a recycled botanical box. Discover Champa, Jasmine, Rose, Frangipani, Blue Lotus, Vetiver, Oud, and Sandalwood, and see how they interact with your skin's unique chemistry.",
+    "specialText": "Can't decide on just one fragrance? Our Unar Solid Perfumes Discovery Set is the ultimate curation of conscious scents. It features all 9 of our handcrafted solid perfumes in mini 3g round tins, beautifully presented in a recycled botanical box. Discover Champa, Jasmine, Rose, Frangipani, Blue Lotus, Vetiver, Oud, Sandalwood and Parijat, and see how they interact with your skin's unique chemistry.",
 
     "howToUse": {
-      "text": "Test each tin on your skin for a few days to see how the fragrance notes settle over hours with your natural body oils."
+      "steps": [
+        "Use the Spatula to take a small amount.",
+        "Glide it gently until absorbed."
+      ],
+      "areas": [
+        "Wrists",
+        "Neck",
+        "Behind ears",
+        "Underarms",
+        "Over the heart center"
+      ]
     },
 
     "howToUseText": "Test each tin on your skin for a few days to see how the fragrance notes settle over hours with your natural body oils.",

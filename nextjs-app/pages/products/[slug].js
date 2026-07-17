@@ -11,7 +11,7 @@ import Footer from "@/components/Footer";
 import CartSidebar from "@/components/CartSidebar";
 import CheckoutModal from "@/components/CheckoutModal";
 import { PRODUCTS, FAQS } from "@/config/products";
-import { ShoppingCart, Check, ChevronDown, ChevronUp, Shield, Truck, Sparkles, AlertCircle, HelpCircle, Sparkle, Clock, Hand, Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { ShoppingCart, Check, ChevronDown, ChevronUp, Shield, Truck, Sparkles, AlertCircle, HelpCircle, Sparkle, Clock, Hand, Heart, ChevronLeft, ChevronRight, Award } from "lucide-react";
 
 const FEATURES = [
   { icon: "/assets/icons/natural.png", title: "100% Natural", desc: "Pure beeswax and essential oils, with absolutely no synthetic ingredients or harmful chemicals." },
@@ -609,7 +609,7 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Trust badges */}
-              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[10px] font-bold uppercase tracking-wider text-[#636e72] font-['Urbanist'] mb-6 select-none">
+              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5 text-[10px] font-bold uppercase tracking-wider text-[#636e72] font-['Urbanist'] mb-6 select-none">
                 <div className="flex items-center gap-1.5">
                   <Truck size={13} className="text-[#295c47]" />
                   <span>Free shipping above ₹999</span>
@@ -617,6 +617,10 @@ export default function ProductDetailPage() {
                 <div className="flex items-center gap-1.5">
                   <Shield size={13} className="text-[#295c47]" />
                   <span>Non-Returnable (Hygiene Standards)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Award size={13} className="text-[#295c47]" />
+                  <span>ISO 9001:2015 Certified</span>
                 </div>
               </div>
 

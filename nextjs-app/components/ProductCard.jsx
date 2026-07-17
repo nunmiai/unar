@@ -106,12 +106,12 @@ export default function ProductCard({ product }) {
             </span>
           </div>
 
-          {outOfStock ? (
+          {outOfStock || slug === "discovery-set" ? (
             <Link
               href={`/products/${slug}`}
-              className="text-[11px] font-extrabold uppercase tracking-widest text-[#295c47] hover:text-[#285b46] flex items-center gap-0.5 group/link transition-colors"
+              className="text-[11px] font-extrabold uppercase tracking-widest text-[#295c47] hover:text-[#285b46] flex items-center gap-0.5 group/link transition-colors cursor-pointer"
             >
-              Explore
+              {slug === "discovery-set" ? "Select Scents" : "Explore"}
               <span className="transition-transform duration-300 transform group-hover/link:translate-x-1">→</span>
             </Link>
           ) : (

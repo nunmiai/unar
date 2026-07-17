@@ -161,7 +161,7 @@ export default function Home() {
                 The idea took shape in a flower market, when the scent of golden champa pulled us straight into a childhood memory — a single flower in the hair, its quiet fragrance lasting all day, with no alcohol, no harshness, just pure happiness close to the body. That moment showed us what we truly wanted: fragrance that is alive, botanical, and rooted in our own land.
               </p>
               <p className="text-[17px] leading-[1.9] text-[#636e72] mb-6">
-                UNAR creates conscious fragrances using native botanicals, plant-based ingredients, and mindful formulations — whether in solid perfumes, hair fragrances, car scents, or room fresheners.
+                UNAR creates conscious fragrances using native botanicals, plant-based ingredients, and mindful formulations — whether in solid perfumes, hair fragrances, car scents, or room fresheners. Every product is crafted in an ISO 9001:2015 certified facility, ensuring the highest standards of quality control and care.
               </p>
               <p className="text-[17px] leading-[1.9] text-[#636e72] mb-6">
                 Whatever the format, our aim is the same: to keep the experience intimate, clean, and deeply connected to you and your space.

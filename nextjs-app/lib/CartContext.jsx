@@ -9,12 +9,14 @@ const FREE_SHIPPING_THRESHOLD = 1000;
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  // appliedCoupon shape: { code, discountPercent, description } | null
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem("unarCart");
       if (stored) setCart(JSON.parse(stored));
-    } catch {}
+    } catch { }
   }, []);
 
   const saveCart = useCallback((newCart) => {
@@ -29,10 +31,10 @@ export function CartProvider({ children }) {
         const existing = prev.find((item) => (item.id || item.name) === productId);
         const next = existing
           ? prev.map((item) =>
-              (item.id || item.name) === productId
-                ? { ...item, quantity: item.quantity + quantityToAdd }
-                : item
-            )
+            (item.id || item.name) === productId
+              ? { ...item, quantity: item.quantity + quantityToAdd }
+              : item
+          )
           : [...prev, { ...product, id: productId, quantity: quantityToAdd }];
         localStorage.setItem("unarCart", JSON.stringify(next));
         return next;
@@ -59,8 +61,8 @@ export function CartProvider({ children }) {
         newQty <= 0
           ? prev.filter((i) => (i.id || i.name) !== idOrName)
           : prev.map((i) =>
-              (i.id || i.name) === idOrName ? { ...i, quantity: newQty } : i
-            );
+            (i.id || i.name) === idOrName ? { ...i, quantity: newQty } : i
+          );
       localStorage.setItem("unarCart", JSON.stringify(next));
       return next;
     });
@@ -78,7 +80,13 @@ export function CartProvider({ children }) {
   );
   const cartShipping =
     cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : cart.length > 0 ? SHIPPING_COST : 0;
-  const cartTotal = cartSubtotal + cartShipping;
+
+  // Coupon discount — applied to subtotal only (before shipping)
+  const discountAmount = appliedCoupon
+    ? Math.round((cartSubtotal * appliedCoupon.discountPercent) / 100)
+    : 0;
+  const discountedSubtotal = cartSubtotal - discountAmount;
+  const cartTotal = discountedSubtotal + cartShipping;
 
   return (
     <CartContext.Provider
@@ -96,6 +104,10 @@ export function CartProvider({ children }) {
         clearCart,
         SHIPPING_COST,
         FREE_SHIPPING_THRESHOLD,
+        appliedCoupon,
+        setAppliedCoupon,
+        discountAmount,
+        discountedSubtotal,
       }}
     >
       {children}

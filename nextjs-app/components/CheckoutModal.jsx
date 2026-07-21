@@ -5,14 +5,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Shield, X, Minus, Plus, Trash2 } from "lucide-react";
+import { Shield, X, Minus, Plus, Trash2, Tag, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
 const LAMBDA_API_URL =
   "https://vfl2536p7nvialuiwcgt22s6iu0noirr.lambda-url.us-east-1.on.aws";
 
+// Coupon Lambda URL — set NEXT_PUBLIC_COUPON_LAMBDA_URL in your .env.local
+const COUPON_LAMBDA_URL =
+  process.env.NEXT_PUBLIC_COUPON_LAMBDA_URL || "";
+
 export default function CheckoutModal({ isOpen, onClose }) {
-  const { cart, cartSubtotal, cartShipping, cartTotal, clearCart, updateQuantity, removeFromCart } =
-    useCart();
+  const {
+    cart,
+    cartSubtotal,
+    cartShipping,
+    cartTotal,
+    discountAmount,
+    appliedCoupon,
+    setAppliedCoupon,
+    clearCart,
+    updateQuantity,
+    removeFromCart,
+  } = useCart();
 
   const [form, setForm] = useState({
     name: "",
@@ -23,10 +37,85 @@ export default function CheckoutModal({ isOpen, onClose }) {
   });
   const [loading, setLoading] = useState(false);
 
+  // ── Coupon state ────────────────────────────────────────────────────────────
+  const [couponInput, setCouponInput] = useState("");
+  const [couponStatus, setCouponStatus] = useState(null); // null | "loading" | "success" | "error"
+  const [couponMessage, setCouponMessage] = useState("");
+
+  // Reset coupon UI whenever the modal is closed
+  useEffect(() => {
+    if (!isOpen) {
+      setCouponInput("");
+      setCouponStatus(null);
+      setCouponMessage("");
+    }
+  }, [isOpen]);
+
   const handleChange = (e) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+    // If email changes and a coupon is already applied, clear it to re-validate
+    if (e.target.name === "email" && appliedCoupon) {
+      setAppliedCoupon(null);
+      setCouponStatus(null);
+      setCouponMessage("");
+    }
   };
 
+  // ── Coupon apply handler ────────────────────────────────────────────────────
+  const handleApplyCoupon = async () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) {
+      setCouponStatus("error");
+      setCouponMessage("Please enter a coupon code");
+      return;
+    }
+
+    setCouponStatus("loading");
+    setCouponMessage("");
+
+    try {
+      const res = await fetch(`${COUPON_LAMBDA_URL}/coupon/validate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          coupon_code: code,
+          email: form.email.trim().toLowerCase(),
+        }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setAppliedCoupon({
+          code: data.coupon_code,
+          discountPercent: data.discount_percent,
+          description: data.description,
+        });
+        setCouponStatus("success");
+        setCouponMessage(
+          data.description
+            ? `${data.description} — ${data.discount_percent}% off applied!`
+            : `${data.discount_percent}% discount applied!`
+        );
+      } else {
+        setAppliedCoupon(null);
+        setCouponStatus("error");
+        setCouponMessage(data.error || "Invalid coupon code");
+      }
+    } catch {
+      setAppliedCoupon(null);
+      setCouponStatus("error");
+      setCouponMessage("Unable to validate coupon. Please try again.");
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput("");
+    setCouponStatus(null);
+    setCouponMessage("");
+  };
+
+  // ── Payment submit handler ──────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.phone || form.phone.trim().length < 10) {
@@ -56,6 +145,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
             address: form.address,
             pincode: form.pincode,
             items: cart.map((i) => `${i.name}${i.selectedScents ? ` (${i.selectedScents.join(", ")})` : ""} x${i.quantity}`).join(", "),
+            ...(appliedCoupon ? { coupon_code: appliedCoupon.code } : {}),
           },
         }),
       });
@@ -80,12 +170,17 @@ export default function CheckoutModal({ isOpen, onClose }) {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
+                // Pass coupon details so payment Lambda can tag + mark-used
+                coupon_code: appliedCoupon?.code || null,
+                coupon_email: appliedCoupon ? form.email.trim().toLowerCase() : null,
                 order_details: {
                   customer: form,
                   items: cart,
                   subtotal: cartSubtotal,
                   shipping: cartShipping,
+                  discount: discountAmount,
                   total: cartTotal,
+                  coupon_code: appliedCoupon?.code || null,
                 },
               }),
             });
@@ -297,12 +392,90 @@ export default function CheckoutModal({ isOpen, onClose }) {
               })}
             </div>
 
-            {/* Totals */}
+            {/* ── Coupon Code Section ────────────────────────────────────── */}
+            <div className="mb-5">
+              <Label className="text-xs font-semibold text-[#636e72] uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                <Tag size={12} />
+                Coupon Code
+              </Label>
+
+              {appliedCoupon ? (
+                /* Applied state */
+                <div className="flex items-center gap-2 bg-[#295c47]/8 border border-[#295c47]/30 rounded-xl px-4 py-2.5">
+                  <CheckCircle2 size={16} className="text-[#295c47] flex-shrink-0" />
+                  <span className="text-sm text-[#295c47] font-semibold flex-1 truncate">
+                    {appliedCoupon.code}
+                  </span>
+                  <span className="text-xs text-[#295c47] font-bold bg-[#295c47]/10 px-2 py-0.5 rounded-full">
+                    -{appliedCoupon.discountPercent}%
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRemoveCoupon}
+                    className="ml-1 text-[#636e72] hover:text-red-500 transition-colors"
+                    aria-label="Remove coupon"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                /* Input state */
+                <div className="flex gap-2">
+                  <Input
+                    id="coupon-input"
+                    value={couponInput}
+                    onChange={(e) => {
+                      setCouponInput(e.target.value.toUpperCase());
+                      if (couponStatus) { setCouponStatus(null); setCouponMessage(""); }
+                    }}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleApplyCoupon())}
+                    placeholder="Enter coupon code"
+                    maxLength={20}
+                    className="flex-1 border-[#e8e4df] focus:border-[#295c47] uppercase tracking-widest text-sm font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyCoupon}
+                    disabled={couponStatus === "loading" || !couponInput.trim()}
+                    className="px-4 py-2 rounded-lg bg-[#295c47] text-white text-sm font-semibold hover:bg-[#475f50] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                  >
+                    {couponStatus === "loading" ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : "Apply"}
+                  </button>
+                </div>
+              )}
+
+              {/* Status message */}
+              {couponStatus === "success" && couponMessage && (
+                <div className="flex items-start gap-1.5 mt-2">
+                  <CheckCircle2 size={14} className="text-[#295c47] mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-[#295c47] font-medium">{couponMessage}</p>
+                </div>
+              )}
+              {couponStatus === "error" && couponMessage && (
+                <div className="flex items-start gap-1.5 mt-2">
+                  <XCircle size={14} className="text-red-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-red-500">{couponMessage}</p>
+                </div>
+              )}
+            </div>
+
+            {/* ── Totals ────────────────────────────────────────────────── */}
             <div className="border-t border-[#e8e4df] pt-4 space-y-2">
               <div className="flex justify-between text-sm text-[#636e72]">
                 <span>Subtotal</span>
                 <span>₹{cartSubtotal}</span>
               </div>
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-sm font-medium text-[#295c47]">
+                  <span className="flex items-center gap-1">
+                    <Tag size={12} />
+                    Discount ({appliedCoupon?.discountPercent}%)
+                  </span>
+                  <span>−₹{discountAmount}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm text-[#636e72]">
                 <span>Shipping</span>
                 <span>{cartShipping === 0 ? "FREE" : `₹${cartShipping}`}</span>

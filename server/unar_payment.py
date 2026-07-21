@@ -15,20 +15,27 @@ RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET')
 
 # SES Email configuration
 SES_SENDER_EMAIL = os.environ.get('SES_SENDER_EMAIL', 'no-reply@unar.in')
-ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'unar.consciousliving@gmail.com')
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'unar@unar.in')
 ses_client = boto3.client('ses', region_name='us-east-1')
+
 
 # DynamoDB setup
 DYNAMODB_TABLE_NAME = os.environ.get('DYNAMODB_TABLE_NAME', 'user_payment_details')
 dynamodb = boto3.resource('dynamodb')
 orders_table = dynamodb.Table(DYNAMODB_TABLE_NAME)
 
+# Coupon Lambda integration
+# Set COUPON_LAMBDA_URL to the Function URL of the unar_coupon Lambda
+# Set COUPON_ADMIN_KEY to the same ADMIN_SECRET_KEY configured on the coupon Lambda
+COUPON_LAMBDA_URL = os.environ.get('COUPON_LAMBDA_URL', '').rstrip('/')
+COUPON_ADMIN_KEY = os.environ.get('COUPON_ADMIN_KEY', '')
+
 # CORS headers
 HEADERS = {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
+    # 'Access-Control-Allow-Origin': '*',
+    # 'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+    # 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
 }
 
 
@@ -183,7 +190,8 @@ def create_order_in_dynamodb(phone, order_id, customer, notes, items, amount, cu
                 'customer_email': order_record['customer_email'],
                 'orders': [order_record],
                 'created_at': timestamp,
-                'updated_at': timestamp
+                'updated_at': timestamp,
+                'user_id':order_record['user_id']
             })
     except Exception as e:
         print(f'Create order DB error: {str(e)}')
@@ -267,6 +275,9 @@ def verify_payment(event):
     razorpay_payment_id = body.get('razorpay_payment_id')
     razorpay_signature = body.get('razorpay_signature')
     order_details = body.get('order_details', {})
+    # Optional coupon fields passed from the checkout UI
+    coupon_code = (body.get('coupon_code') or '').strip().upper() or None
+    coupon_email = (body.get('coupon_email') or '').strip().lower() or None
 
     if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature]):
         return response(400, {'error': 'Missing payment verification parameters'})
@@ -377,6 +388,27 @@ def verify_payment(event):
         print(f'Failed to send emails: {str(e)}')
         # Continue even if email fails - payment is still verified
 
+    # Tag coupon on order record and mark it as redeemed in the coupon Lambda
+    if coupon_code:
+        try:
+            # Tag the coupon_code onto the DynamoDB order record
+            orders_table.update_item(
+                Key={'order_id': razorpay_order_id},
+                UpdateExpression='SET coupon_code = :c',
+                ExpressionAttributeValues={':c': coupon_code}
+            )
+            print(f'Coupon {coupon_code} tagged on order {razorpay_order_id}')
+        except Exception as e:
+            print(f'Failed to tag coupon on order: {str(e)}')
+            # Non-fatal — payment is already verified
+
+        if coupon_email and COUPON_LAMBDA_URL:
+            try:
+                call_coupon_mark_used(coupon_code, coupon_email)
+            except Exception as e:
+                print(f'Failed to mark coupon as used: {str(e)}')
+                # Non-fatal — payment is already verified
+
     return response(200, {
         'success': True,
         'message': 'Payment verified successfully',
@@ -386,6 +418,25 @@ def verify_payment(event):
         'method': payment_method,
         'amount': amount
     })
+
+
+def call_coupon_mark_used(coupon_code, email):
+    """Call the coupon Lambda's /coupon/mark-used endpoint to lock the coupon."""
+    url = f'{COUPON_LAMBDA_URL}/coupon/mark-used'
+    payload = json.dumps({'coupon_code': coupon_code, 'email': email}).encode('utf-8')
+    req = urllib.request.Request(
+        url,
+        data=payload,
+        headers={
+            'Content-Type': 'application/json',
+            'X-Admin-Key': COUPON_ADMIN_KEY,
+        },
+        method='POST'
+    )
+    with urllib.request.urlopen(req, timeout=5) as r:
+        result = json.loads(r.read().decode('utf-8'))
+    print(f'mark_coupon_used response for {coupon_code}: {result}')
+    return result
 
 
 def update_order_status_in_dynamodb(phone, order_id, payment_id, payment_status, payment_method, order_status, amount=None, items=None):
@@ -478,7 +529,6 @@ def razorpay_request(method, endpoint, data=None):
     with urllib.request.urlopen(req) as resp:
         return json.loads(resp.read().decode('utf-8'))
 
-
 def send_customer_email(customer_email, customer_name, order_id, payment_id, items, amount, address, pincode, phone):
     """Send order confirmation email to customer"""
     
@@ -504,13 +554,13 @@ def send_customer_email(customer_email, customer_name, order_id, payment_id, ite
     <head><meta charset="UTF-8"></head>
     <body style="margin: 0; padding: 0; font-family: Georgia, serif; background-color: #faf8f5;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-            <div style="background: linear-gradient(135deg, #295c47 0%, #4a6b55 100%); padding: 30px; text-align: center;">
+            <div style="background: linear-gradient(135deg, #5a7c65 0%, #4a6b55 100%); padding: 30px; text-align: center;">
                 <h1 style="color: #ffffff; margin: 0; font-size: 32px; letter-spacing: 3px;">UNAR</h1>
                 <p style="color: #d4a574; margin: 5px 0 0 0; font-size: 12px; letter-spacing: 2px;">NATURAL SOLID PERFUMES</p>
             </div>
             
             <div style="padding: 40px 30px 20px 30px;">
-                <h2 style="color: #295c47; margin: 0 0 10px 0;">Thank you, {first_name}!</h2>
+                <h2 style="color: #5a7c65; margin: 0 0 10px 0;">Thank you, {first_name}!</h2>
                 <p style="color: #6b6b6b; line-height: 1.6;">Your order has been confirmed. Here's your order summary:</p>
             </div>
             
@@ -532,25 +582,25 @@ def send_customer_email(customer_email, customer_name, order_id, payment_id, ite
             </div>
             
             <div style="padding: 30px;">
-                <h3 style="color: #295c47; margin: 0 0 15px 0; border-bottom: 2px solid #d4a574; padding-bottom: 10px;">Order Details</h3>
+                <h3 style="color: #5a7c65; margin: 0 0 15px 0; border-bottom: 2px solid #d4a574; padding-bottom: 10px;">Order Details</h3>
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr style="background-color: #faf8f5;">
-                            <th style="padding: 12px; text-align: left; color: #295c47;">Item</th>
-                            <th style="padding: 12px; text-align: center; color: #295c47;">Qty</th>
-                            <th style="padding: 12px; text-align: right; color: #295c47;">Price</th>
+                            <th style="padding: 12px; text-align: left; color: #5a7c65;">Item</th>
+                            <th style="padding: 12px; text-align: center; color: #5a7c65;">Qty</th>
+                            <th style="padding: 12px; text-align: right; color: #5a7c65;">Price</th>
                         </tr>
                     </thead>
                     <tbody>{items_html}</tbody>
                 </table>
                 
                 <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #e8e0d5; text-align: right;">
-                    <span style="color: #295c47; font-size: 20px; font-weight: bold;">Total: ₹{amount:.0f}</span>
+                    <span style="color: #5a7c65; font-size: 20px; font-weight: bold;">Total: ₹{amount:.0f}</span>
                 </div>
             </div>
             
             <div style="background-color: #faf8f5; margin: 0 30px; padding: 20px; border-radius: 8px;">
-                <h4 style="color: #295c47; margin: 0 0 10px 0; font-size: 14px;">DELIVERY ADDRESS</h4>
+                <h4 style="color: #5a7c65; margin: 0 0 10px 0; font-size: 14px;">DELIVERY ADDRESS</h4>
                 <p style="color: #333; margin: 0; line-height: 1.6;">
                     {customer_name}<br>{address}<br>Pincode: {pincode}<br>Phone: {phone}
                 </p>
@@ -560,9 +610,9 @@ def send_customer_email(customer_email, customer_name, order_id, payment_id, ite
                 <p style="color: #d4a574; font-style: italic;">"Embrace nature's essence, one fragrance at a time."</p>
             </div>
             
-            <div style="background-color: #295c47; padding: 25px; text-align: center;">
+            <div style="background-color: #5a7c65; padding: 25px; text-align: center;">
                 <p style="color: #ffffff; margin: 0 0 5px 0; font-size: 14px;">Need help? Contact us at</p>
-                <a href="mailto:unar.consciousliving@gmail.com" style="color: #d4a574; text-decoration: none;">unar.consciousliving@gmail.com</a>
+                <a href="mailto:unar@unar.in" style="color: #d4a574; text-decoration: none;">unar@unar.in</a>
                 <p style="color: rgba(255,255,255,0.7); margin: 15px 0 0 0; font-size: 11px;">100% Natural | Zero Waste | Cruelty Free</p>
             </div>
         </div>
@@ -584,7 +634,7 @@ def send_customer_email(customer_email, customer_name, order_id, payment_id, ite
         print(f'Customer email sent to {customer_email}')
     except Exception as e:
         print(f'Failed to send customer email: {str(e)}')
-        raise e
+        
 
 
 def send_admin_email(customer_name, customer_email, customer_phone, order_id, payment_id, items, amount, address, pincode, payment_method):
@@ -599,16 +649,16 @@ def send_admin_email(customer_name, customer_email, customer_phone, order_id, pa
     <head><meta charset="UTF-8"></head>
     <body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; background-color: #f5f5f5;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <div style="background-color: #295c47; padding: 20px; text-align: center;">
+            <div style="background-color: #5a7c65; padding: 20px; text-align: center;">
                 <h1 style="color: #ffffff; margin: 0; font-size: 20px;">🛒 New Order Received!</h1>
             </div>
             
             <div style="padding: 25px;">
                 <div style="background-color: #f0f7f2; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <h2 style="color: #295c47; margin: 0 0 10px 0; font-size: 16px;">Order #{order_short}</h2>
+                    <h2 style="color: #5a7c65; margin: 0 0 10px 0; font-size: 16px;">Order #{order_short}</h2>
                     <p style="margin: 5px 0; color: #666;"><strong>Payment ID:</strong> {payment_id}</p>
                     <p style="margin: 5px 0; color: #666;"><strong>Method:</strong> {payment_method}</p>
-                    <p style="margin: 5px 0; color: #666;"><strong>Amount:</strong> <span style="font-size: 18px; color: #295c47; font-weight: bold;">₹{amount:.0f}</span></p>
+                    <p style="margin: 5px 0; color: #666;"><strong>Amount:</strong> <span style="font-size: 18px; color: #5a7c65; font-weight: bold;">₹{amount:.0f}</span></p>
                 </div>
                 
                 <h3 style="color: #333; border-bottom: 2px solid #d4a574; padding-bottom: 8px;">Customer Details</h3>
@@ -647,7 +697,8 @@ def send_admin_email(customer_name, customer_email, customer_phone, order_id, pa
         print(f'Admin email sent to {ADMIN_EMAIL}')
     except Exception as e:
         print(f'Failed to send admin email: {str(e)}')
-        raise e
+        
+
 
 
 def response(status_code, body):

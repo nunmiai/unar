@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { X, ShoppingCart, Minus, Plus, Trash2 } from "lucide-react";
 
 export default function CartSidebar({ isOpen, onClose }) {
-  const { cart, cartCount, cartSubtotal, cartShipping, cartTotal, removeFromCart, updateQuantity, FREE_SHIPPING_THRESHOLD } =
+  const { cart, cartCount, cartSubtotal, cartShipping, cartTotal, discountAmount, appliedCoupon, removeFromCart, updateQuantity, FREE_SHIPPING_THRESHOLD } =
     useCart();
   const sidebarRef = useRef(null);
 
@@ -126,6 +126,12 @@ export default function CartSidebar({ isOpen, onClose }) {
               <span>Subtotal</span>
               <span>₹{cartSubtotal}</span>
             </div>
+            {discountAmount > 0 && (
+              <div className="flex justify-between items-center mb-2 text-sm font-medium text-[#295c47]">
+                <span>Discount ({appliedCoupon?.discountPercent}%)</span>
+                <span>−₹{discountAmount}</span>
+              </div>
+            )}
             <div className="flex justify-between items-center mb-3 text-sm text-[#636e72]">
               <span>Shipping</span>
               <span>{cartShipping === 0 ? "FREE" : `₹${cartShipping}`}</span>

@@ -31,7 +31,7 @@ const INGREDIENTS = [
 export default function ProductDetailPage() {
   const router = useRouter();
   const { slug } = router.query;
-  const { addToCart, cart, updateQuantity } = useCart();
+  const { addToCart, cart, updateQuantity, appliedCoupon, setAppliedCoupon, discountAmount } = useCart();
 
   const [product, setProduct] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState("box");
@@ -40,6 +40,8 @@ export default function ProductDetailPage() {
   const [selectedScents, setSelectedScents] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [localQuantity, setLocalQuantity] = useState(1);
+  const [addingToCart, setAddingToCart] = useState(false);
 
   // General Accordion states
   const [accordions, setAccordions] = useState({
@@ -53,12 +55,81 @@ export default function ProductDetailPage() {
   // FAQs Accordion states
   const [faqOpenIndex, setFaqOpenIndex] = useState(null);
 
+  // Coupon UI state (local to this page)
+  const [couponInput, setCouponInput] = useState("");
+  const [couponStatus, setCouponStatus] = useState(null); // null | "loading" | "success" | "error"
+  const [couponMessage, setCouponMessage] = useState("");
+  const [defaultCoupons, setDefaultCoupons] = useState([]); // fetched from coupon Lambda
+
   const toggleAccordion = (section) => {
     setAccordions((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
   const toggleFaq = (index) => {
     setFaqOpenIndex(faqOpenIndex === index ? null : index);
+  };
+
+  const COUPON_LAMBDA_URL =
+    process.env.NEXT_PUBLIC_COUPON_LAMBDA_URL || "https://gcxezmcpoov26ggxmguzrpb25e0jzdju.lambda-url.us-east-1.on.aws";
+
+  // Fetch default coupons once on mount
+  useEffect(() => {
+    if (!COUPON_LAMBDA_URL) return;
+    fetch(`${COUPON_LAMBDA_URL}/coupon/list-default`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.coupons)) {
+          setDefaultCoupons(data.coupons);
+        }
+      })
+      .catch((err) => console.warn('Failed to fetch default coupons:', err));
+  }, [COUPON_LAMBDA_URL]);
+
+  const handleApplyCoupon = async (codeOverride) => {
+    const code = (codeOverride || couponInput).trim().toUpperCase();
+    if (!code) {
+      setCouponStatus("error");
+      setCouponMessage("Please enter a coupon code");
+      return;
+    }
+    setCouponStatus("loading");
+    setCouponMessage("");
+    try {
+      const res = await fetch(`${COUPON_LAMBDA_URL}/coupon/validate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ coupon_code: code, email: "" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAppliedCoupon({
+          code: data.coupon_code,
+          discountPercent: data.discount_percent,
+          description: data.description,
+        });
+        setCouponStatus("success");
+        setCouponMessage(
+          data.description
+            ? `${data.description} — ${data.discount_percent}% off applied!`
+            : `${data.discount_percent}% discount applied!`
+        );
+      } else {
+        setAppliedCoupon(null);
+        setCouponStatus("error");
+        setCouponMessage(data.error || "Invalid coupon code");
+      }
+    } catch {
+      setAppliedCoupon(null);
+      setCouponStatus("error");
+      setCouponMessage("Unable to validate coupon. Please try again.");
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput("");
+    setCouponStatus(null);
+    setCouponMessage("");
   };
 
   useEffect(() => {
@@ -81,20 +152,20 @@ export default function ProductDetailPage() {
           if (solidCandidates.length > 0) {
             const sortedSolidsAsc = [...solidCandidates].sort((a, b) => a.price - b.price);
             const lowestThree = sortedSolidsAsc.slice(0, 3);
-            
+
             const sortedSolidsDesc = [...solidCandidates].sort((a, b) => b.price - a.price);
             const highestThree = sortedSolidsDesc.slice(0, 3);
-            
+
             const minItem = lowestThree[Math.floor(Math.random() * lowestThree.length)];
-            
+
             let highestCandidates = highestThree.filter((p) => p.slug !== minItem.slug);
             if (highestCandidates.length === 0) {
               highestCandidates = highestThree;
             }
             const maxItem = highestCandidates[Math.floor(Math.random() * highestCandidates.length)];
-            
+
             const discoverySetItem = PRODUCTS.find((p) => p.slug === "discovery-set");
-            
+
             related.push(maxItem);
             if (minItem.slug !== maxItem.slug) {
               related.push(minItem);
@@ -170,7 +241,7 @@ export default function ProductDetailPage() {
 
   // Resolve active image
   const currentImage = `/assets/website_assets/mockups/${image}`;
-  
+
   const hasCustomSlides = [
     "jasmine",
     "rose",
@@ -230,10 +301,15 @@ export default function ProductDetailPage() {
           price,
           image,
           selectedScents: sortedScents
-        }, 1);
+        }, localQuantity);
       } else {
-        addToCart({ name, price, image }, 1);
+        addToCart({ name, price, image }, localQuantity);
       }
+      setAddingToCart(true);
+      setTimeout(() => {
+        setAddingToCart(false);
+        setLocalQuantity(1);
+      }, 1000);
     }
   };
 
@@ -252,11 +328,11 @@ export default function ProductDetailPage() {
             price,
             image,
             selectedScents: sortedScents
-          }, 1);
+          }, localQuantity);
         }
       } else {
         if (!inCart) {
-          addToCart({ name, price, image }, 1);
+          addToCart({ name, price, image }, localQuantity);
         }
       }
       setCheckoutOpen(true);
@@ -310,10 +386,10 @@ export default function ProductDetailPage() {
 
         {/* HERO SECTION: Gallery and Header Details */}
         <div className="max-w-[1300px] mx-auto px-6 mb-20">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-16 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-x-16 gap-y-12 items-start relative">
 
             {/* Left Image Showcase & Features */}
-            <div className="relative flex flex-col-reverse md:flex-row gap-8 items-start w-full">
+            <div className="relative flex flex-col-reverse md:flex-row gap-8 items-start w-full lg:col-start-1 lg:row-start-1">
 
               {/* Features list (Why Choose Unar) */}
               <div className="flex flex-row md:flex-col justify-around md:justify-start md:gap-8 w-full md:w-auto flex-shrink-0 pt-4 md:pt-0">
@@ -359,7 +435,7 @@ export default function ProductDetailPage() {
                         key={index}
                         src={slide}
                         alt={`${name} Slide ${index + 1}`}
-                        className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-in-out ${activeSlide === index ? "opacity-100 z-10 scale-100" : "opacity-0 z-0 scale-95"
+                        className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out ${activeSlide === index ? "opacity-100 z-10 scale-100 group-hover:scale-105" : "opacity-0 z-0 scale-95"
                           }`}
                       />
                     ))}
@@ -414,7 +490,7 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Right Product Options Details */}
-            <div className="flex flex-col">
+            <div className="flex flex-col lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:sticky lg:top-[140px] z-10 pb-8 h-fit">
 
               {/* Product Header */}
               <div className="border-b border-[#e8e4df] pb-6 mb-6">
@@ -499,8 +575,8 @@ export default function ProductDetailPage() {
                           onClick={handleSelect}
                           className={`flex items-center gap-3 p-2.5 rounded-xl border text-left transition-all relative overflow-hidden group ${isSelected
                             ? "border-[#295c47] bg-white shadow-sm ring-1 ring-[#295c47]/30"
-                            : "border-[#e8e4df] bg-white hover:bg-[#faf8f5] hover:border-[#d4a574]/60"
-                            }`}
+                            : "border-[#e8e4df] bg-white hover:bg-[#faf8f5] hover:border-[#d4a574]/60 hover:-translate-y-1 hover:shadow-md"
+                            } ${!isSelected && selectedScents.length >= 5 ? "opacity-50 grayscale" : ""}`}
                         >
                           {/* Scent Thumbnail */}
                           <div className="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-br from-[#f8f6f3] to-[#f0ebe5] border border-[#e8e4df]/60 relative">
@@ -536,24 +612,24 @@ export default function ProductDetailPage() {
               )}
 
               {/* Quantity Selector */}
-              {!outOfStock && inCart && (
+              {!outOfStock && (
                 <div className="flex items-center justify-between mb-6 bg-[#faf8f5] border border-[#e8e4df] rounded-2xl p-4 animate-fade-in">
                   <span className="text-xs font-bold uppercase tracking-wider text-[#285b46]">
                     Select Quantity
                   </span>
                   <div className="flex items-center border border-[#e8e4df] bg-white rounded-full p-1 shadow-sm">
                     <button
-                      onClick={() => updateQuantity(currentId || name, -1)}
+                      onClick={() => inCart ? updateQuantity(currentId || name, -1) : setLocalQuantity(Math.max(1, localQuantity - 1))}
                       className="w-8 h-8 flex items-center justify-center rounded-full text-[#636e72] hover:bg-[#295c47]/5 hover:text-[#285b46] active:scale-95 transition-all font-bold cursor-pointer"
                       title="Decrease Quantity"
                     >
                       -
                     </button>
                     <span className="w-12 text-center font-bold text-[#2d3436] text-sm select-none">
-                      {inCart.quantity}
+                      {inCart ? inCart.quantity : localQuantity}
                     </span>
                     <button
-                      onClick={() => updateQuantity(currentId || name, 1)}
+                      onClick={() => inCart ? updateQuantity(currentId || name, 1) : setLocalQuantity(localQuantity + 1)}
                       className="w-8 h-8 flex items-center justify-center rounded-full text-[#636e72] hover:bg-[#295c47]/5 hover:text-[#285b46] active:scale-95 transition-all font-bold cursor-pointer"
                       title="Increase Quantity"
                     >
@@ -562,6 +638,105 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
               )}
+
+              {/* ── Coupon Code (Hidden behind Accordion) ────────────────── */}
+              <div className="mb-6 border border-[#e8e4df] rounded-2xl overflow-hidden bg-white shadow-sm">
+                <button
+                  onClick={() => toggleAccordion("coupon")}
+                  className="w-full py-4 px-5 flex items-center justify-between text-left font-serif text-[15px] font-bold text-[#285b46] hover:bg-[#faf8f5] transition-all cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg>
+                    View Available Offers
+                  </span>
+                  {accordions.coupon ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                </button>
+                
+                {accordions.coupon && (
+                  <div className="p-5 border-t border-[#e8e4df] bg-[#faf8f5]">
+                    {/* Default coupon chips — shown when no coupon is applied */}
+                    {!appliedCoupon && defaultCoupons.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {defaultCoupons.map((c) => (
+                          <button
+                            key={c.coupon_code}
+                            type="button"
+                            onClick={() => handleApplyCoupon(c.coupon_code)}
+                            disabled={couponStatus === "loading"}
+                            className="flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-dashed border-[#295c47]/40 bg-[#295c47]/5 hover:bg-[#295c47]/15 hover:border-[#295c47] transition-all cursor-pointer disabled:opacity-50 group"
+                            title={c.description || `${c.discount_percent}% off`}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#295c47" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg>
+                            <span className="text-[11px] font-bold tracking-widest text-[#295c47] uppercase">{c.description || c.coupon_code}</span>
+                            <span className="text-[10px] font-bold text-[#295c47] bg-[#295c47]/15 group-hover:bg-[#295c47]/25 px-1.5 py-0.5 rounded-full transition-colors">{c.discount_percent}% OFF</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {appliedCoupon ? (
+                      /* Applied chip */
+                      <div className="flex items-center gap-2 bg-[#295c47]/8 border border-[#295c47]/30 rounded-2xl px-4 py-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#295c47" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                        <span className="text-sm text-[#295c47] font-bold flex-1 tracking-widest uppercase">
+                          {appliedCoupon.description || appliedCoupon.code}
+                        </span>
+                        <span className="text-xs text-[#295c47] font-bold bg-[#295c47]/10 px-2.5 py-1 rounded-full">
+                          -{appliedCoupon.discountPercent}% OFF
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleRemoveCoupon}
+                          className="ml-1 text-[#636e72] hover:text-red-500 transition-colors cursor-pointer"
+                          aria-label="Remove coupon"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                        </button>
+                      </div>
+                    ) : (
+                      /* Input row */
+                      <div className="flex gap-2">
+                        <input
+                          id="slug-coupon-input"
+                          value={couponInput}
+                          onChange={(e) => {
+                            setCouponInput(e.target.value.toUpperCase());
+                            if (couponStatus) { setCouponStatus(null); setCouponMessage(""); }
+                          }}
+                          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleApplyCoupon())}
+                          placeholder="ENTER CODE"
+                          maxLength={20}
+                          className="flex-1 border border-[#e8e4df] bg-white rounded-xl px-4 py-2.5 text-sm font-mono uppercase tracking-widest focus:outline-none focus:border-[#295c47] transition-colors placeholder:text-[#c0bab3] placeholder:tracking-wider placeholder:font-sans placeholder:text-xs placeholder:uppercase"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleApplyCoupon()}
+                          disabled={couponStatus === "loading" || !couponInput.trim()}
+                          className="px-5 py-2.5 rounded-xl bg-[#295c47] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#1c4536] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 cursor-pointer"
+                        >
+                          {couponStatus === "loading" ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+                          ) : "Apply"}
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Status message */}
+                    {couponStatus === "success" && couponMessage && (
+                      <p className="text-xs text-[#295c47] font-medium mt-2 flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#295c47" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                        {couponMessage}
+                      </p>
+                    )}
+                    {couponStatus === "error" && couponMessage && (
+                      <p className="text-xs text-red-500 mt-2 flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
+                        {couponMessage}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
 
               {/* Add/Buy CTA */}
               <div className="flex gap-4 border-b border-[#e8e4df] pb-8 mb-8">
@@ -581,6 +756,11 @@ export default function ProductDetailPage() {
                     "Sold Out"
                   ) : (category === "discovery-set" && selectedScents.length !== 5) ? (
                     `Select 5 Tins`
+                  ) : addingToCart ? (
+                    <>
+                      <Check size={16} className="animate-bounce" />
+                      Added!
+                    </>
                   ) : inCart ? (
                     <>
                       <Check size={16} />
@@ -624,34 +804,47 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* Clean formulation guarantees: ZERO */}
-              <div className="border border-[#e8e4df] rounded-2xl py-5 flex items-center justify-center gap-4 bg-[#faf8f5]/50 px-4 sm:px-6 mb-8">
-                {/* Left: ZERO */}
-                <div className="flex flex-col items-center justify-center pr-5 border-r border-[#e8e4df] select-none">
-                  <span className="font-serif font-extrabold text-[#c28445] leading-none select-none flex items-baseline">
-                    <span className="text-6xl">ZERO</span>
-                  </span>
-                </div>
 
-                {/* Right: Items in a column list */}
-                <div className="font-['Urbanist'] text-xs font-bold uppercase text-[#2d3436] space-y-1">
-                  <div className="flex items-center">
-                    <span>Phthalates</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span>Parabens</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span>Synthetics Preservatives</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span>Alcohol</span>
-                  </div>
-                </div>
+
+            </div> {/* End of Right Product Options Details */}
+
+            {/* Left Column Bottom Details (ZERO Block + Accordions) */}
+            <div className="lg:col-start-1 lg:row-start-2 w-full flex flex-col gap-8">
+              
+              {/* Innovative ZERO Formulation Banner */}
+              <div className="relative rounded-3xl p-6 sm:p-8 overflow-hidden bg-[#285b46] shadow-xl text-white w-full border border-[#1a3d2e] mt-2 lg:mt-0 group">
+                 {/* Decorative background elements */}
+                 <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-700"></div>
+                 <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-[#d4a574]/10 rounded-full blur-2xl group-hover:bg-[#d4a574]/20 transition-all duration-700"></div>
+                 
+                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                     <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                         <span className="font-serif font-extrabold text-[#d4a574] text-5xl md:text-6xl leading-none mb-1">ZERO</span>
+                         <span className="text-[10px] tracking-widest font-bold uppercase text-white/70">Harmful Chemicals</span>
+                     </div>
+                     <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                         <div className="flex items-center gap-2.5">
+                             <div className="w-1.5 h-1.5 rounded-full bg-[#d4a574]"></div>
+                             <span className="text-[11px] font-bold uppercase tracking-widest text-white/90">Phthalates</span>
+                         </div>
+                         <div className="flex items-center gap-2.5">
+                             <div className="w-1.5 h-1.5 rounded-full bg-[#d4a574]"></div>
+                             <span className="text-[11px] font-bold uppercase tracking-widest text-white/90">Parabens</span>
+                         </div>
+                         <div className="flex items-center gap-2.5">
+                             <div className="w-1.5 h-1.5 rounded-full bg-[#d4a574]"></div>
+                             <span className="text-[11px] font-bold uppercase tracking-widest text-white/90">Synthetics</span>
+                         </div>
+                         <div className="flex items-center gap-2.5">
+                             <div className="w-1.5 h-1.5 rounded-full bg-[#d4a574]"></div>
+                             <span className="text-[11px] font-bold uppercase tracking-widest text-white/90">Alcohol</span>
+                         </div>
+                     </div>
+                 </div>
               </div>
 
               {/* Product Details Accordion */}
-              <div className="border border-[#e8e4df] rounded-2xl overflow-hidden divide-y divide-[#e8e4df] shadow-sm">
+              <div className="border border-[#e8e4df] rounded-2xl overflow-hidden divide-y divide-[#e8e4df] shadow-sm bg-white">
 
 
 

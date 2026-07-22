@@ -654,28 +654,9 @@ export default function ProductDetailPage() {
 
                 {true && (
                   <div className="p-5 bg-[#faf8f5]">
-                    {/* Default coupon chips — shown when no coupon is applied */}
-                    {!appliedCoupon && defaultCoupons.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {defaultCoupons.map((c) => (
-                          <button
-                            key={c.coupon_code}
-                            type="button"
-                            onClick={() => handleApplyCoupon(c.coupon_code)}
-                            disabled={couponStatus === "loading"}
-                            className="flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-dashed border-[#295c47]/40 bg-[#295c47]/5 hover:bg-[#295c47]/15 hover:border-[#295c47] transition-all cursor-pointer disabled:opacity-50 group"
-                            title={c.description || `${c.discount_percent}% off`}
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#295c47" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg>
-                            <span className="text-[11px] font-bold tracking-widest text-[#295c47] uppercase">{c.description || c.coupon_code}</span>
-                            <span className="text-[10px] font-bold text-[#295c47] bg-[#295c47]/15 group-hover:bg-[#295c47]/25 px-1.5 py-0.5 rounded-full transition-colors">{c.discount_percent}% OFF</span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
 
                     {appliedCoupon ? (
-                      /* Applied chip */
+                      /* ── Applied coupon chip ───────────────────────────────── */
                       <div className="flex items-center gap-2 bg-[#295c47]/8 border border-[#295c47]/30 rounded-2xl px-4 py-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#295c47" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                         <span className="text-sm text-[#295c47] font-bold flex-1 tracking-widest uppercase">
@@ -694,31 +675,86 @@ export default function ProductDetailPage() {
                         </button>
                       </div>
                     ) : (
-                      /* Input row */
-                      <div className="flex gap-2">
-                        <input
-                          id="slug-coupon-input"
-                          value={couponInput}
-                          onChange={(e) => {
-                            setCouponInput(e.target.value.toUpperCase());
-                            if (couponStatus) { setCouponStatus(null); setCouponMessage(""); }
-                          }}
-                          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleApplyCoupon())}
-                          placeholder="ENTER COUPON CODE"
-                          maxLength={20}
-                          className="flex-1 border bg-white rounded-xl px-4 py-2.5 text-sm font-mono uppercase tracking-widest focus:outline-none focus:border-[#636e72] transition-colors placeholder:text-[#636e72] placeholder:tracking-wider placeholder:font-sans placeholder:text-xs placeholder:uppercase"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleApplyCoupon()}
-                          disabled={couponStatus === "loading" || !couponInput.trim()}
-                          className="px-5 py-2.5 rounded-xl bg-[#295c47] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#1c4536] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 cursor-pointer"
-                        >
-                          {couponStatus === "loading" ? (
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
-                          ) : "Apply"}
-                        </button>
-                      </div>
+                      /* ── Input row ─────────────────────────────────────────── */
+                      <>
+                        <div className="flex gap-2">
+                          <input
+                            id="slug-coupon-input"
+                            value={couponInput}
+                            onChange={(e) => {
+                              setCouponInput(e.target.value.toUpperCase());
+                              if (couponStatus) { setCouponStatus(null); setCouponMessage(""); }
+                            }}
+                            onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleApplyCoupon())}
+                            placeholder="ENTER COUPON CODE"
+                            maxLength={20}
+                            className="flex-1 border bg-white rounded-xl px-4 py-2.5 text-sm font-mono uppercase tracking-widest focus:outline-none focus:border-[#636e72] transition-colors placeholder:text-[#636e72] placeholder:tracking-wider placeholder:font-sans placeholder:text-xs placeholder:uppercase"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleApplyCoupon()}
+                            disabled={couponStatus === "loading" || !couponInput.trim()}
+                            className="px-5 py-2.5 rounded-xl bg-[#295c47] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#1c4536] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 cursor-pointer"
+                          >
+                            {couponStatus === "loading" ? (
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+                            ) : "Apply"}
+                          </button>
+                        </div>
+
+                        {/* ── Default coupons list ────────────────────────────── */}
+                        {defaultCoupons.length > 0 && (
+                          <div className="mt-4">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#636e72] mb-2 flex items-center gap-1.5">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg>
+                              Available Offers
+                            </p>
+                            <div className="flex flex-col gap-2">
+                              {defaultCoupons.map((c, idx) => (
+                                <div
+                                  key={c.coupon_code}
+                                  className="flex items-center gap-3 bg-white border border-[#e8e4df] rounded-xl px-4 py-3 hover:border-[#295c47]/40 hover:bg-[#f7f5f1] transition-all group"
+                                >
+                                  {/* left ticket icon */}
+                                  <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-[#295c47]/8 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#295c47" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg>
+                                  </div>
+
+                                  {/* code + description */}
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-[11px] font-extrabold tracking-widest text-[#1a1a1a] uppercase font-mono leading-tight">
+                                      {c.coupon_code}
+                                    </p>
+                                    {c.description && (
+                                      <p className="text-[10px] text-[#636e72] mt-0.5 leading-snug truncate">
+                                        {c.description}
+                                      </p>
+                                    )}
+                                  </div>
+
+                                  {/* discount badge */}
+                                  <span className="flex-shrink-0 text-[10px] font-bold text-[#295c47] bg-[#295c47]/10 border border-[#295c47]/20 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                    {c.discount_percent}% OFF
+                                  </span>
+
+                                  {/* tap to apply */}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setCouponInput(c.coupon_code);
+                                      handleApplyCoupon(c.coupon_code);
+                                    }}
+                                    disabled={couponStatus === "loading"}
+                                    className="flex-shrink-0 text-[10px] font-bold text-[#295c47] underline underline-offset-2 hover:text-[#1c4536] transition-colors cursor-pointer disabled:opacity-40 whitespace-nowrap"
+                                  >
+                                    Apply
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
 
                     {/* Status message */}
@@ -792,7 +828,7 @@ export default function ProductDetailPage() {
               <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5 text-[10px] font-bold uppercase tracking-wider text-[#636e72] font-['Urbanist'] mb-6 select-none">
                 <div className="flex items-center gap-1.5">
                   <Truck size={13} className="text-[#295c47]" />
-                  <span>Free shipping above ₹900</span>
+                  <span>Free shipping above ₹999</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Shield size={13} className="text-[#295c47]" />

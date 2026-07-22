@@ -6,7 +6,7 @@ export default function App({ Component, pageProps }) {
   return (
     <CartProvider>
       <Component {...pageProps} />
-      <Toaster position="top-right" />
+      <Toaster position="bottom-center" />
     </CartProvider>
   );
 }

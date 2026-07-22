@@ -613,11 +613,11 @@ export default function ProductDetailPage() {
 
               {/* Quantity Selector */}
               {!outOfStock && (
-                <div className="flex items-center justify-between mb-6 bg-[#faf8f5] border border-[#e8e4df] rounded-2xl p-4 animate-fade-in">
+                <div className="flex items-center justify-between mb-6 bg-[#faf8f5] border border-[#636e72] rounded-2xl p-4 animate-fade-in">
                   <span className="text-xs font-bold uppercase tracking-wider text-[#285b46]">
                     Select Quantity
                   </span>
-                  <div className="flex items-center border border-[#e8e4df] bg-white rounded-full p-1 shadow-sm">
+                  <div className="flex items-center border border-[#636e72] bg-white rounded-full p-1 shadow-sm">
                     <button
                       onClick={() => inCart ? updateQuantity(currentId || name, -1) : setLocalQuantity(Math.max(1, localQuantity - 1))}
                       className="w-8 h-8 flex items-center justify-center rounded-full text-[#636e72] hover:bg-[#295c47]/5 hover:text-[#285b46] active:scale-95 transition-all font-bold cursor-pointer"
@@ -640,7 +640,7 @@ export default function ProductDetailPage() {
               )}
 
               {/* ── Coupon Code (Hidden behind Accordion) ────────────────── */}
-              <div className="mb-6 border border-[#e8e4df] rounded-2xl overflow-hidden bg-white shadow-sm">
+              <div className="mb-6 border border-[#636e72] rounded-2xl overflow-hidden bg-white shadow-sm">
                 {/* <button
                   onClick={() => toggleAccordion("coupon")}
                   className="w-full py-4 px-5 flex items-center justify-between text-left font-serif text-[15px] font-bold text-[#285b46] hover:bg-[#faf8f5] transition-all cursor-pointer"
@@ -653,7 +653,7 @@ export default function ProductDetailPage() {
                 </button> */}
 
                 {true && (
-                  <div className="p-5 border-t border-[#e8e4df] bg-[#faf8f5]">
+                  <div className="p-5 bg-[#faf8f5]">
                     {/* Default coupon chips — shown when no coupon is applied */}
                     {!appliedCoupon && defaultCoupons.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-4">
@@ -704,9 +704,9 @@ export default function ProductDetailPage() {
                             if (couponStatus) { setCouponStatus(null); setCouponMessage(""); }
                           }}
                           onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleApplyCoupon())}
-                          placeholder="ENTER CODE"
+                          placeholder="ENTER COUPON CODE"
                           maxLength={20}
-                          className="flex-1 border border-[#e8e4df] bg-white rounded-xl px-4 py-2.5 text-sm font-mono uppercase tracking-widest focus:outline-none focus:border-[#295c47] transition-colors placeholder:text-[#c0bab3] placeholder:tracking-wider placeholder:font-sans placeholder:text-xs placeholder:uppercase"
+                          className="flex-1 border bg-white rounded-xl px-4 py-2.5 text-sm font-mono uppercase tracking-widest focus:outline-none focus:border-[#636e72] transition-colors placeholder:text-[#636e72] placeholder:tracking-wider placeholder:font-sans placeholder:text-xs placeholder:uppercase"
                         />
                         <button
                           type="button"

@@ -641,7 +641,7 @@ export default function ProductDetailPage() {
 
               {/* ── Coupon Code (Hidden behind Accordion) ────────────────── */}
               <div className="mb-6 border border-[#e8e4df] rounded-2xl overflow-hidden bg-white shadow-sm">
-                <button
+                {/* <button
                   onClick={() => toggleAccordion("coupon")}
                   className="w-full py-4 px-5 flex items-center justify-between text-left font-serif text-[15px] font-bold text-[#285b46] hover:bg-[#faf8f5] transition-all cursor-pointer"
                 >
@@ -650,9 +650,9 @@ export default function ProductDetailPage() {
                     View Available Offers
                   </span>
                   {accordions.coupon ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </button>
-                
-                {accordions.coupon && (
+                </button> */}
+
+                {true && (
                   <div className="p-5 border-t border-[#e8e4df] bg-[#faf8f5]">
                     {/* Default coupon chips — shown when no coupon is applied */}
                     {!appliedCoupon && defaultCoupons.length > 0 && (
@@ -792,7 +792,7 @@ export default function ProductDetailPage() {
               <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5 text-[10px] font-bold uppercase tracking-wider text-[#636e72] font-['Urbanist'] mb-6 select-none">
                 <div className="flex items-center gap-1.5">
                   <Truck size={13} className="text-[#295c47]" />
-                  <span>Free shipping above ₹999</span>
+                  <span>Free shipping above ₹900</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Shield size={13} className="text-[#295c47]" />
@@ -810,38 +810,45 @@ export default function ProductDetailPage() {
 
             {/* Left Column Bottom Details (ZERO Block + Accordions) */}
             <div className="lg:col-start-1 lg:row-start-2 w-full flex flex-col gap-8">
-              
+
               {/* Innovative ZERO Formulation Banner */}
               <div className="relative rounded-3xl p-6 sm:p-8 overflow-hidden bg-[#285b46] shadow-xl text-white w-full border border-[#1a3d2e] mt-2 lg:mt-0 group">
-                 {/* Decorative background elements */}
-                 <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-700"></div>
-                 <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-[#d4a574]/10 rounded-full blur-2xl group-hover:bg-[#d4a574]/20 transition-all duration-700"></div>
-                 
-                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-                     <div className="flex flex-col items-center md:items-start text-center md:text-left">
-                         <span className="font-serif font-extrabold text-[#d4a574] text-5xl md:text-6xl leading-none mb-1">ZERO</span>
-                         <span className="text-[10px] tracking-widest font-bold uppercase text-white/70">Harmful Chemicals</span>
-                     </div>
-                     <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                         <div className="flex items-center gap-2.5">
-                             <div className="w-1.5 h-1.5 rounded-full bg-[#d4a574]"></div>
-                             <span className="text-[11px] font-bold uppercase tracking-widest text-white/90">Phthalates</span>
-                         </div>
-                         <div className="flex items-center gap-2.5">
-                             <div className="w-1.5 h-1.5 rounded-full bg-[#d4a574]"></div>
-                             <span className="text-[11px] font-bold uppercase tracking-widest text-white/90">Parabens</span>
-                         </div>
-                         <div className="flex items-center gap-2.5">
-                             <div className="w-1.5 h-1.5 rounded-full bg-[#d4a574]"></div>
-                             <span className="text-[11px] font-bold uppercase tracking-widest text-white/90">Synthetics</span>
-                         </div>
-                         <div className="flex items-center gap-2.5">
-                             <div className="w-1.5 h-1.5 rounded-full bg-[#d4a574]"></div>
-                             <span className="text-[11px] font-bold uppercase tracking-widest text-white/90">Alcohol</span>
-                         </div>
-                     </div>
-                 </div>
-              </div>
+                {/* Decorative background elements */}
+                <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-700"></div>
+                <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-[#d4a574]/10 rounded-full blur-2xl group-hover:bg-[#d4a574]/20 transition-all duration-700"></div>
+
+                <div className="relative z-2 flex flex-row items-stretch gap-0">
+                  {/* ZERO - massive, spans the height of the list */}
+                  <div className="flex items-center justify-center pr-6 flex-shrink-0">
+                    <div className="flex flex-col items-center">
+                      <span className="font-serif font-extrabold text-[#d4a574] leading-none select-none" style={{ fontSize: "clamp(3.5rem, 8vw, 6rem)" }}>ZERO</span>
+                    </div>
+                  </div>
+
+                  {/* Vertical divider */}
+                  <div className="w-px bg-[#d4a574]/30 self-stretch mx-2 flex-shrink-0"></div>
+
+                  {/* Chemicals — single column stacked */}
+                  <div className="flex flex-col justify-around pl-6 gap-3 py-1">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-1 h-1 rounded-full bg-[#d4a574] flex-shrink-0"></div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-white/90">Phthalates</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-1 h-1 rounded-full bg-[#d4a574] flex-shrink-0"></div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-white/90">Parabens</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-1 h-1 rounded-full bg-[#d4a574] flex-shrink-0"></div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-white/90">Synthetics</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-1 h-1 rounded-full bg-[#d4a574] flex-shrink-0"></div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-white/90">Alcohol</span>
+                    </div>   {/* end Alcohol item */}
+                  </div>  {/* end chemicals column */}
+                </div>   {/* end flex-row */}
+              </div>     {/* end banner card */}
 
               {/* Product Details Accordion */}
               <div className="border border-[#e8e4df] rounded-2xl overflow-hidden divide-y divide-[#e8e4df] shadow-sm bg-white">
@@ -943,7 +950,7 @@ export default function ProductDetailPage() {
                     <div className="p-5 bg-[#fdfbf7] text-[13px] leading-[1.7] text-[#636e72] space-y-4 text-left">
                       <div>
                         <h4 className="font-bold text-[#285b46] mb-1 text-[11px] uppercase tracking-wider">Shipping Details:</h4>
-                        <p>Orders are dispatched within 24-48 hours. Delivery takes 3-5 business days across India. Free shipping is automatically applied on all orders above ₹999.</p>
+                        <p>Orders are dispatched within 24-48 hours. Delivery takes 3-5 business days across India. Free shipping is automatically applied on all orders above ₹900.</p>
                       </div>
                       <div className="border-t border-[#e8e4df]/60 pt-3 mt-3">
                         <h4 className="font-bold text-[#285b46] mb-1 text-[11px] uppercase tracking-wider">Return & Refund Policy:</h4>

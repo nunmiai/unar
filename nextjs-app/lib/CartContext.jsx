@@ -4,7 +4,7 @@ import { toast } from "sonner";
 const CartContext = createContext(null);
 
 const SHIPPING_COST = 100;
-const FREE_SHIPPING_THRESHOLD = 1000;
+const FREE_SHIPPING_THRESHOLD = 900;
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);

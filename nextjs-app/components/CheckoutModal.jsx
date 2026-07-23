@@ -8,11 +8,14 @@ import { toast } from "sonner";
 import { Shield, X, Minus, Plus, Trash2, Tag, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
 const LAMBDA_API_URL =
+  (process.env.NEXT_PUBLIC_LAMBDA_API_URL && process.env.NEXT_PUBLIC_LAMBDA_API_URL.trim()) ||
   "https://vfl2536p7nvialuiwcgt22s6iu0noirr.lambda-url.us-east-1.on.aws";
 
 // Coupon Lambda URL — set NEXT_PUBLIC_COUPON_LAMBDA_URL in your .env.local
 const COUPON_LAMBDA_URL =
-  process.env.NEXT_PUBLIC_COUPON_LAMBDA_URL || "";
+  (process.env.NEXT_PUBLIC_COUPON_LAMBDA_URL && process.env.NEXT_PUBLIC_COUPON_LAMBDA_URL.trim()) ||
+  "https://gcxezmcpoov26ggxmguzrpb25e0jzdju.lambda-url.us-east-1.on.aws";
+
 
 export default function CheckoutModal({ isOpen, onClose }) {
   const {
@@ -234,6 +237,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
       {/* Modal */}
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-auto checkout-modal-content">
         <button
+          type="button"
           onClick={onClose}
           className="absolute top-4 right-4 z-10 p-2 rounded-full hover:bg-gray-100 transition-colors"
         >
@@ -364,6 +368,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
                       )}
                       <div className="flex items-center gap-1.5 mt-1">
                         <button
+                          type="button"
                           onClick={() => updateQuantity(itemId, -1)}
                           className="w-5 h-5 rounded-full border flex items-center justify-center text-xs hover:bg-[#295c47] hover:text-white hover:border-[#295c47] transition-all"
                         >
@@ -371,6 +376,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
                         </button>
                         <span className="text-xs w-4 text-center">{item.quantity}</span>
                         <button
+                          type="button"
                           onClick={() => updateQuantity(itemId, 1)}
                           className="w-5 h-5 rounded-full border flex items-center justify-center text-xs hover:bg-[#295c47] hover:text-white hover:border-[#295c47] transition-all"
                         >
@@ -381,6 +387,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
                     <div className="text-right flex-shrink-0">
                       <p className="font-bold text-[#295c47] text-sm">₹{item.price * item.quantity}</p>
                       <button
+                        type="button"
                         onClick={() => removeFromCart(itemId)}
                         className="text-red-400 hover:text-red-600 mt-1"
                       >

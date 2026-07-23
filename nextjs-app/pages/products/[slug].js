@@ -28,6 +28,10 @@ const INGREDIENTS = [
   { title: "The Essence of Nature", desc: "These authentic botanical extracts interact with your unique body chemistry to create a personalized, evolving scent profile." },
 ];
 
+const COUPON_LAMBDA_URL =
+  (process.env.NEXT_PUBLIC_COUPON_LAMBDA_URL && process.env.NEXT_PUBLIC_COUPON_LAMBDA_URL.trim()) ||
+  "https://gcxezmcpoov26ggxmguzrpb25e0jzdju.lambda-url.us-east-1.on.aws";
+
 export default function ProductDetailPage() {
   const router = useRouter();
   const { slug } = router.query;
@@ -69,9 +73,6 @@ export default function ProductDetailPage() {
     setFaqOpenIndex(faqOpenIndex === index ? null : index);
   };
 
-  const COUPON_LAMBDA_URL =
-    process.env.NEXT_PUBLIC_COUPON_LAMBDA_URL || "https://gcxezmcpoov26ggxmguzrpb25e0jzdju.lambda-url.us-east-1.on.aws";
-
   // Fetch default coupons once on mount
   useEffect(() => {
     if (!COUPON_LAMBDA_URL) return;
@@ -83,7 +84,7 @@ export default function ProductDetailPage() {
         }
       })
       .catch((err) => console.warn('Failed to fetch default coupons:', err));
-  }, [COUPON_LAMBDA_URL]);
+  }, []);
 
   const handleApplyCoupon = async (codeOverride) => {
     const code = (codeOverride || couponInput).trim().toUpperCase();
@@ -777,6 +778,7 @@ export default function ProductDetailPage() {
               {/* Add/Buy CTA */}
               <div className="flex gap-4 border-b border-[#e8e4df] pb-8 mb-8">
                 <button
+                  type="button"
                   onClick={handleAddToCart}
                   disabled={outOfStock || (category === "discovery-set" && selectedScents.length !== 5)}
                   className={`flex-1 py-4 px-6 rounded-full font-bold uppercase tracking-wider text-xs transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${outOfStock
@@ -811,6 +813,7 @@ export default function ProductDetailPage() {
                 </button>
 
                 <button
+                  type="button"
                   onClick={handleBuyNow}
                   disabled={outOfStock || (category === "discovery-set" && selectedScents.length !== 5)}
                   className={`flex-1 py-4 px-6 rounded-full font-bold uppercase tracking-wider text-xs transition-all duration-300 shadow-md flex items-center justify-center cursor-pointer ${outOfStock

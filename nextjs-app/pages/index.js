@@ -13,6 +13,8 @@ import Footer from "@/components/Footer";
 import { PRODUCTS } from "@/config/products";
 
 
+import Script from "next/script";
+
 const FEATURES = [
   { icon: "/assets/icons/natural.png", title: "100% Natural", desc: "Pure beeswax and essential oils, with absolutely no synthetic ingredients or harmful chemicals." },
   { icon: "/assets/icons/travel.png", title: "Travel Friendly", desc: "Compact tins perfect for your bag—no spills, no leaks, and TSA-approved for flights." },
@@ -57,8 +59,9 @@ export default function Home() {
         <meta name="description" content="Unar - Natural solid perfumes handcrafted with pure beeswax and essential oils. Conscious Living." />
         <meta name="keywords" content="natural perfume, solid perfume, beeswax perfume, essential oils, handcrafted fragrance" />
         <link rel="icon" href="/assets/website_assets/logo-circle.png" />
-        <script src="https://checkout.razorpay.com/v1/checkout.js" async />
       </Head>
+
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
 
       <Navbar onCartOpen={() => setCartOpen(true)} />
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />

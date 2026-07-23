@@ -64,6 +64,8 @@ def lambda_handler(event, context):
             return save_google_user(event)
         elif path.endswith('/user-orders'):
             return get_user_orders(event)
+        elif path.endswith('/delete-order'):
+            return delete_user_order(event)
         else:
             return response(404, {'error': 'Route not found', 'path': path})
 
@@ -647,6 +649,30 @@ def get_user_orders(event):
     except Exception as e:
         print(f'Get user orders error: {str(e)}')
         return response(500, {'error': 'Failed to fetch orders', 'details': str(e)})
+
+
+def delete_user_order(event):
+    """POST /delete-order - Delete an order by order_id"""
+    raw_body = event.get('body')
+    body = json.loads(raw_body or '{}') if isinstance(raw_body, str) else (raw_body or {})
+    order_id = body.get('order_id', '').strip()
+    user_id = body.get('user_id', '').strip()
+
+    if not order_id:
+        return response(400, {'error': 'Order ID is required'})
+
+    try:
+        orders_table.delete_item(
+            Key={'order_id': order_id}
+        )
+        return response(200, {
+            'success': True,
+            'message': 'Order deleted successfully',
+            'order_id': order_id
+        })
+    except Exception as e:
+        print(f'Delete order error: {str(e)}')
+        return response(500, {'error': 'Failed to delete order', 'details': str(e)})
 
 
 def response(status_code, body):

@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
 import Head from "next/head";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Eye, EyeOff, Home, Shield, Loader2, Check } from "lucide-react";
+import { Eye, EyeOff, Home, Shield } from "lucide-react";
 
 const AUTH_API = "https://hxr7qp46qicsvrlnale5v7z34m0crgjm.lambda-url.us-east-1.on.aws";
 const COGNITO_DOMAIN = "https://us-east-1qfevieihb.auth.us-east-1.amazoncognito.com";
@@ -19,22 +18,16 @@ function getRedirectUri() {
 }
 
 export default function LoginPage() {
-  const router = useRouter();
-
-  // mode: "login" | "signup" | "verify" | "forgot" | "reset"
-  const [mode, setMode] = useState("login");
-
-  // Password visibility states
+  const [activeTab, setActiveTab] = useState("login");
   const [showLoginPwd, setShowLoginPwd] = useState(false);
   const [showSignupPwd, setShowSignupPwd] = useState(false);
   const [showConfirmPwd, setShowConfirmPwd] = useState(false);
-  const [showResetPwd, setShowResetPwd] = useState(false);
-
   const [loading, setLoading] = useState(false);
+  const [verifyMode, setVerifyMode] = useState(false);
   const [pendingEmail, setPendingEmail] = useState("");
   const [pendingUserId, setPendingUserId] = useState(null);
 
-  // Processing overlay state for Google OAuth callback
+  // Processing overlay state for Google OAuth callback & auth transitions
   const [processing, setProcessing] = useState({
     visible: false,
     title: "Signing you in",
@@ -42,20 +35,14 @@ export default function LoginPage() {
     done: false,
   });
 
-  // Forms state
   const [loginForm, setLoginForm] = useState({ email: "", password: "", remember: false });
-  const [signupForm, setSignupForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const [signupForm, setSignupForm] = useState({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
   const [verifyForm, setVerifyForm] = useState({ code: "" });
-  const [forgotForm, setForgotForm] = useState({ email: "" });
-  const [resetForm, setResetForm] = useState({ code: "", newPassword: "" });
 
-  // ── On mount: check OAuth callback & check auth state ────────────────────────
+  const handleLoginChange = (e) => setLoginForm((f) => ({ ...f, [e.target.name]: e.target.type === "checkbox" ? e.target.checked : e.target.value }));
+  const handleSignupChange = (e) => setSignupForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+
+  // Handle Cognito Google OAuth redirect & existing session on mount
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -79,9 +66,9 @@ export default function LoginPage() {
       });
 
       const redirectUri = getRedirectUri();
+
       (async () => {
         try {
-          // Exchange code for tokens
           const tokenRes = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -100,7 +87,6 @@ export default function LoginPage() {
             return;
           }
 
-          // Fetch user info from Cognito
           const userInfoRes = await fetch(`${COGNITO_DOMAIN}/oauth2/userInfo`, {
             headers: { Authorization: `Bearer ${tokens.access_token}` },
           });
@@ -124,7 +110,6 @@ export default function LoginPage() {
             })
           );
 
-          // Save Google user to backend DynamoDB
           try {
             await fetch(`${AUTH_API}/google-user`, {
               method: "POST",
@@ -180,19 +165,6 @@ export default function LoginPage() {
     }
   }, []);
 
-  // ── Form Input Handlers ──────────────────────────────────────────────────────
-  const handleLoginChange = (e) =>
-    setLoginForm((f) => ({
-      ...f,
-      [e.target.name]: e.target.type === "checkbox" ? e.target.checked : e.target.value,
-    }));
-
-  const handleSignupChange = (e) =>
-    setSignupForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-
-  // ── API Actions ─────────────────────────────────────────────────────────────
-
-  // Sign In
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -212,10 +184,10 @@ export default function LoginPage() {
         if (data.code === "USER_NOT_CONFIRMED" || (data.error && data.error.includes("not confirmed"))) {
           setPendingEmail(loginForm.email.trim());
           setPendingUserId(data.user_id || data.cognito_user_id || null);
-          setMode("verify");
+          setVerifyMode(true);
           toast.error("Please verify your email first.");
         } else {
-          toast.error(data.error || data.message || "Sign in failed");
+          toast.error(data.error || data.message || "Invalid credentials");
         }
       }
     } catch {
@@ -225,7 +197,6 @@ export default function LoginPage() {
     }
   };
 
-  // Sign Up
   const handleSignup = async (e) => {
     e.preventDefault();
     if (signupForm.password !== signupForm.confirmPassword) {
@@ -248,8 +219,8 @@ export default function LoginPage() {
       if (data.success) {
         setPendingEmail(signupForm.email.trim());
         setPendingUserId(data.user_id || data.cognito_user_id || null);
-        setMode("verify");
-        toast.success("Account created! Please check your email for verification code.");
+        setVerifyMode(true);
+        toast.success("Account created! Please check your email for the verification code.");
       } else {
         toast.error(data.error || data.message || "Registration failed");
       }
@@ -260,7 +231,6 @@ export default function LoginPage() {
     }
   };
 
-  // Verify Email
   const handleVerify = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -276,7 +246,8 @@ export default function LoginPage() {
       const data = await res.json();
       if (data.success) {
         toast.success("Email verified! You can now sign in.");
-        setMode("login");
+        setVerifyMode(false);
+        setActiveTab("login");
       } else {
         toast.error(data.error || data.message || "Invalid verification code");
       }
@@ -287,94 +258,6 @@ export default function LoginPage() {
     }
   };
 
-  // Resend Code
-  const handleResendCode = async () => {
-    if (!pendingEmail) {
-      toast.error("No email specified to resend code");
-      return;
-    }
-    try {
-      const bodyPayload = { email: pendingEmail };
-      if (pendingUserId) bodyPayload.user_id = pendingUserId;
-
-      const res = await fetch(`${AUTH_API}/resend-code`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bodyPayload),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success("Verification code resent! Please check your email.");
-      } else {
-        toast.error(data.error || "Failed to resend code");
-      }
-    } catch {
-      toast.error("Failed to resend code. Please try again.");
-    }
-  };
-
-  // Forgot Password
-  const handleForgotPassword = async (e) => {
-    e.preventDefault();
-    if (!forgotForm.email.trim()) {
-      toast.error("Please enter your email");
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await fetch(`${AUTH_API}/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: forgotForm.email.trim() }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setPendingEmail(forgotForm.email.trim());
-        setMode("reset");
-        toast.success("Reset code sent to your email!");
-      } else {
-        toast.error(data.error || "Failed to send reset code");
-      }
-    } catch {
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Reset Password
-  const handleResetPassword = async (e) => {
-    e.preventDefault();
-    if (resetForm.newPassword.length < 8) {
-      toast.error("Password must be at least 8 characters");
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await fetch(`${AUTH_API}/reset-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: pendingEmail,
-          code: resetForm.code.trim(),
-          new_password: resetForm.newPassword,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success("Password reset successful! Please sign in.");
-        setMode("login");
-      } else {
-        toast.error(data.error || "Password reset failed");
-      }
-    } catch {
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Google OAuth Login
   const handleGoogleLogin = () => {
     const redirectUri = getRedirectUri();
     const authUrl =
@@ -404,498 +287,188 @@ export default function LoginPage() {
         <meta name="description" content="Sign in or create your Unar account" />
       </Head>
 
-      {/* Processing Overlay (Google OAuth Callback) */}
+      {/* Fullscreen Processing Overlay (shown during Google OAuth callback & auth transitions) */}
       {processing.visible && (
-        <div className="fixed inset-0 z-[9999] bg-gradient-to-br from-[#4a6b55] via-[#3d5a47] to-[#2c4234] flex flex-col items-center justify-center p-6 text-white text-center animate-fade-in">
+        <div className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center p-6 text-center animate-fade-in">
           <div className="flex flex-col items-center gap-6 max-w-sm">
-            <div>
-              <h1 className="font-['Cormorant_Garamond'] text-5xl tracking-[8px] font-normal mb-1">
-                UNAR
-              </h1>
-              <p className="text-[10px] uppercase tracking-[4px] text-[#d4a574]">
-                Natural Solid Perfumes
-              </p>
-            </div>
+            <img
+              src="/assets/website_assets/mockups/logo_tagline.png"
+              alt="UNAR - Natural Solid Perfumes"
+              className="w-[240px] h-auto object-contain select-none"
+            />
 
             {processing.done ? (
-              <div className="w-16 h-16 rounded-full border-2 border-[#d4a574] flex items-center justify-center text-[#d4a574]">
-                <Check size={32} />
+              <div className="w-16 h-16 rounded-full border-2 border-[#295c47] flex items-center justify-center text-[#295c47] transition-all">
+                <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
               </div>
             ) : (
-              <div className="w-14 h-14 rounded-full border-4 border-white/20 border-t-white animate-spin" />
+              <div className="w-14 h-14 rounded-full border-4 border-[#295c47]/20 border-t-[#295c47] animate-spin" />
             )}
 
             <div>
-              <p className="font-['Cormorant_Garamond'] text-2xl font-medium">
+              <p className="font-['Cormorant_Garamond'] text-2xl font-medium text-[#295c47]">
                 {processing.title}
               </p>
-              <p className="text-xs text-white/70 mt-1">{processing.subtitle}</p>
+              <p className="text-xs text-[#5a5a5a] mt-1">{processing.subtitle}</p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Top right home button */}
-      <Link
-        href="/"
-        className="fixed top-5 right-6 md:right-12 z-40 hidden sm:flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 text-sm font-medium text-[#295c47] shadow-sm hover:bg-[#faf8f5] hover:-translate-y-px transition-all"
-      >
+      {/* Home button */}
+      <Link href="/" className="fixed top-5 right-[400px] z-50 hidden md:flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 text-sm font-medium text-[#295c47] shadow hover:bg-[#faf8f5] hover:-translate-y-px transition-all">
         <Home size={15} />
         Home
       </Link>
 
       <div className="flex min-h-screen">
         {/* Left brand panel */}
-        <div className="hidden md:flex w-[42%] flex-shrink-0 relative overflow-hidden flex-col items-center justify-center px-12 py-16 bg-[#295c47]">
-          {/* Decorative background circles */}
-          <div className="absolute -top-36 -right-36 w-96 h-96 rounded-full border border-white/10 pointer-events-none" />
-          <div className="absolute -bottom-24 -left-20 w-80 h-80 rounded-full border border-white/5 pointer-events-none" />
+        <div className="hidden md:flex w-[42%] flex-shrink-0 relative overflow-hidden flex-col items-center justify-center px-12 py-16 bg-[#ffffff]">
+          {/* Decorative circles */}
 
-          <div className="text-center text-white relative z-10 flex flex-col items-center">
-            <h1 className="font-['Cormorant_Garamond'] text-7xl tracking-[14px] font-normal mb-2 leading-none">
-              UNAR
-            </h1>
-            <p className="text-[10px] uppercase tracking-[5px] text-[#d4a574] mb-8">
-              Natural Solid Perfumes
-            </p>
-            <div className="w-9 h-px bg-white/30 mx-auto mb-7" />
-            <p className="text-[14px] leading-[1.9] text-white/70 max-w-[280px] mx-auto font-normal">
-              Hand-crafted botanical solid perfumes. Pure, natural, and free from alcohol &amp; synthetic chemicals.
-            </p>
-            <div className="inline-flex items-center gap-1.5 mt-10 bg-white/10 border border-white/20 rounded-full px-4 py-2 text-[11px] tracking-wide text-white/80 font-medium">
-              <Shield size={12} className="text-[#d4a574]" />
-              100% Natural · Zero Waste · Cruelty Free
+          <div className="text-center text-[#295c47] relative z-10 flex flex-col items-center">
+            <img
+              src="/assets/website_assets/mockups/logo_tagline.png"
+              alt="UNAR - Natural Solid Perfumes"
+              className="w-[260px] h-auto object-contain mb-9 select-none"
+            />
+            <div className="w-9 h-px bg-[#295c47]/30 mx-auto mb-7" />
+            <p className="text-[14px] leading-[1.9] text-[#295c47]/80 max-w-[280px] mx-auto font-medium">A sensory brand dedicated to the art of awakening. We bridge the gap between ancient heritage and modern mindfulness through intentional, handcrafted rituals.</p>
+            <div className="inline-flex items-center gap-1.5 mt-10 bg-[#295c47]/8 border border-[#295c47]/15 rounded-full px-[18px] py-2 text-[11px] tracking-wide text-[#295c47]/90 font-semibold">
+              <Shield size={12} className="text-[#295c47]" />
+              100% Natural · Cruelty Free
             </div>
           </div>
 
-          <Link
-            href="/"
-            className="mt-8 flex items-center gap-2 text-white/70 hover:text-white text-sm font-medium transition-colors relative z-10"
-          >
+          <Link href="/" className="mt-8 flex items-center gap-2 text-[#295c47]/70 hover:text-[#295c47] text-sm font-semibold transition-colors relative z-10">
             ← Back to Home
           </Link>
         </div>
 
         {/* Right form panel */}
-        <div className="flex-1 flex items-center justify-center bg-[#faf8f5] p-6 overflow-y-auto">
+        <div className="flex-1 flex items-center justify-center bg-[#ffffff] p-6 overflow-y-auto">
           <div className="w-full max-w-[420px]">
             {/* Mobile home link */}
-            <Link
-              href="/"
-              className="flex sm:hidden items-center gap-2 text-[#295c47] mb-6 text-sm font-medium"
-            >
+            <Link href="/" className="flex md:hidden items-center gap-2 text-[#295c47] mb-6 text-sm font-medium">
               <Home size={15} /> Back to Home
             </Link>
 
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-[#e8e4df]/60">
-              <div className="p-8">
-                <h2 className="font-['Cormorant_Garamond'] text-3xl font-medium text-[#2c2c2c] text-center mb-6">
-                  {mode === "login" && "Welcome Back"}
-                  {mode === "signup" && "Create Account"}
-                  {mode === "verify" && "Verify Email"}
-                  {mode === "forgot" && "Reset Password"}
-                  {mode === "reset" && "Create New Password"}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+              <div className="p-8 pb-0">
+                <h2 className="font-['Cormorant_Garamond'] text-2xl font-medium text-[#2c2c2c] text-center mb-7">
+                  {verifyMode ? "Verify Email" : "Welcome Back"}
                 </h2>
 
-                {/* Tabs for Login / Signup */}
-                {(mode === "login" || mode === "signup") && (
-                  <div className="flex bg-[#faf8f5] rounded-xl p-1 mb-6 border border-gray-100">
-                    <button
-                      type="button"
-                      onClick={() => setMode("login")}
-                      className={`flex-1 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all ${
-                        mode === "login"
-                          ? "bg-white text-[#295c47] shadow-sm font-bold"
-                          : "text-[#5a5a5a] hover:text-[#295c47]"
-                      }`}
-                    >
-                      Sign In
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setMode("signup")}
-                      className={`flex-1 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all ${
-                        mode === "signup"
-                          ? "bg-white text-[#295c47] shadow-sm font-bold"
-                          : "text-[#5a5a5a] hover:text-[#295c47]"
-                      }`}
-                    >
-                      Sign Up
-                    </button>
+                {!verifyMode && (
+                  <div className="flex bg-[#faf8f5] rounded-lg p-1 mb-7">
+                    {["login", "signup"].map((tab) => (
+                      <button key={tab} onClick={() => setActiveTab(tab)} className={`flex-1 py-3 rounded-md text-[14px] font-medium transition-all capitalize ${activeTab === tab ? "bg-white text-[#295c47] shadow-sm" : "text-[#5a5a5a]"}`}>
+                        {tab === "login" ? "Sign In" : "Sign Up"}
+                      </button>
+                    ))}
                   </div>
                 )}
 
-                {/* ── 1. LOGIN FORM ────────────────────────────────────────────── */}
-                {mode === "login" && (
-                  <form onSubmit={handleLogin} className="space-y-4">
+                {/* Verify form */}
+                {verifyMode && (
+                  <form onSubmit={handleVerify} className="space-y-5">
+                    <p className="text-center text-[#5a5a5a] text-sm mb-5">We&apos;ve sent a verification code to <strong>{pendingEmail}</strong>. Please enter it below.</p>
                     <div>
-                      <Label htmlFor="loginEmail" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">
-                        Email Address
-                      </Label>
-                      <Input
-                        id="loginEmail"
-                        name="email"
-                        type="email"
-                        required
-                        placeholder="Enter your email"
-                        value={loginForm.email}
-                        onChange={handleLoginChange}
-                        className="border-gray-200 focus:border-[#295c47]"
-                      />
+                      <Label htmlFor="verifyCode" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">Verification Code</Label>
+                      <Input id="verifyCode" placeholder="Enter 6-digit code" maxLength={6} required value={verifyForm.code} onChange={(e) => setVerifyForm({ code: e.target.value })} className="border-gray-200 focus:border-[#295c47]" />
+                    </div>
+                    <button type="submit" disabled={loading} className="w-full py-3.5 rounded-lg bg-gradient-to-br from-[#295c47] to-[#4a6b55] text-white font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:opacity-70 disabled:transform-none">
+                      {loading ? "Verifying..." : "Verify Email"}
+                    </button>
+                  </form>
+                )}
+
+                {/* Login form */}
+                {!verifyMode && activeTab === "login" && (
+                  <form onSubmit={handleLogin} className="space-y-5">
+                    <div>
+                      <Label htmlFor="loginEmail" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">Email Address</Label>
+                      <Input id="loginEmail" name="email" type="email" required placeholder="Enter your email" value={loginForm.email} onChange={handleLoginChange} className="border-gray-200 focus:border-[#295c47]" />
                     </div>
                     <div>
-                      <Label htmlFor="loginPassword" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">
-                        Password
-                      </Label>
+                      <Label htmlFor="loginPassword" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">Password</Label>
                       <div className="relative">
-                        <Input
-                          id="loginPassword"
-                          name="password"
-                          type={showLoginPwd ? "text" : "password"}
-                          required
-                          placeholder="Enter your password"
-                          value={loginForm.password}
-                          onChange={handleLoginChange}
-                          className="border-gray-200 focus:border-[#295c47] pr-10"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowLoginPwd((v) => !v)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                        >
+                        <Input id="loginPassword" name="password" type={showLoginPwd ? "text" : "password"} required placeholder="Enter your password" value={loginForm.password} onChange={handleLoginChange} className="border-gray-200 focus:border-[#295c47] pr-10" />
+                        <button type="button" onClick={() => setShowLoginPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                           {showLoginPwd ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                       </div>
                     </div>
-
-                    <div className="flex justify-between items-center text-xs">
+                    <div className="flex justify-between items-center text-[13px]">
                       <label className="flex items-center gap-2 text-[#5a5a5a] cursor-pointer">
-                        <input
-                          type="checkbox"
-                          name="remember"
-                          checked={loginForm.remember}
-                          onChange={handleLoginChange}
-                          className="w-4 h-4 accent-[#295c47] rounded"
-                        />
+                        <input type="checkbox" name="remember" checked={loginForm.remember} onChange={handleLoginChange} className="w-4 h-4 accent-[#295c47]" />
                         Remember me
                       </label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setForgotForm({ email: loginForm.email });
-                          setMode("forgot");
-                        }}
-                        className="text-[#295c47] font-medium hover:underline bg-transparent border-none cursor-pointer"
-                      >
-                        Forgot Password?
-                      </button>
+                      <button type="button" className="text-[#295c47] font-medium hover:underline bg-transparent border-none cursor-pointer">Forgot Password?</button>
                     </div>
-
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full py-3.5 rounded-xl bg-[#295c47] text-white font-semibold text-sm hover:bg-[#1c4536] transition-all disabled:opacity-70 flex items-center justify-center gap-2"
-                    >
-                      {loading ? <Loader2 size={16} className="animate-spin" /> : "Sign In"}
+                    <button type="submit" disabled={loading} className="w-full py-3.5 rounded-lg bg-gradient-to-br from-[#295c47] to-[#4a6b55] text-white font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:opacity-70">
+                      {loading ? "Signing in..." : "Sign In"}
                     </button>
-
-                    <div className="flex items-center gap-3 my-4">
-                      <div className="flex-1 h-px bg-gray-200" />
-                      <span className="text-xs text-gray-400">or continue with</span>
-                      <div className="flex-1 h-px bg-gray-200" />
+                    <div className="flex items-center gap-3 my-2">
+                      <div className="flex-1 h-px bg-gray-200" /><span className="text-[13px] text-gray-400">or continue with</span><div className="flex-1 h-px bg-gray-200" />
                     </div>
-
-                    <button
-                      type="button"
-                      onClick={handleGoogleLogin}
-                      className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-gray-200 text-[#2c2c2c] text-sm font-medium hover:bg-[#faf8f5] transition-colors"
-                    >
+                    <button type="button" onClick={handleGoogleLogin} className="w-full flex items-center justify-center gap-3 py-3.5 rounded-lg border border-gray-200 text-[#2c2c2c] text-[14px] font-medium hover:bg-[#faf8f5] transition-colors">
                       <GoogleIcon /> Continue with Google
                     </button>
                   </form>
                 )}
 
-                {/* ── 2. SIGNUP FORM ───────────────────────────────────────────── */}
-                {mode === "signup" && (
-                  <form onSubmit={handleSignup} className="space-y-4">
+                {/* Signup form */}
+                {!verifyMode && activeTab === "signup" && (
+                  <form onSubmit={handleSignup} className="space-y-5">
+                    {[
+                      { id: "signupName", name: "name", label: "Full Name", type: "text", placeholder: "Enter your full name", value: signupForm.name },
+                      { id: "signupEmail", name: "email", label: "Email Address", type: "email", placeholder: "Enter your email", value: signupForm.email },
+                      { id: "signupPhone", name: "phone", label: "Phone Number", type: "tel", placeholder: "Enter your phone number", value: signupForm.phone },
+                    ].map(({ id, name, label, type, placeholder, value }) => (
+                      <div key={id}>
+                        <Label htmlFor={id} className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">{label}</Label>
+                        <Input id={id} name={name} type={type} required placeholder={placeholder} value={value} onChange={handleSignupChange} className="border-gray-200 focus:border-[#295c47]" />
+                      </div>
+                    ))}
                     <div>
-                      <Label htmlFor="signupName" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">
-                        Full Name *
-                      </Label>
-                      <Input
-                        id="signupName"
-                        name="name"
-                        type="text"
-                        required
-                        placeholder="Enter your full name"
-                        value={signupForm.name}
-                        onChange={handleSignupChange}
-                        className="border-gray-200 focus:border-[#295c47]"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="signupEmail" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">
-                        Email Address *
-                      </Label>
-                      <Input
-                        id="signupEmail"
-                        name="email"
-                        type="email"
-                        required
-                        placeholder="Enter your email"
-                        value={signupForm.email}
-                        onChange={handleSignupChange}
-                        className="border-gray-200 focus:border-[#295c47]"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="signupPhone" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">
-                        Phone Number *
-                      </Label>
-                      <Input
-                        id="signupPhone"
-                        name="phone"
-                        type="tel"
-                        required
-                        pattern="[0-9]{10}"
-                        maxLength={10}
-                        placeholder="10-digit phone number"
-                        value={signupForm.phone}
-                        onChange={handleSignupChange}
-                        className="border-gray-200 focus:border-[#295c47]"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="signupPassword" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">
-                        Password *
-                      </Label>
+                      <Label htmlFor="signupPassword" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">Password</Label>
                       <div className="relative">
-                        <Input
-                          id="signupPassword"
-                          name="password"
-                          type={showSignupPwd ? "text" : "password"}
-                          required
-                          minLength={8}
-                          placeholder="Create password (min. 8 characters)"
-                          value={signupForm.password}
-                          onChange={handleSignupChange}
-                          className="border-gray-200 focus:border-[#295c47] pr-10"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowSignupPwd((v) => !v)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-                        >
+                        <Input id="signupPassword" name="password" type={showSignupPwd ? "text" : "password"} required minLength={8} placeholder="Create a password" value={signupForm.password} onChange={handleSignupChange} className="border-gray-200 focus:border-[#295c47] pr-10" />
+                        <button type="button" onClick={() => setShowSignupPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
                           {showSignupPwd ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                       </div>
                     </div>
                     <div>
-                      <Label htmlFor="confirmPassword" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">
-                        Confirm Password *
-                      </Label>
+                      <Label htmlFor="confirmPassword" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">Confirm Password</Label>
                       <div className="relative">
-                        <Input
-                          id="confirmPassword"
-                          name="confirmPassword"
-                          type={showConfirmPwd ? "text" : "password"}
-                          required
-                          placeholder="Confirm your password"
-                          value={signupForm.confirmPassword}
-                          onChange={handleSignupChange}
-                          className="border-gray-200 focus:border-[#295c47] pr-10"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowConfirmPwd((v) => !v)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-                        >
+                        <Input id="confirmPassword" name="confirmPassword" type={showConfirmPwd ? "text" : "password"} required placeholder="Confirm your password" value={signupForm.confirmPassword} onChange={handleSignupChange} className="border-gray-200 focus:border-[#295c47] pr-10" />
+                        <button type="button" onClick={() => setShowConfirmPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
                           {showConfirmPwd ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                       </div>
                     </div>
-
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full py-3.5 rounded-xl bg-[#295c47] text-white font-semibold text-sm hover:bg-[#1c4536] transition-all disabled:opacity-70 flex items-center justify-center gap-2 mt-2"
-                    >
-                      {loading ? <Loader2 size={16} className="animate-spin" /> : "Create Account"}
+                    <button type="submit" disabled={loading} className="w-full py-3.5 rounded-lg bg-gradient-to-br from-[#295c47] to-[#4a6b55] text-white font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:opacity-70">
+                      {loading ? "Creating Account..." : "Create Account"}
                     </button>
-
-                    <div className="flex items-center gap-3 my-4">
-                      <div className="flex-1 h-px bg-gray-200" />
-                      <span className="text-xs text-gray-400">or continue with</span>
-                      <div className="flex-1 h-px bg-gray-200" />
+                    <div className="flex items-center gap-3 my-2">
+                      <div className="flex-1 h-px bg-gray-200" /><span className="text-[13px] text-gray-400">or continue with</span><div className="flex-1 h-px bg-gray-200" />
                     </div>
-
-                    <button
-                      type="button"
-                      onClick={handleGoogleLogin}
-                      className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-gray-200 text-[#2c2c2c] text-sm font-medium hover:bg-[#faf8f5] transition-colors"
-                    >
+                    <button type="button" onClick={handleGoogleLogin} className="w-full flex items-center justify-center gap-3 py-3.5 rounded-lg border border-gray-200 text-[#2c2c2c] text-[14px] font-medium hover:bg-[#faf8f5] transition-colors">
                       <GoogleIcon /> Continue with Google
                     </button>
                   </form>
                 )}
-
-                {/* ── 3. VERIFY FORM ───────────────────────────────────────────── */}
-                {mode === "verify" && (
-                  <form onSubmit={handleVerify} className="space-y-4">
-                    <p className="text-center text-[#5a5a5a] text-xs leading-relaxed mb-4">
-                      We&apos;ve sent a verification code to <strong>{pendingEmail}</strong>. Please enter it below.
-                    </p>
-                    <div>
-                      <Label htmlFor="verifyCode" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">
-                        Verification Code
-                      </Label>
-                      <Input
-                        id="verifyCode"
-                        placeholder="Enter 6-digit code"
-                        maxLength={6}
-                        required
-                        value={verifyForm.code}
-                        onChange={(e) => setVerifyForm({ code: e.target.value })}
-                        className="border-gray-200 focus:border-[#295c47] text-center font-mono tracking-widest text-lg"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full py-3.5 rounded-xl bg-[#295c47] text-white font-semibold text-sm hover:bg-[#1c4536] transition-all disabled:opacity-70 flex items-center justify-center gap-2"
-                    >
-                      {loading ? <Loader2 size={16} className="animate-spin" /> : "Verify Email"}
-                    </button>
-                    <p className="text-center text-xs mt-3">
-                      Didn&apos;t receive the code?{" "}
-                      <button
-                        type="button"
-                        onClick={handleResendCode}
-                        className="text-[#295c47] font-semibold hover:underline bg-transparent border-none cursor-pointer"
-                      >
-                        Resend Code
-                      </button>
-                    </p>
-                    <p className="text-center text-xs mt-1">
-                      <button
-                        type="button"
-                        onClick={() => setMode("login")}
-                        className="text-[#5a5a5a] hover:text-[#295c47] underline"
-                      >
-                        Back to Sign In
-                      </button>
-                    </p>
-                  </form>
-                )}
-
-                {/* ── 4. FORGOT PASSWORD FORM ─────────────────────────────────── */}
-                {mode === "forgot" && (
-                  <form onSubmit={handleForgotPassword} className="space-y-4">
-                    <p className="text-center text-[#5a5a5a] text-xs leading-relaxed mb-4">
-                      Enter your email address and we&apos;ll send you a code to reset your password.
-                    </p>
-                    <div>
-                      <Label htmlFor="forgotEmail" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">
-                        Email Address
-                      </Label>
-                      <Input
-                        id="forgotEmail"
-                        type="email"
-                        required
-                        placeholder="Enter your email"
-                        value={forgotForm.email}
-                        onChange={(e) => setForgotForm({ email: e.target.value })}
-                        className="border-gray-200 focus:border-[#295c47]"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full py-3.5 rounded-xl bg-[#295c47] text-white font-semibold text-sm hover:bg-[#1c4536] transition-all disabled:opacity-70 flex items-center justify-center gap-2"
-                    >
-                      {loading ? <Loader2 size={16} className="animate-spin" /> : "Send Reset Code"}
-                    </button>
-                    <p className="text-center text-xs mt-3">
-                      <button
-                        type="button"
-                        onClick={() => setMode("login")}
-                        className="text-[#295c47] font-semibold hover:underline"
-                      >
-                        Back to Sign In
-                      </button>
-                    </p>
-                  </form>
-                )}
-
-                {/* ── 5. RESET PASSWORD FORM ──────────────────────────────────── */}
-                {mode === "reset" && (
-                  <form onSubmit={handleResetPassword} className="space-y-4">
-                    <p className="text-center text-[#5a5a5a] text-xs leading-relaxed mb-4">
-                      Enter the code sent to <strong>{pendingEmail}</strong> and your new password.
-                    </p>
-                    <div>
-                      <Label htmlFor="resetCode" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">
-                        Verification Code
-                      </Label>
-                      <Input
-                        id="resetCode"
-                        placeholder="Enter code from email"
-                        maxLength={6}
-                        required
-                        value={resetForm.code}
-                        onChange={(e) => setResetForm((f) => ({ ...f, code: e.target.value }))}
-                        className="border-gray-200 focus:border-[#295c47] font-mono tracking-widest"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="resetPassword" className="text-xs font-medium text-[#5a5a5a] mb-1.5 block">
-                        New Password
-                      </Label>
-                      <div className="relative">
-                        <Input
-                          id="resetPassword"
-                          type={showResetPwd ? "text" : "password"}
-                          required
-                          minLength={8}
-                          placeholder="Enter new password (min. 8 characters)"
-                          value={resetForm.newPassword}
-                          onChange={(e) => setResetForm((f) => ({ ...f, newPassword: e.target.value }))}
-                          className="border-gray-200 focus:border-[#295c47] pr-10"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowResetPwd((v) => !v)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-                        >
-                          {showResetPwd ? <EyeOff size={18} /> : <Eye size={18} />}
-                        </button>
-                      </div>
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full py-3.5 rounded-xl bg-[#295c47] text-white font-semibold text-sm hover:bg-[#1c4536] transition-all disabled:opacity-70 flex items-center justify-center gap-2"
-                    >
-                      {loading ? <Loader2 size={16} className="animate-spin" /> : "Reset Password"}
-                    </button>
-                    <p className="text-center text-xs mt-3">
-                      <button
-                        type="button"
-                        onClick={() => setMode("login")}
-                        className="text-[#295c47] font-semibold hover:underline"
-                      >
-                        Back to Sign In
-                      </button>
-                    </p>
-                  </form>
-                )}
               </div>
 
-              <div className="px-8 py-4 bg-[#faf8f5] border-t border-[#f5f0e8] text-center text-xs text-[#5a5a5a]">
-                By continuing, you agree to our{" "}
-                <Link href="/terms" className="text-[#295c47] font-medium hover:underline">
-                  Terms of Service
-                </Link>
+              <div className="px-8 py-5 border-t border-[#f5f0e8] text-center text-[13px] text-[#5a5a5a]">
+                {activeTab === "login"
+                  ? <p>Don&apos;t have an account? <button className="text-[#295c47] font-medium hover:underline bg-transparent border-none cursor-pointer" onClick={() => setActiveTab("signup")}>Sign up</button></p>
+                  : <p>Already have an account? <button className="text-[#295c47] font-medium hover:underline bg-transparent border-none cursor-pointer" onClick={() => setActiveTab("login")}>Sign in</button></p>
+                }
               </div>
             </div>
           </div>

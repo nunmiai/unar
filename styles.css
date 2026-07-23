@@ -1,5 +1,5 @@
 :root {
-    --primary-color: #5a7c65;
+    --primary-color: #295c47;
     --primary-dark: #475f50;
     --secondary-color: #d4a574;
     --accent-color: #e8d5c4;
@@ -241,11 +241,12 @@ body {
 }
 
 .hero-logo-img {
-    max-width: 250px;
+    max-width: 220px;
     height: auto;
     display: block;
-    margin-bottom: -30px;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+    margin-bottom: 8px;
+    border-radius: 12px;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
 }
 
 .hero-subtitle {
@@ -257,12 +258,52 @@ body {
     margin-top: 0;
 }
 
-.hero-description {
+.hero-brand-statement {
+    margin-bottom: 32px;
+    max-width: 550px;
+}
+
+.hero-intro-text {
     font-size: 18px;
     color: var(--text-light);
-    margin-bottom: 32px;
-    max-width: 500px;
     line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+.hero-pillars {
+    background-color: rgba(90, 124, 101, 0.05);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(90, 124, 101, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pillar-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.pillar-item p {
+    margin: 0;
+    font-size: 15px;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.pillar-item p strong {
+    color: var(--primary-color);
+}
+
+.hero-tagline {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 600;
+    color: #c28445;
+    font-style: italic;
 }
 
 .hero-cta {
@@ -1371,6 +1412,13 @@ section {
 .form-group textarea::placeholder,
 .form-group select::placeholder {
     color: #999;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.form-group input:focus::placeholder,
+.form-group textarea:focus::placeholder,
+.form-group select:focus::placeholder {
     opacity: 0.6;
 }
 
@@ -1618,7 +1666,7 @@ section {
         justify-content: center;
     }
 
-    .hero-description {
+    .hero-brand-statement {
         margin-left: auto;
         margin-right: auto;
     }
@@ -1648,6 +1696,19 @@ section {
     .footer-content {
         grid-template-columns: 1fr;
         gap: 32px;
+        text-align: center;
+    }
+
+    .footer-brand,
+    .footer-links,
+    .footer-contact {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-logo-img {
+        margin: 0 auto -12px;
     }
 }
 
@@ -1687,7 +1748,8 @@ section {
 
     .hero-logo-img {
         max-width: 180px;
-        margin: 0 auto -35px auto;
+        margin: 0 auto 8px auto;
+        border-radius: 10px;
     }
 
     .hero-subtitle {
@@ -1890,7 +1952,8 @@ section {
 
     .hero-logo-img {
         max-width: 150px;
-        margin: 0 auto -25px auto;
+        margin: 0 auto 8px auto;
+        border-radius: 8px;
     }
 
     .hero-subtitle {

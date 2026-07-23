@@ -68,10 +68,21 @@ export default function CartSidebar({ isOpen, onClose }) {
                   <div key={itemId} className="flex gap-4 items-center border-b border-[#e8e4df] pb-4">
                     <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-[#fdfbf7]">
                       <img
-                        src={`/assets/website_assets/mockups/${item.image}`}
+                        src={
+                          !item.image
+                            ? "/assets/website_assets/logo-circle.png"
+                            : item.image.startsWith("/") || item.image.startsWith("http")
+                            ? item.image
+                            : item.image.includes("/")
+                            ? `/${item.image}`
+                            : `/assets/website_assets/mockups/${item.image}`
+                        }
                         alt={item.name}
                         className="w-full h-full object-cover"
-                        onError={(e) => { e.target.src = "/assets/website_assets/logo-circle.png"; }}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/assets/website_assets/logo-circle.png";
+                        }}
                       />
                     </div>
                     <div className="flex-1 min-w-0">

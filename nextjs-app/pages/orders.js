@@ -675,38 +675,42 @@ export default function OrdersPage() {
 
                           {/* Action Toolbar: Retry, Reorder, Delete */}
                           <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-200/80">
-                            {/* Delete Order Button */}
-                            {confirmDeleteId === rawId ? (
-                              <div className="flex items-center gap-2 bg-rose-50 border border-rose-200 rounded-xl px-3 py-1.5 text-xs">
-                                <AlertTriangle size={14} className="text-rose-600" />
-                                <span className="text-rose-700 font-medium">Confirm Delete?</span>
-                                <button
-                                  onClick={(e) => handleDeleteOrder(rawId, e)}
-                                  disabled={deletingId === rawId}
-                                  className="px-2.5 py-1 bg-rose-600 text-white rounded-lg font-semibold hover:bg-rose-700 transition-colors text-xs flex items-center gap-1"
-                                >
-                                  {deletingId === rawId ? <Loader2 size={12} className="animate-spin" /> : "Yes, Delete"}
-                                </button>
+                            {/* Delete Order Button (Only for Pending & Failed orders) */}
+                            {isPendingOrFailed ? (
+                              confirmDeleteId === rawId ? (
+                                <div className="flex items-center gap-2 bg-rose-50 border border-rose-200 rounded-xl px-3 py-1.5 text-xs">
+                                  <AlertTriangle size={14} className="text-rose-600" />
+                                  <span className="text-rose-700 font-medium">Confirm Delete?</span>
+                                  <button
+                                    onClick={(e) => handleDeleteOrder(rawId, e)}
+                                    disabled={deletingId === rawId}
+                                    className="px-2.5 py-1 bg-rose-600 text-white rounded-lg font-semibold hover:bg-rose-700 transition-colors text-xs flex items-center gap-1"
+                                  >
+                                    {deletingId === rawId ? <Loader2 size={12} className="animate-spin" /> : "Yes, Delete"}
+                                  </button>
+                                  <button
+                                    onClick={(e) => {
+                                      e?.stopPropagation();
+                                      setConfirmDeleteId(null);
+                                    }}
+                                    className="px-2 py-1 text-gray-500 hover:text-gray-700 text-xs"
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              ) : (
                                 <button
                                   onClick={(e) => {
                                     e?.stopPropagation();
-                                    setConfirmDeleteId(null);
+                                    setConfirmDeleteId(rawId);
                                   }}
-                                  className="px-2 py-1 text-gray-500 hover:text-gray-700 text-xs"
+                                  className="inline-flex items-center gap-1.5 text-xs text-rose-600 hover:text-rose-800 font-medium hover:underline bg-transparent border-none cursor-pointer"
                                 >
-                                  Cancel
+                                  <Trash2 size={14} /> Delete Order
                                 </button>
-                              </div>
+                              )
                             ) : (
-                              <button
-                                onClick={(e) => {
-                                  e?.stopPropagation();
-                                  setConfirmDeleteId(rawId);
-                                }}
-                                className="inline-flex items-center gap-1.5 text-xs text-rose-600 hover:text-rose-800 font-medium hover:underline bg-transparent border-none cursor-pointer"
-                              >
-                                <Trash2 size={14} /> Delete Order
-                              </button>
+                              <div />
                             )}
 
                             {/* Right Action Buttons: Retry Payment & Reorder */}
